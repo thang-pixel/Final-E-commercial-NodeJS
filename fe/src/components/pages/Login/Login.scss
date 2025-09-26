@@ -1,0 +1,12 @@
+.login{
+    // margin: 100px;
+    background-color: aqua;
+    padding: 20px;
+    margin: 100px;
+    border-radius: 20px;
+    background: linear-gradient(to right, rgba(102, 255, 255, 0.786), aqua);
+    
+    &__submit{
+        background: linear-gradient(to right, rgb(94, 109, 248), rgb(4, 52, 224));
+    }
+}
