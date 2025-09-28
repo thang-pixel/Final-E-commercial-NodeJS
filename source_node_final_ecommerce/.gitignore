@@ -5,10 +5,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 dist
-.env
 .DS_Store
 .idea
 .vscode
 
 /gateway/node_modules
 /services/**/node_modules
+/fe/node_modules
+
+# file này chứa biến môi trường, thông tin nhạy cảm
+.env
