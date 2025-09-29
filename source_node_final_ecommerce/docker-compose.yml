@@ -44,6 +44,8 @@ services:
     build: ./services/users
     container_name: users
     env_file: .env
+    ports:
+    - "8001:8001"
     volumes:
       - ./services/users:/app 
       - /app/node_modules  
@@ -62,6 +64,8 @@ services:
       - ./services/products:/app 
       - /app/node_modules  
     command: npm run dev
+    ports:
+    - "8002:8002"
     environment:
       PORT: ${PRODUCTS_PORT}
       JWT_SECRET: ${JWT_SECRET}
@@ -76,6 +80,8 @@ services:
       - ./services/orders:/app 
       - /app/node_modules  
     command: npm run dev
+    ports:
+    - "8003:8003"
     environment:
       PORT: ${ORDERS_PORT}
       JWT_SECRET: ${JWT_SECRET}
