@@ -20,7 +20,7 @@ function CustomerRoutes() {
       <Route path="/" element={<CustomerLayout user={user} />}>
         <Route path="" element={<Home />} />
         {/* <Route path="product/:id" element={<ProductDetail />} /> */}
-        {/* <Route path="products" element={<Product />} /> */}
+        <Route path="products" element={<Home />} />
         <Route path="cart" element={<Cart />} />
         <Route path="profile" element={<Profile />} />
         <Route path="order" element={<Order />} />
