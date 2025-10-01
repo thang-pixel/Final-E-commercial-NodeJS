@@ -2,10 +2,11 @@ import { Link, Outlet } from "react-router-dom";
 // import "./LayoutDefault.scss"; 
 import { Flex, Typography } from "antd";  
 import AdminFooter from "../../components/admin/AdminFooter";
+// import { useEffect, useReducer, useState } from "react";
 const { Text } = Typography;
 function AdminLayout(props) {  
   const { user } = props;
-
+  
   return (
     <div className="layout-admin">
       <header className="layout-admin__header">
