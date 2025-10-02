@@ -1,0 +1,56 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    
+  be_node_e-commerce: 
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+      target: dev
+    container_name: be_node_final
+    env_file: .env
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./BE:/app 
+      - /app/node_modules   
+    environment: 
+      - NODE_ENV=development 
+      - PORT=${BACKEND_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_USER=""
+      - DB_PASSWORD=""
+      - DB_HOST=${MONGO_HOST}
+      - DB_PORT=${MONGO_PORT}
+      - DB_NAME=e_commerce_final_dev
+      - MONGO_URI=mongodb://${MONGO_HOST}:${MONGO_PORT}/e_commerce_final_dev 
+    depends_on: [mongo]
+
+ 
+  fe_node_e-commerce:
+    build: 
+      context: ./fe
+      dockerfile: Dockerfile
+      target: dev
+    container_name: fe_node_final
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./fe:/app 
+      - /app/node_modules 
+    environment:
+      - NODE_ENV=development
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - API_URL=${API_URL}
+    depends_on:
+      - be_node_e-commerce
+ 
+
+volumes:
+  mongo_data:
+  

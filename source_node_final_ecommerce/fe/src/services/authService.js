@@ -5,6 +5,11 @@ export const getProductList= async () => {
     return result;
 }
 
+export const getProductById = async (id) => {
+    const result = await get("products/" + id);
+    return result;
+};
+
 export const createProduct = async (options) => {
     const result = await post("products", options);
     return result;
@@ -19,3 +24,4 @@ export const editProduct = async (id, options) => {
     const result = await edit("products/" + id, options);
     return result;
 }
+ 

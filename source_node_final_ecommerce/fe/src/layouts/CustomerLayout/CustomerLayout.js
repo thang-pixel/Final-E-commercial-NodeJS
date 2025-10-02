@@ -1,11 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
 import clsx from "clsx";
-import "./CustomerLayout.scss";
-import { Typography } from "antd";
+import "./CustomerLayout.scss"; 
 import CustomerFooter from "../../components/customer/CustomerFooter";
 import { useState } from "react";
-import { ACTIVE_PAGES } from "../../constants/pageContants";
-const { Text } = Typography;
+import { ACTIVE_PAGES } from "../../constants/pageContants"; 
 
 function CustomerLayout(props) {
   const { user } = props;

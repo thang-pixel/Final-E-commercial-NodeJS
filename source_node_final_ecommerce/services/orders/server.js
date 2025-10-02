@@ -17,18 +17,21 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ordersdb';
 const JWT_SECRET = process.env.JWT_SECRET || 'change_me';
 const PRODUCTS_URL = process.env.PRODUCTS_URL || 'http://localhost:8002';
 
-mongoose.connect(MONGO_URI).then(()=>console.log('Orders DB connected')).catch(err=>console.error(err));
+mongoose
+    .connect(MONGO_URI)
+    .then(() => console.log('Orders DB connected'))
+    .catch((err) => console.error(err));
 
 function authRequired(req, res, next) {
-  const h = req.headers.authorization || '';
-  const token = h.startsWith('Bearer ') ? h.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'Missing token' });
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch {
-    res.status(401).json({ error: 'Invalid token' });
-  }
+    const h = req.headers.authorization || '';
+    const token = h.startsWith('Bearer ') ? h.slice(7) : null;
+    if (!token) return res.status(401).json({ error: 'Missing token' });
+    try {
+        req.user = jwt.verify(token, JWT_SECRET);
+        next();
+    } catch {
+        res.status(401).json({ error: 'Invalid token' });
+    }
 }
 
 app.get('/health', (_, res) => res.json({ ok: true, service: 'orders' }));
@@ -79,8 +82,10 @@ app.get('/health', (_, res) => res.json({ ok: true, service: 'orders' }));
 
 // List my orders
 app.get('/me', authRequired, async (req, res) => {
-  const orders = await Order.find({ userId: req.user.id }).sort({ createdAt: -1 });
-  res.json(orders);
+    const orders = await Order.find({ userId: req.user.id }).sort({
+        createdAt: -1,
+    });
+    res.json(orders);
 });
 
 app.listen(PORT, () => console.log(`Orders service on ${PORT}`));
