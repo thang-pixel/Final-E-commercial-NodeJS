@@ -7,12 +7,10 @@
 
 # Config:
 Trong thư mục source_node_final_ecommerce
-  - Chạy docker-compose up --build khi build lại prj
-  - Chạy docker-compose up khi đã build và không thêm thư viên mới
-  - Mỗi service nên chạy riêng khi developing and testing api
-  - npm install để cài package cho các services
-  - Database giả lập sẽ lưu trong source/mock-data
-
+  - Development:
+    + Chạy docker compose -f docker-compose.dev.yml up --build khi build lại prj
+    + Chay docker compose -f docker-compose.dev.yml up khi viet code va chua them thu vien moi
+    + Test api: http://localhost:8001/api/users
 # Link:
  - Báo cáo:
  - Phân công, chấm điểm:

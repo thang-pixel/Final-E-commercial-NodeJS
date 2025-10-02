@@ -1,0 +1,46 @@
+[{
+  "_id": {
+    "$oid": "68b81a3ad5652c2308e37863"
+  },
+  "full_name": "Tran Minh Thuyen",
+  "username": "tranthuyen",
+  "password": "123456",
+  "email": "tranthuyen2222@gmail.com",
+  "phone": "0373436163",
+  "addresses": [
+    {
+      "name": "Le Van Luong, Tan Phong, Quan 7",
+      "is_default": true
+    },
+    {
+      "name": "Nguyen, Tan Phong, Quan 7",
+      "is_default": false
+    }
+  ],
+  "role": "admin",
+  "provider": "gg",
+  "point": 0
+},
+{
+  "_id": {
+    "$oid": "68b81a62d5652c2308e37867"
+  },
+  "full_name": "Tran Minh Thuyen",
+  "username": "thuyen523",
+  "password": "123456",
+  "email": "tmthuyentl2005@gmail.com",
+  "phone": "0373436163",
+  "addresses": [
+    {
+      "name": "Le Van Luong, Tan Phong, Quan 7",
+      "is_default": true
+    },
+    {
+      "name": "Nguyen, Tan Phong, Quan 7",
+      "is_default": false
+    }
+  ],
+  "role": "customer",
+  "provider": "gg",
+  "point": 100
+}]
