@@ -1,14 +1,15 @@
-import { Schema, model } from "mongoose";
+const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 const slugUpdater = require("mongoose-slug-updater");
 
-const categorySchema = new Schema(
+const categorySchema = new mongoose.Schema(
   {
     _id: Number,
     name: { type: String, unique: true },
     slug: { type: String, slug: "name", unique: true, index: true },
-    description: String,
+    description: { type: String, default: "" },
+    image: { type: String, default: "" },
   },
   { _id: false, timestamps: true, collection: "categories" }
 );
@@ -23,4 +24,4 @@ categorySchema.plugin(mongooseDelete, {
   validateBeforeRestore: false,
 });
 
-module.exports = model("Category", categorySchema);
+module.exports = mongoose.model("Category", categorySchema);

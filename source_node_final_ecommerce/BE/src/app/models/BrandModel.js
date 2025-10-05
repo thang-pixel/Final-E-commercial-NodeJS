@@ -1,12 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+const mongoose = require('mongoose');
 const mongooseDelete = require("mongoose-delete"); 
 const slugUpdater = require("mongoose-slug-updater");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const brandSchema = new Schema(
+const brandSchema = new mongoose.Schema(
   {
     _id: Number,
-    name: String,
+    name: { type: String, required: true, unique: true },
+    description: { type: String, default: ""},
+    image: { type: String, default: "" },
     slug: { type: String, slug: "name", unique: true, index: true }
   },
   { _id: false, timestamps: true, collection: "brands" }
