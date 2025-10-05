@@ -10,7 +10,10 @@ Trong thư mục source_node_final_ecommerce
   - Development:
     + Chạy docker compose -f docker-compose.dev.yml up --build khi build lại prj
     + Chay docker compose -f docker-compose.dev.yml up khi viet code va chua them thu vien moi
-    + Test api: http://localhost:8001/api/users
+    + Backend pull code ve phai npm i de cai thu vien. Lenh chay: npm run dev
+    + Test api: 
+      + http://localhost:8001/api
+      + http://localhost:8001/api/users
 # Link:
  - Báo cáo:
  - Phân công, chấm điểm:
