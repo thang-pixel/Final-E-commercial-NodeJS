@@ -1,23 +1,28 @@
-const requireLogin = (req, res, next) => {
-    // if (true) {
-    //     return res.redirect('/login');
-    // }
-    next();
+const { body } = require('express-validator');
+const { USER_ROLES } = require('../../constants/dbEnum');
+
+const authRequired = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
 };
 
-const requireRole = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!req.session.username) {
-            return res.redirect('/login');
-        }
-        if (!allowedRoles.includes(req.session.role)) {
-            return res.redirect('/error/403');
-        }
-        next();
-    };
+const roleRequired = (req, res, next) => {
+  if (!req.user || ![USER_ROLES.ADMIN, USER_ROLES.CUSTOMER].includes(req.user.role)) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
 };
 
-module.exports = {
-    requireLogin,
-    requireRole
+const adminRequired = (req, res, next) => {
+  if (!req.user || req.user.role !== USER_ROLES.ADMIN) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
+module.exports = { 
+  authRequired,
+  roleRequired,
+  adminRequired,
 };

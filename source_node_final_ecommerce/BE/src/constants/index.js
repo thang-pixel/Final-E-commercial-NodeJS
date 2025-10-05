@@ -7,4 +7,6 @@ module.exports = {
     DB_HOST: process.env.DB_HOST,
     DB_PORT: parseInt(process.env.DB_PORT) || 27017,
     DB_NAME: process.env.DB_NAME,
+    MONGO_URI: process.env.MONGO_URI,
+    JWT_SECRET: process.env.JWT_SECRET || 'thuyen_jwt' 
 }
