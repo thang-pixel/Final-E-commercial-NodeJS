@@ -1,15 +1,10 @@
-const mongoose = require('mongoose');
-require('dotenv').config({path: __dirname + '/../../../.env'})
-
-// const db_name = 'e_commerce_final';
-
+const mongoose = require('mongoose'); 
+const { MONGO_URI } = require('../../constants');
 
 async function connect(){ 
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        console.log('Connecting to MongoDB...', MONGO_URI);
+        await mongoose.connect(MONGO_URI);
         console.log('Connect successfully to MongoDB');
     } catch (error) {
         console.log('Connect failed to MongoDB');

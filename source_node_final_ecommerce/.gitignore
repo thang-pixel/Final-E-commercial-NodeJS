@@ -12,7 +12,7 @@ dist
 /gateway/node_modules
 /services/**/node_modules
 /fe/node_modules
-/BE/node_modules
+/BE/node_modules/
 
 # file này chứa biến môi trường, thông tin nhạy cảm
 .env
