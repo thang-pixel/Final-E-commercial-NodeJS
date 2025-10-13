@@ -10,6 +10,9 @@ router.get('/:slug', CategoryController.detail);
 // Protected routes - only for admin
 router.post('/', adminRequired, CategoryController.store);
 router.put('/edit/:id', adminRequired, CategoryController.update);
+router.patch('/categories/:id/restore', adminRequired, CategoryController.restore);
+router.delete('/categories/:id/force', adminRequired, CategoryController.forceDestroy);
+router.delete('/categories/:id', adminRequired, CategoryController.softDelete);
 router.get('/', CategoryController.index);
 
 module.exports = router;

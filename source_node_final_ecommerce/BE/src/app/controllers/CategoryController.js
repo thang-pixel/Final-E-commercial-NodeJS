@@ -1,3 +1,4 @@
+const { CATEGORY_STATUSES } = require('../../constants/dbEnum');
 const CategoryModel = require('../models/CategoryModel');
 
 class CategoryController {
@@ -11,6 +12,10 @@ class CategoryController {
                   $or: [
                       { name: { $regex: search, $options: 'i' } },
                       { slug: { $regex: search, $options: 'i' } },
+                  ],
+                  $and: [
+                      { status: CATEGORY_STATUSES.ACTIVE },
+                      { deletedAt: false },
                   ],
               }
             : {};
@@ -59,7 +64,9 @@ class CategoryController {
     // [GET] | api/categories/:slug
     async detail(req, res) {
         let { slug } = req.params;
-        let query = slug ? { slug } : {};
+        let query = slug
+            ? { slug, status: CATEGORY_STATUSES.ACTIVE, deletedAt: false }
+            : {};
 
         try {
             const data = await CategoryModel.findOne(query);
@@ -143,10 +150,14 @@ class CategoryController {
         }
 
         try {
-            const doc = await CategoryModel.findOneAndUpdate({ _id: id }, req.body, {
-                new: true,
-                runValidators: true, // Nên thêm để kiểm tra validation khi cập nhật
-            });
+            const doc = await CategoryModel.findOneAndUpdate(
+                { _id: id },
+                req.body,
+                {
+                    new: true,
+                    runValidators: true, // Nên thêm để kiểm tra validation khi cập nhật
+                }
+            );
 
             // 1. KIỂM TRA KẾT QUẢ TÌM KIẾM
             if (!doc) {
@@ -161,7 +172,7 @@ class CategoryController {
             return res.status(200).json({
                 success: true,
                 message: 'Cập nhật nhân vật thành công.',
-                data: doc, //  
+                data: doc, //
             });
         } catch (error) {
             return res.status(500).json({
@@ -170,6 +181,94 @@ class CategoryController {
                 data: null,
                 error,
             });
+        }
+    }
+
+    // [DELETE] api/categories/:id
+    async softDelete(req, res, next) {
+        try {
+            const { id } = req.params;
+            const c = await CategoryModel.delete({ _id: id });
+            if (c.deletedCount === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy danh mục để xóa',
+                });
+            }
+            await CategoryModel.updateOne(
+                { _id: id },
+                { status: CATEGORY_STATUSES.INACTIVE }
+            );
+            return res.status(200).json({
+                success: true,
+                message: 'Xóa danh mục thành công.',
+            });
+        } catch (error) {
+            console.error(error);
+            next(error);
+        }
+    }
+
+    // [PATCH] /categories/:id/restore
+    async restore(req, res, next) {
+        try {
+            const c = await CategoryModel.restore({ _id: req.params.id });
+            if (c.modifiedCount === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy danh mục để khôi phục',
+                });
+            }
+            await CategoryModel.updateOne(
+                { _id: req.params.id },
+                { status: CATEGORY_STATUSES.ACTIVE }
+            );
+            return res.status(200).json({
+                success: true,
+                message: 'Khôi phục danh mục thành công.',
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi server',
+                data: null,
+                error,
+            });
+        }
+    }
+
+    // [DELETE] /categories/:id/force
+    async forceDestroy(req, res, next) {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID danh mục không được để trống',
+            });
+        }
+        try {
+            const hasProducts = await ProductModel.exists({ categoryId: id }); // + index {categoryId:1}
+            if (hasProducts) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'Không thể xoá: danh mục đang có sản phẩm.',
+                });
+            }
+            const c = await CategoryModel.deleteOne({ _id: id });
+            if (c.deletedCount === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy danh mục để xóa',
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                message: 'Xóa danh mục thành công.',
+            });
+        } catch (error) {
+            console.error(error);
+            next(error);
         }
     }
 }

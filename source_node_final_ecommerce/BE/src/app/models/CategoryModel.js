@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 const slugUpdater = require("mongoose-slug-updater");
+const { CATEGORY_STATUSES } = require("../../constants/dbEnum");
 
 const categorySchema = new mongoose.Schema(
   {
@@ -10,6 +11,7 @@ const categorySchema = new mongoose.Schema(
     slug: { type: String, slug: "name", unique: true, index: true },
     description: { type: String, default: "" },
     image: { type: String, default: "" },
+    status: { type: String, enum: [CATEGORY_STATUSES.ACTIVE, CATEGORY_STATUSES.INACTIVE], default: CATEGORY_STATUSES.ACTIVE }
   },
   { _id: false, timestamps: true, collection: "categories" }
 );
