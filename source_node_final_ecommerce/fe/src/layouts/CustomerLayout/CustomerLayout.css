@@ -1,0 +1,79 @@
+.layout-customer__header {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 80px !important;
+}
+.layout-customer__nav {
+    /* background-color: rgb(0, 255, 26)!important; */
+}
+
+.layout-customer__main {
+    padding-top: 100px !important;
+    min-height: calc(100vh - 100px);
+    background-color: #f5f5f5;
+}
+
+.layout-customer__nav--menu {
+    display: flex;
+    transition: all 0.75s ease-in-out;
+}
+
+.layout-customer__nav--hamburger,
+.layout-customer__nav--close {
+    display: none;
+}
+
+.menuProfile ::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    border-width: 0 15px 15px 15px;
+    border-style: solid;
+    border-color: transparent transparent #ffffff transparent;
+}
+
+.menuProfile ::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: 0px;
+    height: 20px;
+    width: 100%;
+    background-color: transparent;
+}
+
+.nav-item--account:hover .menuProfile {
+    display: block !important;
+}
+
+@media (min-width: 768px) {
+    .layout-customer__nav--menu {
+        display: flex !important;
+    }
+    .layout-customer__nav--hamburger,
+    .layout-customer__nav--close {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .layout-customer__nav--menu {
+        display: none;
+        gap: 0px;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 80px;
+        width: 100%;
+        height: auto;
+        background-color: inherit;
+    }
+    .layout-customer__nav--close {
+        /* display: block; */
+        /*z-index: 20; */
+    }
+    .layout-customer__nav--hamburger {
+        display: block;
+    }
+}

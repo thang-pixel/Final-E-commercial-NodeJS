@@ -10,6 +10,7 @@ import ErrorPage from "../pages/ErrorPage";
 import useAuth from "../hooks/authHook";
 import Login from "../pages/Login";
 import Logout from "../pages/Logout";
+import Category from "../pages/customer/Category";
 
 function CustomerRoutes() {
   const { user } = useAuth();
@@ -21,9 +22,10 @@ function CustomerRoutes() {
         <Route path="" element={<Home />} />
         {/* <Route path="product/:id" element={<ProductDetail />} /> */}
         <Route path="products" element={<Home />} />
-        <Route path="cart" element={<Cart />} />
+        <Route path="categories" element={<Category />} />
+        <Route path="carts" element={<Cart />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="order" element={<Order />} />
+        <Route path="orders" element={<Order />} />
       </Route>
       <Route
         path="/admin/*"

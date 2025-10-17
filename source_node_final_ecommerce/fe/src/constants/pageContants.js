@@ -1,9 +1,10 @@
 const ACTIVE_PAGES = {
   home: "home",
+  categories: "categories",
   products: "products",
-  cart: "cart",
+  carts: "carts",
   profile: "profile",
-  order: "order",
+  orders: "orders",
 };
 
 export { ACTIVE_PAGES };

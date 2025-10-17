@@ -1,21 +1,32 @@
-// import logo from './logo.svg'; 
+// import logo from './logo.svg';
+import CssBaseline from '@mui/material/CssBaseline';
 import './App.css';
 import useAuth from './hooks/authHook';
 import AdminRoutes from './routes/AdminRoutes';
 import CustomerRoutes from './routes/CustomerRoutes';
+import { ThemeProvider } from '@emotion/react';
+import theme from './config/theme';
 
 function App() {
-  const { user } = useAuth();
-  return (
-    <div className="App">
-      {user 
-      ? <> 
-        {user.role === "ADMIN" ? <AdminRoutes /> : <CustomerRoutes />}
-      </>
-      : <h1>Please log in.</h1>
-    }
-    </div>
-  );
+    const { user } = useAuth();
+    return (
+        <div className="App">
+            {user ? (
+                <>
+                    {user.role === 'ADMIN' ? (
+                        <AdminRoutes />
+                    ) : (
+                        <ThemeProvider theme={theme}>
+                            <CssBaseline />
+                            <CustomerRoutes />
+                        </ThemeProvider>
+                    )}
+                </>
+            ) : (
+                <h1>Please log in.</h1>
+            )}
+        </div>
+    );
 }
 
 export default App;
