@@ -69,10 +69,10 @@ const filterProduct = (filter, brand_ids, range_prices, ratings) => {
     return filter;
 };
 
-const paginationParam = (req, limit = 5, total) => {
+const paginationParam = (req, limitDefault = 5, total) => {
     const page = parseInt(req.query.page, 10) || 1;
 
-    let limit = parseInt(req.query.limit, 10) || limit;
+    let limit = parseInt(req.query.limit, 10) || limitDefault;
     // Giới hạn max 50 items/trang
     limit = Math.min(Math.max(1, limit), 50);
     const skip = (page - 1) * limit;

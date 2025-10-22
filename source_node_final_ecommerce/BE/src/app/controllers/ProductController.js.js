@@ -6,18 +6,23 @@ const {
 } = require('../../utils/searchUtil');
 const ProductModel = require('../models/ProductModel');
 
+
 class ProductController {
     // [GET] | /api/products/search
     // Hỗ trợ: ?category_id=1&brand_ids=1,2,3&range_prices=100-500&ratings=4&sort=price_asc&sort=createdAt_desc
     async search(req, res) {
         try {
-            const { category_id } = req.query;
+            const { category_id, keyword } = req.query;
             const { brand_ids, range_prices, ratings } = req.query;
 
             // --- Filter ---
             let filter = {
                 status: PRODUCT_STATUSES.ACTIVE,
                 deleted: false,
+                name: {
+                    $regex: keyword.trim(),
+                    $options: 'i', // không phân biệt hoa/thường
+                },
             };
 
             if (category_id) {
@@ -147,7 +152,7 @@ class ProductController {
                     message: 'Sản phẩm không tồn tại',
                     data: null,
                 });
-            }   
+            }
             res.status(200).json({
                 success: true,
                 message: 'Cập nhật trạng thái sản phẩm thành công',
@@ -258,7 +263,7 @@ class ProductController {
             const { id } = req.params;
             // Tìm kiếm sản phẩm có trong đơn hàng nào không?
             const isInOrders = false; // TODO: check trong OrderModel
-            if(isInOrders){
+            if (isInOrders) {
                 return res.status(400).json({
                     success: false,
                     message: 'Không thể xóa sản phẩm vì đã có trong đơn hàng',

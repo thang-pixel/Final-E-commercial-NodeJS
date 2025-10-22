@@ -4,7 +4,8 @@ const initialState = {
   user: {
     username: "thuyen070", 
     full_name: "Tran Minh Thuyen",
-    role: "CUSTOMERS"
+    // role: "CUSTOMER"
+    role: "ADMIN"
   }, 
   token: null,
 };

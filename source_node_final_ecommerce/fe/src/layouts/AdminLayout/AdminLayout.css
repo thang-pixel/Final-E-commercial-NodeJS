@@ -1,0 +1,22 @@
+:root {
+    --admin-nav-width: 250px;
+    --admin-nav-collapsed-width: 80px;
+    --admin-header-height: 64px;
+    --admin-footer-height: 40px;
+    --admin-header-color: #001529;
+    --admin-header-bg-color-light: #efebeb;
+
+}
+.layout-admin__nav {
+    background-color: var(--admin-header-bg-color); 
+    text-align: center;
+    padding: 0px; 
+    /* max-width: 50px; */
+}
+
+.layout-admin__header, .layout-admin__content-header {
+    background-color: var(--admin-header-bg-color);
+    height: var(--admin-header-height);
+    font-size: 18px;
+    font-weight: bold; 
+}

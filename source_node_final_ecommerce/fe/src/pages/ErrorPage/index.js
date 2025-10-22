@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function ErrorPage({ status, message }) {
+function ErrorPage({ role, status, message }) {
   // Gán giá trị mặc định nếu không được truyền vào
   const defaultStatus = status || 404;
   const defaultMessage =
@@ -24,7 +24,7 @@ function ErrorPage({ status, message }) {
           </Link>
         ) : (
           <Link
-            to="/"
+            to={role === "ADMIN" ? "/admin" : "/"}
             className="inline-block px-6 py-3 bg-teal-500 text-white font-bold rounded-lg shadow-md hover:bg-teal-600 transition-colors duration-300 ease-in-out"
           >
             Quay về trang chủ

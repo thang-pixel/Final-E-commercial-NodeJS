@@ -22,7 +22,7 @@ const productImageSchema = new Schema(
 const productVariantSchema = new Schema(
   {
     id: { type: Number }, // ID nội bộ
-    SKU: { type: String, required: true, unique: true, trim: true },
+    SKU: { type: String, required: false, unique: true, trim: true },
     color: { type: String, trim: true },
     storage: { type: String, trim: true },
     original_price: { type: Number, required: true },

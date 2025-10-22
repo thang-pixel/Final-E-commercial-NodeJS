@@ -1,16 +1,14 @@
-import { Schema, model } from "mongoose";
+const mongoose = require('mongoose');
 const mongooseDelete = require("mongoose-delete");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 const slugUpdater = require("mongoose-slug-updater");
 
-const reviewSchema = new Schema(
+const reviewSchema = new mongoose.Schema(
   {
     _id: Number,
     user_id: { type: Number, ref: "User",},
-    product_id: { type: Number, ref: "Product", index: true},
-    parent_id: { type: Number, ref: "Comment",},
-    content: { type: String },
-    status: { type: String, enum: ["active", "hidden"], default: "active" },
+    product_id: { type: Number, ref: "Product", index: true}, 
+    content: { type: String }, 
     rating: { type: Number, min: 1, max: 5 },
   },
   { _id: false, timestamps: true, collection: "reviews" }
@@ -26,4 +24,4 @@ reviewSchema.plugin(mongooseDelete, {
   validateBeforeRestore: false,
 });
 
-module.exports = model("Review", reviewSchema);
+module.exports = mongoose.model("Review", reviewSchema);
