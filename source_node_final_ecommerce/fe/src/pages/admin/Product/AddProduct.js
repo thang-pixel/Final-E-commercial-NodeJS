@@ -1,11 +1,11 @@
 
-const AddBrand = () => {
+const AddProduct = () => {
     
     return (
         <>
-            <h1>Add Brand</h1>
+            <h1>Add Product</h1>
         </>
     );
 }
 
-export default AddBrand;
+export default AddProduct;

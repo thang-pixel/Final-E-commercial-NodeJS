@@ -1,7 +1,7 @@
-import { 
+import {
     ContainerOutlined,
     CustomerServiceOutlined,
-    LogoutOutlined, 
+    LogoutOutlined,
     NotificationOutlined,
     OrderedListOutlined,
     PieChartOutlined,
@@ -9,73 +9,68 @@ import {
     SettingOutlined,
 } from '@ant-design/icons';
 import { ConfigProvider, Menu } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const items = [
     {
         key: '1',
         icon: <PieChartOutlined />,
-        label: 'Trang chủ',
-        path: '/admin/home',
+        label: <Link to="/admin/home">Trang chủ</Link>,
     },
     {
         key: '2',
         icon: <ProductOutlined />,
-        label: 'Sản phẩm',
+        label: <Link to="/admin/products">Sản phẩm</Link>,
         children: [
             {
                 key: '2-1',
-                label: 'Thương hiệu',
-                path: '/admin/brands',
+                label: <Link to="/admin/products">Sản phẩm</Link>, 
                 children: [
                     {
                         key: '2-1-1',
-                        label: 'Thêm thương hiệu',
-                        path: '/admin/brands/add',
+                        label: <Link to="/admin/products">Danh sách sản phẩm</Link>,
                     },
                     {
                         key: '2-1-2',
-                        label: 'Sửa thương hiệu',
-                        path: '/admin/brands/edit',
+                        label: <Link to="/admin/products/add">Thêm sản phẩm</Link>,
                     },
                     {
                         key: '2-1-3',
-                        label: 'Danh sách thương hiệu',
-                        path: '/admin/brands',
+                        label: <Link to="/admin/products/edit">Sửa sản phẩm</Link>,
+                    },
+                    {
+                        key: '2-1-4',
+                        label: <Link to="/admin/products/:slug">Chi tiết sản phẩm</Link>,
                     },
                 ],
             },
             {
                 key: '2-2',
-                label: 'Danh mục',
-                path: '/admin/categories',
+                label: <Link to="/admin/brands">Thương hiệu</Link>,
                 children: [
                     {
                         key: '2-2-1',
-                        label: 'Thêm danh mục',
-                        path: '/admin/categories/add',
+                        label: <Link to="/admin/brands">Danh sách thương hiệu</Link>,
                     },
                     {
                         key: '2-2-2',
-                        label: 'Sửa danh mục',
-                        path: '/admin/categories/edit',
-                    },
-                    {
-                        key: '2-2-3',
-                        label: 'Danh sách danh mục',
-                        path: '/admin/categories',
-                    },
+                        label: <Link to="/admin/brands/add">Thêm thương hiệu</Link>,
+                    }, 
                 ],
             },
             {
                 key: '2-3',
-                label: 'Sản phẩm',
-                path: '/admin/products',
+                label: <Link to="/admin/categories">Danh mục</Link>, 
                 children: [
-                    { key: '2-3-1', label: 'Thêm sản phẩm' },
-                    { key: '2-3-2', label: 'Sửa sản phẩm' },
-                    { key: '2-3-3', label: 'Danh sách sản phẩm' },
-                    { key: '2-3-4', label: 'Chi tiết sản phẩm' },
+                    {
+                        key: '2-3-1',
+                        label: <Link to="/admin/categories">Danh sách danh mục</Link>,
+                    }, 
+                    {
+                        key: '2-3-2',
+                        label: <Link to="/admin/categories/add">Thêm danh mục</Link>,
+                    }, 
                 ],
             },
         ],
@@ -83,72 +78,86 @@ const items = [
     {
         key: '3',
         icon: <OrderedListOutlined />,
-        label: 'Đơn hàng',
-        path: '/admin/orders',
+        label: <Link to="/admin/orders">Đơn hàng</Link>,
     },
     {
         key: '4',
         icon: <CustomerServiceOutlined />,
-        label: 'Khách hàng',
-        path: '/admin/customers',
+        label: <Link to="/admin/customers">Khách hàng</Link>, 
     },
     {
         key: '5',
         icon: <ContainerOutlined />,
-        label: 'Khuyến mãi',
-        path: '/admin/promotions',
+        label: <Link to="/admin/promotions">Khuyến mãi</Link>,
     },
     {
         key: '6',
         icon: <ContainerOutlined />,
-        label: 'Báo cáo, phân tích',
-        path: '/admin/reports',
-    },
+        label: <Link to="/admin/reports">Báo cáo, phân tích</Link>,
+    }, 
     {
         key: '7',
         icon: <NotificationOutlined />,
-        label: 'Thông báo',
-        path: '/admin/notifications',
+        label: <Link to="/admin/notifications">Thông báo</Link>,
     },
     {
         key: '8',
         icon: <SettingOutlined />,
-        label: 'Cài đặt',
-        path: '/admin/settings',
+        label: <Link to="/admin/settings">Cài đặt</Link>,
     },
-    { key: '9', icon: <LogoutOutlined />, label: 'Đăng xuất', path: '/logout' },
+    { key: '9', icon: <LogoutOutlined />, label: <Link to="/logout">Đăng xuất</Link> },
 ];
 
+// const flattenItemsToMap = (list, map = new Map()) => {
+//     for (const it of list) {
+//         if (it.path) map.set(it.key, it.path);
+//         if (it.children) flattenItemsToMap(it.children, map);
+//     }
+//     return map;
+// };
 
 const AdminMenu = ({ collapsed, className }) => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    // const location = useLocation();
 
-    const onClickMenu = (info) => {
-        const { key } = info;  
+    // const keyPathMap = useMemo(() => flattenItemsToMap(items), []);
+    // const selectedKey = useMemo(() => {
+    //     // chọn key khớp với URL hiện tại (ưu tiên path dài nhất)
+    //     let match = null;
+    //     for (const [k, p] of keyPathMap.entries()) {
+    //         if (p === '/admin/products/:slug') continue; // không điều hướng literal
+    //         if (
+    //             location.pathname === p ||
+    //             location.pathname.startsWith(p + '/')
+    //         ) {
+    //             if (!match || p.length > keyPathMap.get(match).length)
+    //                 match = k;
+    //         }
+    //     }
+    //     return match ? [match] : [];
+    // }, [location.pathname, keyPathMap]);
 
-        const findMenu = (list, k) => {
-            for (const item of list) {
-                if (item.key === k) return item;
-                if (item.children) {
-                    const found = findMenu(item.children, k);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
-
-        const selectedMenu = findMenu(items, key);
-        if (selectedMenu && selectedMenu.path) {
-            console.log('click menu: ', selectedMenu);
-            if (selectedMenu.path) {
-                navigate(selectedMenu.path);
-            }
-        }
-    };
+    // const onSelect = ({ key }) => {
+    //     const path = keyPathMap.get(key);
+    //     if (!path) return;
+    //     if (path.includes(':')) return; // chặn route động trong menu
+    //     navigate(path);
+    // };
 
     return (
         <>
-            <ConfigProvider
+        <Menu
+                    mode="inline"
+                    theme="light"
+                    defaultSelectedKeys={['1']}
+                    // onSelect={onSelect}
+                    // selectedKeys={selectedKey} // 🔥 controlled theo URL
+                    inlineCollapsed={collapsed}
+                    items={items}
+                    style={{ background: 'inherit', width: '100' }}
+                    className={className}
+                />
+            {/* <ConfigProvider
                 theme={{
                     token: {
                         itemHoverBg: '#FFEDD5',
@@ -162,18 +171,8 @@ const AdminMenu = ({ collapsed, className }) => {
                     },
                 }}
             >
-                <Menu
-                    defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['sub1']}
-                    mode="inline"
-                    theme="light"
-                    onClick={onClickMenu}
-                    inlineCollapsed={collapsed}
-                    items={items}
-                    style={{ background: 'inherit', width: '100' }}
-                    className={className}
-                />
-            </ConfigProvider>
+                
+            </ConfigProvider> */}
         </>
     );
 };
