@@ -36,13 +36,12 @@ function AdminRoutes() {
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Dashboard />} />
           <Route path="brands" element={<Outlet />} >
-            <Route index element={<Navigate to="" replace />} />
+            <Route index element={<BrandList />} /> 
             <Route path="add" element={<AddBrand />} />
-            <Route path="edit" element={<EditBrand />} />
-            <Route path="" element={<BrandList />} />z
+            <Route path="edit" element={<EditBrand />} /> 
           </Route>
-          <Route path="categories" element={<Outlet />} >
-            <Route index element={<Navigate to="" replace />} />
+          <Route path="categories" element={<Outlet />} > 
+            <Route index element={<CategoryList />} /> 
             <Route path="add" element={<AddCategory />} />
             <Route path="edit" element={<EditCategory />} />
             <Route path="" element={<CategoryList />} />

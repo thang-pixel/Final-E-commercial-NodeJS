@@ -7,6 +7,7 @@ const brandSchema = new mongoose.Schema(
   {
     _id: Number,
     name: { type: String, required: true, unique: true },
+    category_id: { type: Number, ref: "Category", required: true, index: true },
     description: { type: String, default: ""},
     image: { type: String, default: "" },
     slug: { type: String, slug: "name", unique: true, index: true }
