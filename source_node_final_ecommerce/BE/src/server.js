@@ -33,6 +33,8 @@ app.use(cors({ origin: true, credentials: true })); // development
 app.use(morgan('combined'));
 // static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Cookie parser
 app.use(cookieParser());
 app.use(express.json()); 

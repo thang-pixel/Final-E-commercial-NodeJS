@@ -1,15 +1,18 @@
 // src/pages/admin/Product/index.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Button,
-  Card,
+  Button, 
   Col,
+  DatePicker,
   Divider,
   Input,
+  message,
+  Modal,
   Row,
   Segmented,
-  Space,
-  Table,
+  Select,
+  Skeleton,
+  Space, 
   Tag,
   Tooltip,
   Typography,
@@ -26,84 +29,56 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteCategory, getAll } from '../../../redux/reducers/categorySlice';
+import { API_DOMAIN } from '../../../constants/apiDomain';
+import CategoryTable from '../../../components/admin/Category/CategoryTable';
+import CategoryGrid from '../../../components/admin/Category/CategoryGrid'; 
 const STATUS = [
   { label: 'Đang hoạt động', value: 'ACTIVE', color: 'green' },
   { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
 ];
 
-// TODO: Thay bằng API thật
-async function mockFetch(params) {
-  const total = 42;
-  const items = Array.from({ length: params.pageSize }, (_, i) => {
-    const id = (params.page - 1) * params.pageSize + i + 1;
-    return {
-      _id: String(id),
-      name: `Sản phẩm ${id}`,
-      parentCategory: `Danh mục cha ${((id - 1) % 5) + 1}`,
-      description: `Mô tả cho danh mục ${id}`,
-      productCount: Math.floor(Math.random() * 100),
-      status: STATUS[id % 2].value,
-      createdAt: dayjs().subtract(id, 'day').toISOString(),
-      cover: `https://picsum.photos/seed/p${id}/400/300`,
-    };
-  });
-  return new Promise((r) => setTimeout(() => r({ items, total }), 250));
-}
-
 const CategoryList = () => {
   // View state
-  const [view, setView] = useState('table'); // "table" | "grid"
-  const [loading, setLoading] = useState(false);
+  const { categories, loading, meta } = useSelector(
+    (state) => state.categories
+  );
+  // message api
+  const [messageApi, contextHolderMessage] = message.useMessage();
+  const [modal, contextHolderModal] = Modal.useModal();
 
+  const [view, setView] = useState('table');
   // Filters
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState();
   const [status, setStatus] = useState();
   const [dateRange, setDateRange] = useState();
 
   // Paging/Sort
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(5);
   const [sorter, setSorter] = useState(); // { field, order }
-
-  // Data
-  const [data, setData] = useState([]);
-  const [total, setTotal] = useState(0);
 
   // Build query
   const query = useMemo(
     () => ({
-      q,
-      category,
+      search: q,
       status,
       dateFrom: dateRange?.[0]?.startOf('day').toISOString(),
       dateTo: dateRange?.[1]?.endOf('day').toISOString(),
       page,
-      pageSize,
+      limit: pageSize,
       sort: sorter?.order
         ? `${sorter.field}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`
         : undefined,
     }),
-    [q, category, status, dateRange, page, pageSize, sorter]
+    [q, status, dateRange, page, pageSize, sorter]
   );
 
-  // Fetch
-  const fetchData = async (override = {}) => {
-    setLoading(true);
-    try {
-      const res = await mockFetch({ ...query, ...override });
-      console.log(query);
-      setData(res.items);
-      setTotal(res.total);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    fetchData(); /* eslint-disable-next-line */
-  }, [category, status, dateRange, page, pageSize, sorter]);
+    dispatch(getAll(query));
+  }, [dispatch, query]);
 
   // Search debounce
   const dRef = useRef();
@@ -113,25 +88,35 @@ const CategoryList = () => {
     clearTimeout(dRef.current);
     dRef.current = setTimeout(() => {
       setPage(1);
-      fetchData({ q: value, page: 1 });
-    }, 300);
+    }, 500);
   };
 
   const reset = () => {
     setQ('');
-    setCategory();
     setStatus();
     setDateRange();
     setPage(1);
     setSorter();
-    fetchData({
-      q: '',
-      category: undefined,
-      status: undefined,
-      dateFrom: undefined,
-      dateTo: undefined,
-      page: 1,
-      sort: undefined,
+    dispatch(getAll({}));
+  };
+
+  // modal delete
+  const handleDeleteConfirm = (id, name) => {
+    modal.confirm({
+      title: 'Xác nhận xoá',
+      content: `Bạn có chắc chắn muốn xoá danh mục id = ${id} (${name}) này không?`,
+      okText: 'Xoá',
+      okType: 'danger',
+      cancelText: 'Huỷ',
+      centered: true,
+      onOk: async () => {
+        try {
+          await dispatch(deleteCategory(id)).unwrap();
+          messageApi.success('Đã xoá thương hiệu thành công!');
+        } catch (error) {
+          messageApi.error(error.message || 'Xoá thất bại!');
+        }
+      },
     });
   };
 
@@ -149,7 +134,7 @@ const CategoryList = () => {
           ) : (
             <Space>
               <img
-                src={r.cover}
+                src={API_DOMAIN + r.image}
                 alt={r.name}
                 style={{
                   width: 44,
@@ -168,8 +153,13 @@ const CategoryList = () => {
       ),
     },
     { title: 'Mô tả', dataIndex: 'description', width: 160 },
-    { title: 'Danh mục cha', dataIndex: 'parentCategory', width: 140 },
-    { title: 'Số sản phẩm', dataIndex: 'productCount', width: 120 },
+    { title: 'Danh mục cha', dataIndex: 'parent_id', width: 140 },
+    {
+      title: 'Số sản phẩm',
+      dataIndex: 'productCount',
+      width: 80,
+      render: (v) => v || 0,
+    },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -182,7 +172,7 @@ const CategoryList = () => {
     {
       title: 'Tạo lúc',
       dataIndex: 'createdAt',
-      sorter: true,
+      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
       width: 160,
       render: (v) => dayjs(v).format('DD/MM/YYYY'),
     },
@@ -196,10 +186,22 @@ const CategoryList = () => {
             <Button size="small" icon={<EyeOutlined />} />
           </Tooltip>
           <Tooltip title="Sửa">
-            <Button size="small" type="primary" ghost icon={<EditOutlined />} />
+            <Link to={`edit/${r._id}`}>
+              <Button
+                size="small"
+                type="primary"
+                ghost
+                icon={<EditOutlined />}
+              />
+            </Link>
           </Tooltip>
           <Tooltip title="Xoá">
-            <Button size="small" danger icon={<DeleteOutlined />} />
+            <Button
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDeleteConfirm(r._id, r.name)}
+            />
           </Tooltip>
         </Space>
       ),
@@ -229,16 +231,38 @@ const CategoryList = () => {
 
   return (
     <Space direction="vertical" style={{ display: 'block' }} size={12}>
-      {/* Toolbar */}
-      <Typography.Title level={4}>Danh sách danh mục</Typography.Title>
+      {contextHolderMessage}
+      {contextHolderModal}
+      {/* <Typography.Title level={4}>Danh sách danh mục</Typography.Title> */}
       <Row gutter={[8, 8]} align="middle">
-        <Col xs={24} md={10}>
+        <Col xs={24} md={12}>
           <Input
             allowClear
             prefix={<SearchOutlined />}
             placeholder="Tìm theo tên, mô tả..."
             value={q}
             onChange={onSearchChange}
+          />
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Select
+            allowClear
+            placeholder="Trạng thái"
+            value={status}
+            onChange={setStatus}
+            options={STATUS.map((s) => ({
+              label: s.label,
+              value: s.value,
+            }))}
+            style={{ width: '100%' }}
+          />
+        </Col>
+        <Col xs={12} md={6}>
+          <DatePicker.RangePicker
+            value={dateRange}
+            onChange={setDateRange}
+            style={{ width: '100%' }}
           />
         </Col>
 
@@ -282,87 +306,33 @@ const CategoryList = () => {
         {/* hiển thị danh sách danh mục */}
         <Col span={24}>
           {/* Content */}
-          {view === 'table' ? (
-            <Table
-              rowKey="_id"
-              {...tableProps}
-              loading={loading}
-              columns={columns}
-              dataSource={data}
-              onChange={onTableChange}
-              pagination={{
-                total,
-                current: page,
-                pageSize,
-                showSizeChanger: true,
-                showTotal: (t) => `${t} sản phẩm`,
-              }}
-              scroll={{ x: '100%', y: 600 }}
-            />
+          {loading && categories.length === 0 ? (
+            <Skeleton active paragraph={{ rows: 6 }} />
           ) : (
-            <Row gutter={[12, 12]}>
-              {data.map((p) => (
-                <Col defaultValue={24} xs={12} md={8} lg={6} xl={4} key={p._id}>
-                  <Card
-                    size="small"
-                    hoverable
-                    cover={
-                      <img
-                        src={p.cover}
-                        alt={p.name}
-                        style={{
-                          height: 140,
-                          objectFit: 'cover',
-                        }}
-                      />
-                    }
-                    actions={[
-                      <EyeOutlined key="v" />,
-                      <EditOutlined key="e" />,
-                      <DeleteOutlined key="d" />,
-                    ]}
-                  >
-                    <Card.Meta
-                      title={<div style={{ fontWeight: 600 }}>{p.name}</div>}
-                      description={
-                        <Space
-                          direction="vertical"
-                          size={4}
-                          style={{ width: '100%' }}
-                        >
-                          <Space>
-                            <Tag
-                              color={
-                                STATUS.find((s) => s.value === p.status)?.color
-                              }
-                            >
-                              {STATUS.find((s) => s.value === p.status)?.label}
-                            </Tag>
-                          </Space>
-                        </Space>
-                      }
-                    />
-                  </Card>
-                </Col>
-              ))}
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Space>
-                  <Button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page <= 1}
-                  >
-                    Trang trước
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={page * pageSize >= total}
-                  >
-                    Trang sau
-                  </Button>
-                </Space>
-              </Col>
-            </Row>
+            <>
+              {view === 'table' ? (
+                <CategoryTable
+                  tableProps={tableProps}
+                  loading={loading}
+                  columns={columns}
+                  categories={categories}
+                  onTableChange={onTableChange}
+                  meta={meta}
+                  page={page}
+                  pageSize={pageSize}
+                />
+              ) : (
+                <CategoryGrid
+                  categories={categories}
+                  meta={meta}
+                  page={page}
+                  pageSize={pageSize}
+                  setPage={setPage}
+                  STATUS={STATUS}
+                  onDelete={handleDeleteConfirm}
+                />
+              )}
+            </>
           )}
         </Col>
       </Row>

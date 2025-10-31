@@ -1,21 +1,68 @@
 import { Container, Typography } from '@mui/material';
-import { Card, Input, Select, Button, Row, Col, Form, message } from 'antd';
+import {
+  Card,
+  Input,
+  Select,
+  Button,
+  Row,
+  Col,
+  Form,
+  message,
+  Upload,
+} from 'antd';
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { getAll } from '../../../redux/reducers/categorySlice';
+import { addBrand } from '../../../redux/reducers/brandSlice';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const AddBrand = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
+  // load categories
+  const { categories } = useSelector((state) => state.categories);
+  const [adding, setAdding] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSubmit = async (values) => {
     console.log('Submit payload:', values);
-    messageApi.success('Đã lưu sản phẩm (fake API)');
-    // await axios.post("/api/products", values);
-    form.resetFields();
+    setAdding(true);
+
+    let valuesSubmit = { ...values };
+    valuesSubmit.image = values.image?.[0]?.originFileObj || null;
+    try {
+      const result = await dispatch(addBrand(valuesSubmit)).unwrap();
+      messageApi.success(result.message || 'Thêm thương hiệu thành công!');
+      form.resetFields();
+
+    } catch (error) {
+      messageApi.error(error.message || 'Thêm thương hiệu thất bại!');
+    } finally {
+      setAdding(false);
+    }
+    // messageApi.success('Đã lưu sản phẩm (fake API)');
+    // // await axios.post("/api/products", values);
+    // form.resetFields();
   };
 
+  // load categories for selection
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {contextHolder}
+      <Button
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate('/admin/brands')}
+        style={{ marginRight: 12 }}
+      >
+        Quay lại
+      </Button>
       <Typography variant="h4" gutterBottom>
         Thêm thương hiệu
       </Typography>
@@ -48,12 +95,10 @@ const AddBrand = () => {
               >
                 <Select
                   placeholder="Danh mục"
-                  options={[
-                    { value: '1', label: 'Điện thoại' },
-                    { value: '2', label: 'Laptop' },
-                    { value: '3', label: 'Máy tính bảng' },
-                    { value: '4', label: 'Đồng hồ thông minh' },
-                  ]}
+                  options={categories.map((cat) => ({
+                    label: cat.name,
+                    value: cat._id,
+                  }))}
                 />
               </Form.Item>
             </Col>
@@ -67,11 +112,39 @@ const AddBrand = () => {
             </Col>
           </Row>
 
+          {/* logo */}
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                name="image"
+                label="Ảnh thương hiệu"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => e?.fileList}
+                rules={[
+                  { required: true, message: 'Hãy chọn logo thương hiệu' },
+                ]}
+              >
+                <Upload
+                  beforeUpload={() => false}
+                  listType="picture-card" // 🖼️ Hiển thị dạng ảnh nhỏ
+                  maxCount={1} // ✅ Chỉ cho chọn 1 file
+                  accept="image/*"
+                >
+                  <Button>Chọn ảnh</Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+
           {/* ================= Trạng thái & Lưu ================= */}
-          <Row justify="space-between" align="middle">
-            <Col>
-              <Form.Item name="status" label="Trạng thái">
-                <Select style={{ width: 200 }}>
+          <Row gutter={[8, 8]} justify="space-between" align="middle">
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="status"
+                label="Trạng thái"
+                style={{ width: '100%' }}
+              >
+                <Select>
                   <Select.Option value={PRODUCT_STATUS.ACTIVE.value}>
                     {PRODUCT_STATUS.ACTIVE.label}
                   </Select.Option>
@@ -82,8 +155,13 @@ const AddBrand = () => {
               </Form.Item>
             </Col>
 
-            <Col>
-              <Button type="primary" htmlType="submit">
+            <Col xs={24} sm={12} style={{ textAlign: 'right' }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={adding}
+                style={{ width: '100%' }}
+              >
                 Lưu thương hiệu
               </Button>
             </Col>

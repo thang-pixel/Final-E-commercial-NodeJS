@@ -12,8 +12,8 @@ Trong thư mục source_node_final_ecommerce
     + Chay docker compose -f docker-compose.dev.yml up khi viet code va chua them thu vien moi
     + Backend pull code ve phai npm i de cai thu vien. Lenh chay: npm run dev
     + Test api: 
-      + http://localhost:8001/api
-      + http://localhost:8001/api/users
+      + http://localhost:8000/api
+      + http://localhost:8000/api/users
 # Link:
  - Báo cáo:
  - Phân công, chấm điểm:

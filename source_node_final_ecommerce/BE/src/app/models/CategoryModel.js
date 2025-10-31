@@ -9,6 +9,7 @@ const categorySchema = new mongoose.Schema(
     _id: Number,
     name: { type: String, unique: true },
     slug: { type: String, slug: "name", unique: true, index: true },
+    parent_id: { type: Number, ref: "Category", default: null },
     description: { type: String, default: "" },
     image: { type: String, default: "" },
     status: { type: String, enum: [CATEGORY_STATUSES.ACTIVE, CATEGORY_STATUSES.INACTIVE], default: CATEGORY_STATUSES.ACTIVE }

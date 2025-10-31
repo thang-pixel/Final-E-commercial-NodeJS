@@ -1,8 +1,15 @@
-// import { createStore } from "redux";
-// import { composeWithDevTools } from "redux-devtools-extension";
-import rootReducer from "./reducers/index.js";
-import { legacy_createStore as createStore} from 'redux'
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from './reducers/authSlice.js';
+import categoryReducer from './reducers/categorySlice.js';
+import brandReducer from './reducers/brandSlice.js';
 
-const store = createStore(rootReducer);
+
+const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    categories: categoryReducer,
+    brands: brandReducer,
+  },
+});
 
 export default store;

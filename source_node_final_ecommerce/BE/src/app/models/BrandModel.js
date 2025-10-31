@@ -10,7 +10,8 @@ const brandSchema = new mongoose.Schema(
     category_id: { type: Number, ref: "Category", required: true, index: true },
     description: { type: String, default: ""},
     image: { type: String, default: "" },
-    slug: { type: String, slug: "name", unique: true, index: true }
+    slug: { type: String, slug: "name", unique: true, index: true },
+    status: { type: String, enum: ["ACTIVE", "INACTIVE"], default: "ACTIVE" },
   },
   { _id: false, timestamps: true, collection: "brands" }
 );

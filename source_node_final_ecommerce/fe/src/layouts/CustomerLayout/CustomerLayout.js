@@ -48,24 +48,24 @@ function CustomerLayout(props) {
         ' bg-white/20 border-b-2 font-semibold border-white'
     );
 
-    const items = [
-        {
-            label: 'Danh mục',
-            to: 'categories',
-            page: ACTIVE_PAGES.categories,
-            onClick: () => setIsOpen(true),
-        },
-        // { label: 'Sản phẩm', to: 'products', page: ACTIVE_PAGES.products },
-        // { label: 'Đơn hàng', to: 'orders', page: ACTIVE_PAGES.orders },
-        { label: 'Giỏ hàng', to: 'carts', page: ACTIVE_PAGES.carts },
-        // { label: 'Đăng xuất', to: 'logout', page: null },
-        // {
-        //     label: `Chào ${user.username}!`,
-        //     to: 'profile',
-        //     page: ACTIVE_PAGES.profile,
-        //     className: 'ml-auto',
-        // },
-    ];
+    // const items = [
+    //     {
+    //         label: 'Danh mục',
+    //         to: 'categories',
+    //         page: ACTIVE_PAGES.categories,
+    //         onClick: () => setIsOpen(true),
+    //     },
+    //     // { label: 'Sản phẩm', to: 'products', page: ACTIVE_PAGES.products },
+    //     // { label: 'Đơn hàng', to: 'orders', page: ACTIVE_PAGES.orders },
+    //     { label: 'Giỏ hàng', to: 'carts', page: ACTIVE_PAGES.carts },
+    //     // { label: 'Đăng xuất', to: 'logout', page: null },
+    //     // {
+    //     //     label: `Chào ${user.username}!`,
+    //     //     to: 'profile',
+    //     //     page: ACTIVE_PAGES.profile,
+    //     //     className: 'ml-auto',
+    //     // },
+    // ];
 
     const handleToggleNav = (isCollapsed) => {
         const hamburger = document.querySelector(

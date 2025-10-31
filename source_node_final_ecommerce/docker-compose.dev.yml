@@ -1,21 +1,18 @@
 services:
   mongo:
-    image: mongo:6
-    container_name: mongo
+    image: mongo:6 
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     
-  be_node_e-commerce: 
+  backend: 
     build:
       context: ./BE
       dockerfile: Dockerfile
-      target: dev
-    container_name: be_node_final
-    env_file: .env
+      target: dev  
     ports:
-      - "8001:8001"
+      - "8000:${BACKEND_PORT}"
     volumes:
       - ./BE:/app 
       - /app/node_modules   
@@ -23,33 +20,36 @@ services:
       - NODE_ENV=development 
       - PORT=${BACKEND_PORT}
       - JWT_SECRET=${JWT_SECRET}
-      - DB_USER=""
-      - DB_PASSWORD=""
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
       - DB_HOST=${MONGO_HOST}
       - DB_PORT=${MONGO_PORT}
       - DB_NAME=e_commerce_final_dev
       - MONGO_URI=mongodb://${MONGO_HOST}:${MONGO_PORT}/e_commerce_final_dev 
     depends_on: [mongo]
 
- 
-  fe_node_e-commerce:
+
+  frontend:
     build: 
       context: ./fe
       dockerfile: Dockerfile
-      target: dev
-    container_name: fe_node_final
+      target: dev 
     ports:
-      - "3000:3000"
+      - "3000:${FRONTEND_PORT}"
     volumes:
       - ./fe:/app 
       - /app/node_modules 
     environment:
-      - NODE_ENV=development
-      - FRONTEND_PORT=${FRONTEND_PORT}
-      - API_URL=${API_URL}
+      - NODE_ENV=development 
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WATCHPACK_INTERVAL=1000
+      - REACT_APP_BACKEND_URL=${API_URL}
     depends_on:
-      - be_node_e-commerce
- 
+      - backend
 
 volumes:
   mongo_data:

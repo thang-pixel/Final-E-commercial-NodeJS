@@ -2,16 +2,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
-  Card,
   Col,
   DatePicker,
   Divider,
   Input,
+  message,
+  Modal,
   Row,
   Segmented,
   Select,
+  Skeleton,
   Space,
-  Table,
   Tag,
   Tooltip,
   Typography,
@@ -28,6 +29,10 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteBrand, getAllBrands } from '../../../redux/reducers/brandSlice';
+import BrandTable from '../../../components/admin/Brand/BrandTable';
+import BrandGrid from '../../../components/admin/Brand/BrandGrid'; 
 
 const { RangePicker } = DatePicker;
 
@@ -36,76 +41,46 @@ const STATUS = [
   { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
 ];
 
-// TODO: Thay bằng API thật
-async function mockFetch(params) {
-  const total = 42;
-  const items = Array.from({ length: params.pageSize }, (_, i) => {
-    const id = (params.page - 1) * params.pageSize + i + 1;
-    return {
-      _id: String(id),
-      name: `Sản phẩm ${id}`,
-      category: ['Điện thoại', 'Tai nghe', 'Laptop', 'Phụ kiện'][id % 4],
-      status: STATUS[id % 2].value,
-      createdAt: dayjs().subtract(id, 'day').toISOString(),
-      cover: `https://picsum.photos/seed/p${id}/400/300`,
-    };
-  });
-  return new Promise((r) => setTimeout(() => r({ items, total }), 250));
-}
-
 const BrandList = () => {
   // View state
-  const [view, setView] = useState('table'); // "table" | "grid"
-  const [loading, setLoading] = useState(false);
+  const { brands, loading, meta } = useSelector(
+    (state) => state.brands
+  );
+  const dispatch = useDispatch();
+  // message api
+  const [messageApi, contextHolderMessage] = message.useMessage();
+  const [modal, contextHolderModal] = Modal.useModal();
 
+  const [view, setView] = useState('table');
   // Filters
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState();
   const [status, setStatus] = useState();
   const [dateRange, setDateRange] = useState();
 
   // Paging/Sort
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(5);
   const [sorter, setSorter] = useState(); // { field, order }
-
-  // Data
-  const [data, setData] = useState([]);
-  const [total, setTotal] = useState(0);
 
   // Build query
   const query = useMemo(
     () => ({
-      q,
-      category,
+      search: q,
       status,
       dateFrom: dateRange?.[0]?.startOf('day').toISOString(),
       dateTo: dateRange?.[1]?.endOf('day').toISOString(),
       page,
-      pageSize,
+      limit: pageSize,
       sort: sorter?.order
         ? `${sorter.field}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`
         : undefined,
     }),
-    [q, category, status, dateRange, page, pageSize, sorter]
+    [q, status, dateRange, page, pageSize, sorter]
   );
 
-  // Fetch
-  const fetchData = async (override = {}) => {
-    setLoading(true);
-    try {
-      const res = await mockFetch({ ...query, ...override });
-      console.log(query);
-      setData(res.items);
-      setTotal(res.total);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData(); /* eslint-disable-next-line */
-  }, [category, status, dateRange, page, pageSize, sorter]);
+    dispatch(getAllBrands(query));
+  }, [dispatch, query]);
 
   // Search debounce
   const dRef = useRef();
@@ -115,25 +90,36 @@ const BrandList = () => {
     clearTimeout(dRef.current);
     dRef.current = setTimeout(() => {
       setPage(1);
-      fetchData({ q: value, page: 1 });
-    }, 300);
+      // fetchData({ q: value, page: 1 });
+    }, 500);
   };
 
   const reset = () => {
     setQ('');
-    setCategory();
     setStatus();
     setDateRange();
     setPage(1);
     setSorter();
-    fetchData({
-      q: '',
-      category: undefined,
-      status: undefined,
-      dateFrom: undefined,
-      dateTo: undefined,
-      page: 1,
-      sort: undefined,
+    dispatch(getAllBrands({}));
+  };
+
+  // modal delete
+  const handleDeleteConfirm = (id, name) => {
+    modal.confirm({
+      title: 'Xác nhận xoá',
+      content: `Bạn có chắc chắn muốn xoá danh mục id = ${id} (${name}) này không?`,
+      okText: 'Xoá',
+      okType: 'danger',
+      cancelText: 'Huỷ',
+      centered: true,
+      onOk: async () => {
+        try {
+          await dispatch(deleteBrand(id)).unwrap();
+          messageApi.success('Đã xoá thương hiệu thành công!');
+        } catch (error) {
+          messageApi.error(error.message || 'Xoá thất bại!');
+        }
+      },
     });
   };
 
@@ -169,20 +155,27 @@ const BrandList = () => {
         </>
       ),
     },
-    { title: 'Danh mục', dataIndex: 'category', sorter: true, width: 160 },
+    {
+      title: 'Danh mục',
+      dataIndex: 'category_id',
+      sorter: (a, b) => a.category_id - b.category_id,
+      width: 160,
+      render: (cate_id) => <>{cate_id.name}</>,
+    },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       width: 140,
-      render: (v) => {
-        const s = STATUS.find((x) => x.value === v);
-        return <Tag color={s?.color}>{s?.label}</Tag>;
+      render: (status) => {
+        const color = status === 'INACTIVE' ? 'red' : 'green';
+        const label = status === 'INACTIVE' ? 'Đã ẩn' : 'Hoạt động';
+        return <Tag color={color}>{label}</Tag>;
       },
     },
     {
       title: 'Tạo lúc',
       dataIndex: 'createdAt',
-      sorter: true,
+      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
       width: 160,
       render: (v) => dayjs(v).format('DD/MM/YYYY'),
     },
@@ -196,10 +189,17 @@ const BrandList = () => {
             <Button size="small" icon={<EyeOutlined />} />
           </Tooltip>
           <Tooltip title="Sửa">
-            <Button size="small" type="primary" ghost icon={<EditOutlined />} />
+            <Link to={`edit/${r._id}`}>
+              <Button
+                size="small"
+                type="primary"
+                ghost
+                icon={<EditOutlined />}
+              />
+            </Link>
           </Tooltip>
           <Tooltip title="Xoá">
-            <Button size="small" danger icon={<DeleteOutlined />} />
+            <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDeleteConfirm(r._id, r.name)} />
           </Tooltip>
         </Space>
       ),
@@ -229,9 +229,11 @@ const BrandList = () => {
 
   return (
     <Space direction="vertical" style={{ display: 'block' }} size={12}>
+      {contextHolderMessage}
+      {contextHolderModal}
       {/* Toolbar */}
-      <Row gutter={[8, 8]} align="middle">
-        <Col xs={24} md={10}>
+      <Row gutter={[8, 8]} justify="center" align="middle">
+        <Col xs={24} md={12}>
           <Input
             allowClear
             prefix={<SearchOutlined />}
@@ -240,11 +242,11 @@ const BrandList = () => {
             onChange={onSearchChange}
           />
         </Col>
-        <Col xs={12} md={4}>
+        {/* <Col xs={12} md={4}>
           <Select
             allowClear
             placeholder="Danh mục"
-            value={category}
+            value={brands}
             onChange={setCategory}
             options={[
               { label: 'Điện thoại', value: 'Điện thoại' },
@@ -254,8 +256,8 @@ const BrandList = () => {
             ]}
             style={{ width: '100%' }}
           />
-        </Col>
-        <Col xs={12} md={3}>
+        </Col> */}
+        <Col xs={12} md={6}>
           <Select
             allowClear
             placeholder="Trạng thái"
@@ -282,7 +284,7 @@ const BrandList = () => {
               Làm mới
             </Button>
             <Button type="primary" icon={<PlusOutlined />}>
-                <Link to="add">Thêm danh mục</Link>
+              <Link to="add">Thêm thương hiệu</Link>
             </Button>
             <Segmented
               value={view}
@@ -314,90 +316,35 @@ const BrandList = () => {
         </Col>
 
         {/* hiển thị danh sách thương hiệu */}
-
         <Col span={24}>
           {/* Content */}
-          {view === 'table' ? (
-            <Table
-              rowKey="_id"
-              {...tableProps}
-              loading={loading}
-              columns={columns}
-              dataSource={data}
-              onChange={onTableChange}
-              pagination={{
-                total,
-                current: page,
-                pageSize,
-                showSizeChanger: true,
-                showTotal: (t) => `${t} sản phẩm`,
-              }}
-              scroll={{ x: '100%', y: 600 }}
-            />
+          {loading && brands.length === 0 ? (
+            <Skeleton active paragraph={{ rows: 6 }} />
           ) : (
-            <Row gutter={[12, 12]}>
-              {data.map((p) => (
-                <Col defaultValue={24} xs={12} md={8} lg={6} xl={4} key={p._id}>
-                  <Card
-                    size="small"
-                    hoverable
-                    cover={
-                      <img
-                        src={p.cover}
-                        alt={p.name}
-                        style={{
-                          height: 140,
-                          objectFit: 'cover',
-                        }}
-                      />
-                    }
-                    actions={[
-                      <EyeOutlined key="v" />,
-                      <EditOutlined key="e" />,
-                      <DeleteOutlined key="d" />,
-                    ]}
-                  >
-                    <Card.Meta
-                      title={<div style={{ fontWeight: 600 }}>{p.name}</div>}
-                      description={
-                        <Space
-                          direction="vertical"
-                          size={4}
-                          style={{ width: '100%' }}
-                        >
-                          <Space>
-                            <Tag
-                              color={
-                                STATUS.find((s) => s.value === p.status)?.color
-                              }
-                            >
-                              {STATUS.find((s) => s.value === p.status)?.label}
-                            </Tag>
-                          </Space>
-                        </Space>
-                      }
-                    />
-                  </Card>
-                </Col>
-              ))}
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Space>
-                  <Button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page <= 1}
-                  >
-                    Trang trước
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={page * pageSize >= total}
-                  >
-                    Trang sau
-                  </Button>
-                </Space>
-              </Col>
-            </Row>
+            <>
+              {view === 'table' ? (
+                <BrandTable
+                  tableProps={tableProps}
+                  loading={loading}
+                  columns={columns}
+                  brands={brands}
+                  onTableChange={onTableChange}
+                  meta={meta}
+                  page={page}
+                  pageSize={pageSize}
+                />
+              ) : (
+                <BrandGrid
+                  brands={brands}
+                  meta={meta}
+                  page={page}
+                  pageSize={pageSize}
+                  setPage={setPage}
+                  STATUS={STATUS}
+                  onDelete={handleDeleteConfirm}
+                />
+              )}
+            </>
           )}
         </Col>
       </Row>

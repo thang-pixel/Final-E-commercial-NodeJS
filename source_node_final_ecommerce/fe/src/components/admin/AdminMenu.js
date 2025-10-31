@@ -8,9 +8,8 @@ import {
     ProductOutlined,
     SettingOutlined,
 } from '@ant-design/icons';
-import { ConfigProvider, Menu } from 'antd';
-import { useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu } from 'antd'; 
+import { Link } from 'react-router-dom';
 
 const items = [
     {
@@ -70,7 +69,7 @@ const items = [
                     {
                         key: '2-3-2',
                         label: <Link to="/admin/categories/add">Thêm danh mục</Link>,
-                    }, 
+                    },  
                 ],
             },
         ],

@@ -38,18 +38,18 @@ function AdminRoutes() {
           <Route path="brands" element={<Outlet />} >
             <Route index element={<BrandList />} /> 
             <Route path="add" element={<AddBrand />} />
-            <Route path="edit" element={<EditBrand />} /> 
+            <Route path="edit/:id" element={<EditBrand />} /> 
           </Route>
           <Route path="categories" element={<Outlet />} > 
             <Route index element={<CategoryList />} /> 
             <Route path="add" element={<AddCategory />} />
-            <Route path="edit" element={<EditCategory />} />
+            <Route path="edit/:id" element={<EditCategory />} />
             <Route path="" element={<CategoryList />} />
           </Route>
           <Route path="products" element={<Outlet/>} >
             <Route index element={<ProductList />} /> 
             <Route path="add" element={<AddProduct />} />
-            <Route path="edit" element={<EditProduct />} />
+            <Route path="edit/:id" element={<EditProduct />} />
             <Route path=":slug" element={<DetailProduct />} /> 
           </Route>
           <Route path="customers" element= {<CustomerList />}/>

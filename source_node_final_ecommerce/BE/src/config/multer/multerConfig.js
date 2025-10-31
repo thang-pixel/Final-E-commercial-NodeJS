@@ -4,7 +4,8 @@ const fs = require("fs");
 
 // Hàm tạo storage cho từng folder upload
 function createStorage(folderName) {
-  const dir = path.join(__dirname, "..", "uploads", folderName);
+  // root/uploads/folderName
+  const dir = path.join(__dirname, "../..", "uploads", folderName);
 
   // Nếu folder chưa có thì tạo mới
   if (!fs.existsSync(dir)) {
@@ -16,7 +17,7 @@ function createStorage(folderName) {
       cb(null, dir);
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + file.originalname);
+      cb(null, Date.now() + "_"+ file.originalname);
     },
   });
 }
