@@ -142,7 +142,7 @@ function CustomerLayout(props) {
                         >
                             <Link to={'/profile'} className='flex justify-center items-center'>
                                 <AccountCircle />
-                                <p className="p-2">{`Chào ${user.username}!`}</p>
+                                <p className="p-2">{`Chào ${user?.username || user?.full_name || user?.email || "Khách"}!`}</p>
                             </Link>
                             <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20 hidden">
                                 <ul>

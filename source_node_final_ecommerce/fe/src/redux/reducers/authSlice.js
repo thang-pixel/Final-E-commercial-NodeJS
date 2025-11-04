@@ -1,11 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user: {
-    username: "thuyen070",
-    full_name: "Tran Minh Thuyen",
-    role: "ADMIN",
-  },
+  user: null,
   token: null,
 };
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { get } from "../../utils/request";
 import { Button, Dropdown, Flex, Space, Typography } from "antd";
 import { DownOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import Profile from "../../pages/Profile";
+import Profile from '../../pages/customer/Profile';
 const { Text } = Typography;
 function LayoutDefault(props) {
   const [profile, setProfile] = useState(null);
