@@ -2,67 +2,36 @@ import { Button, Flex, Form, Input, Spin, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import "./Login.scss";
-import { API_DOMAIN } from "../../../constants/apiDomain";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../../redux/actions/authAction";
 
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
+
 function Login() {
   const [form] = Form.useForm();
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const dispatch = useDispatch();
 
-  const onInputChange = (val) =>{
-    setErr('')
-  }
+  const onInputChange = () => {
+    setErr('');
+  };
+
   const onFinish = async (values) => {
-    const { username, password } = values;
-    const body = new URLSearchParams();
-    // mo code comment khi chay
-    // body.append("username", username);
-    // body.append("password", password);
-    // backdoor
-    body.append("username", "52300070");
-    body.append("password", "123456");
+    const { Email, password } = values;
     setLoading(true);
-
-    const res = await fetch(API_DOMAIN + "/auth/token", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body,
-    });
-
-    await sleep(500);
-    // setLoading(false)
-
-    setTimeout(() => setLoading(false), 1000);
-
-    if (res.status === 200) {
-      const rs = await res.json();
-      if (localStorage.getItem("access_token"))
-        localStorage.removeItem("access_token");
-      localStorage.setItem("access_token", rs.data.access_token);
-      // chuyển hướng sau khi login thành công
-      console.log(rs);
+    setErr('');
+    const result = await dispatch(loginUser(Email, password));
+    setLoading(false);
+    if (result.success) {
       navigate("/");
-    } else if (res.status === 401) {
-      const rs = await res.json();
-      setErr(rs.message ? rs.message : rs.detail)
-      console.log(rs);
     } else {
-      console.error("Lỗi khác:", res.status);
+      setErr(result.message);
     }
-    // console.log(rs.data);
-    // if (localStorage.getItem('access_token'))
-    //   localStorage.removeItem('access_token')
-    // localStorage.setItem("access_token", rs.data.access_token);
-    // navigate("/");
   };
 
   return (
@@ -80,12 +49,12 @@ function Login() {
           autoComplete="off"
         >
           <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
+            label="Email"
+            name="Email"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
           >
             <Input
-              placeholder="Nhập tên đăng nhập"
+              placeholder="Nhập email"
               prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
             />
           </Form.Item>
@@ -93,7 +62,7 @@ function Login() {
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
             <Input.Password
               placeholder="Nhập mật khẩu"
@@ -113,9 +82,16 @@ function Login() {
             </Button>
           </Form.Item>
         </Form>
+        <div style={{ marginTop: 16, textAlign: "center" }}>
+          <span>Bạn chưa có tài khoản? </span>
+          <Button type="link" onClick={() => navigate("/register")}>
+            Đăng ký
+          </Button>
+        </div>
       </div>
-       <Spin size="large" fullscreen delay={100} spinning={loading} tip={'Dang xac thuc'}/>
+      <Spin size="large" fullscreen delay={100} spinning={loading} tip={'Đang xác thực'} />
     </Flex>
   );
-};
+}
+
 export default Login;

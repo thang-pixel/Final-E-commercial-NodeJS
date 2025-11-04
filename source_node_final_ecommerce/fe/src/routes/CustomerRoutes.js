@@ -8,15 +8,16 @@ import Order from "../pages/customer/Order";
 import CustomerLayout from "../layouts/CustomerLayout/CustomerLayout";
 import ErrorPage from "../pages/ErrorPage";
 import useAuth from "../hooks/authHook";
-import Login from "../pages/Login";
-import Logout from "../pages/Logout";
+import Login from "../pages/auth/Login";
+import Logout from "../pages/auth/Logout";
 import Category from "../pages/customer/Category";
-
+import Register from "../pages/auth/Register";
 function CustomerRoutes() {
   const { user } = useAuth();
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
       <Route path="/" element={<CustomerLayout user={user} />}>
         <Route path="" element={<Home />} />

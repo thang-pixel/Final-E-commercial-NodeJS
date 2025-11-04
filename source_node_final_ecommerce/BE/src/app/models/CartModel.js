@@ -26,6 +26,6 @@ cartSchema.plugin(mongooseDelete, {
   overrideMethods: "all",
   validateBeforeDelete: false,
   validateBeforeRestore: false,
-});
+}); 
 
 module.exports = mongoose.model("Cart", cartSchema);

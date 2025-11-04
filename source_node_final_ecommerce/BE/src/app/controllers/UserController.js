@@ -1,5 +1,5 @@
 const { schemaError } = require("../../utils/errorUtils");
-const UserModel = require("../models/userModel");
+const UserModel = require("../models/UserModel");
 
 let dataFake = [
   {
