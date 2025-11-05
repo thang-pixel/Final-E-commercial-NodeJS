@@ -5,7 +5,8 @@ import "./Login.scss";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../../redux/actions/authAction";
-
+import {useSelector} from 'react-redux';
+import { useEffect } from "react";
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
@@ -16,7 +17,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const user = useSelector((state) => state.auth.user);
   const onInputChange = () => {
     setErr('');
   };
@@ -27,12 +28,20 @@ function Login() {
     setErr('');
     const result = await dispatch(loginUser(Email, password));
     setLoading(false);
-    if (result.success) {
-      navigate("/");
-    } else {
+    if(!result.success){
       setErr(result.message);
     }
   };
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin/home');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
+
 
   return (
     <Flex align="center" justify="center" vertical>

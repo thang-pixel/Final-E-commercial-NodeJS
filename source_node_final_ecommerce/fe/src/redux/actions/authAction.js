@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_DOMAIN } from "../../constants/apiDomain";
-import { login } from "../reducers/authSlice";
+import { login,logout } from "../reducers/authSlice";
 
 export const loginUser = (email, password) => async (dispatch) => {
   try {
@@ -29,4 +29,10 @@ export const registerUser = (data) => async (dispatch) => {
   } catch (err) {
     return { success: false, message: err.response?.data?.message || "Register failed" };
   }
+};
+
+export const logoutUser = () => async (dispatch) => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  dispatch(logout());
 };
