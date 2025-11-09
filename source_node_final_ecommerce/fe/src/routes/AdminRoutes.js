@@ -4,8 +4,8 @@ import Dashboard from "../pages/admin/Dashboard";
 import PrivateRoute from "./PrivateRoute";
 import useAuth from "../hooks/authHook";
 import ErrorPage from "../pages/ErrorPage";
-import Logout from "../pages/Logout";
-import Login from "../pages/Login";
+import Logout from "../pages/auth/Logout";
+import Login from "../pages/auth/Login";
 import ProductList from "../pages/admin/Product";
 import CategoryList from "../pages/admin/Category";
 import PromotionList from "../pages/admin/Promotion";
@@ -23,44 +23,42 @@ import AddBrand from "../pages/admin/Brand/AddBrand";
 import EditBrand from "../pages/admin/Brand/EditBrand";
 import DetailProduct from "../pages/admin/Product/DetailProduct";
 
+
 function AdminRoutes() {
   const { user } = useAuth();
   return (
     <Routes>
-      <Route path="/login" element={ <Login />} />
-      <Route path="/logout" element={ <Logout />} />
-      <Route element={<PrivateRoute role="ADMIN" />}>
-        <Route index element={<Navigate to="/admin" replace />} />
-        <Route path="/admin" element={<AdminLayout user={user} />}>
-        
+      <Route path="/login" element={<Login />} />
+      <Route path="/logout" element={<Logout />} />
+      <Route element={<PrivateRoute role="admin" />}>
+        <Route path="/" element={<AdminLayout user={user} />}>
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Dashboard />} />
-          <Route path="brands" element={<Outlet />} >
-            <Route index element={<BrandList />} /> 
+          <Route path="brands" element={<Outlet />}>
+            <Route index element={<BrandList />} />
             <Route path="add" element={<AddBrand />} />
-            <Route path="edit/:id" element={<EditBrand />} /> 
+            <Route path="edit/:id" element={<EditBrand />} />
           </Route>
-          <Route path="categories" element={<Outlet />} > 
-            <Route index element={<CategoryList />} /> 
+          <Route path="categories" element={<Outlet />}>
+            <Route index element={<CategoryList />} />
             <Route path="add" element={<AddCategory />} />
             <Route path="edit/:id" element={<EditCategory />} />
-            <Route path="" element={<CategoryList />} />
           </Route>
-          <Route path="products" element={<Outlet/>} >
-            <Route index element={<ProductList />} /> 
+          <Route path="products" element={<Outlet />}>
+            <Route index element={<ProductList />} />
             <Route path="add" element={<AddProduct />} />
             <Route path="edit/:id" element={<EditProduct />} />
-            <Route path=":slug" element={<DetailProduct />} /> 
+            <Route path=":slug" element={<DetailProduct />} />
           </Route>
-          <Route path="customers" element= {<CustomerList />}/>
-          <Route path="orders" element= {<OrderList />}/>
-          <Route path="notifications" element= {<Notification />}/>
+          <Route path="customers" element={<CustomerList />} />
+          <Route path="orders" element={<OrderList />} />
+          <Route path="notifications" element={<Notification />} />
           <Route path="promotions" element={<PromotionList />} />
           <Route path="reports" element={<ReportList />} />
           <Route path="settings" element={<Setting />} />
         </Route>
       </Route>
-      <Route path="*" element={ <ErrorPage role={user?.role} status={404} message="Page Not Found" />} />
+      <Route path="*" element={<ErrorPage status={404} message="Page Not Found" />} />
     </Routes>
   );
 }

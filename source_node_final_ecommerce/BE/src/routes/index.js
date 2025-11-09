@@ -10,11 +10,13 @@ const paymentRoute = require('./paymentRoute');
 const promotionRoute = require('./promotionRoute'); 
 const homeRoute = require('./homeRoute');
 var createError = require('http-errors');
+const authRoute = require('./authRoute');
 const { adminRequired } = require('../app/middlewares/AuthMiddleware');
 
 function route(app) {
     app.use(globalLimiter);
     // app.use('/api/auth', authLimiter, authRoute);
+    app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/cart', cartRoute);
     app.use('/api/users', authLimiter, userRoute);
     app.use('/api/products', productRoute);

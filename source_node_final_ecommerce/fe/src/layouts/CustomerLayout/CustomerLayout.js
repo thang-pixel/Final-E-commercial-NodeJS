@@ -12,6 +12,7 @@ function CustomerLayout(props) {
     const { user } = props;
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
     const categories = [
         'Điện thoại',
         'Laptop',
@@ -142,28 +143,41 @@ function CustomerLayout(props) {
                         >
                             <Link to={'/profile'} className='flex justify-center items-center'>
                                 <AccountCircle />
-                                <p className="p-2">{`Chào ${user.username}!`}</p>
+                                <p className="p-2">{`Chào ${user?.username || user?.full_name || user?.email || "Khách"}!`}</p>
                             </Link>
-                            <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20 hidden">
+                            <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20">
                                 <ul>
-                                    <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                        <Link to={'/profile'}>
-                                            Tài khoản của tôi
-                                        </Link>
-                                    </li>
-                                    <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                        <Link to={'/orders'}>
-                                            Đơn hàng của tôi
-                                        </Link>
-                                    </li>
-                                    <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                        <Link to={'/addresses'}>
-                                            Sổ địa chỉ
-                                        </Link>
-                                    </li>
-                                    <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                        <Link to={'/logout'}>Đăng xuất</Link>
-                                    </li>
+                                    {user && (
+                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                            
+                                            <Link to={'/profile'}>Tài khoản của tôi</Link>
+                                        </li>
+                                    )}
+
+                                    {user && (
+                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                            <Link to={'/orders'}>Đơn hàng của tôi</Link>
+                                        </li>
+                                    )}
+
+                                    {user &&(
+                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                            <Link to={'/carts'}>Giỏ hàng của tôi</Link>
+                                        </li>
+                                    )}
+
+                                    {user && (
+                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                            <Link to={'/logout'}>Đăng xuất</Link>
+                                        </li>
+                                    )}
+                                    
+                                    {!user && (
+                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                            <Link to={'/login'}>Đăng nhập</Link>
+                                        </li>
+                                    )}
+                                    
                                 </ul>
                             </div>
                         </div>

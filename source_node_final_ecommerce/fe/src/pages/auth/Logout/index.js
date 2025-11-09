@@ -1,20 +1,18 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../../../redux/actions/authAction";
 
 export default function Logout() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Xóa thông tin đăng nhập
-    // localStorage.removeItem("access_token");
-    sessionStorage.removeItem("user");
-
-    // Nếu backend có API logout, gọi thêm:
-    // await fetch("/api/logout", { method: "POST", credentials: "include" });
-
+    // Gọi action logout để xóa Redux + localStorage
+    dispatch(logoutUser());
     // Chuyển hướng
     navigate("/login");
-  }, [navigate]);
+  }, [dispatch, navigate]);
 
   return null; // hoặc <p>Đang đăng xuất...</p>
 }

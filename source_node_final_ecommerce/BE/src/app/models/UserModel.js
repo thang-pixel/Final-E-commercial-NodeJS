@@ -83,13 +83,15 @@ const userSchema = new mongoose.Schema(
 );
 
 // --- Plugins ---
-userSchema.plugin(AutoIncrement, { id: "user_seq", inc_field: "_id" });
-userSchema.plugin(mongooseDelete, {
-  deletedAt: true,
-  overrideMethods: "all",
-  validateBeforeDelete: false,
-  validateBeforeRestore: false,
-});
+if (!mongoose.models.User) {
+  userSchema.plugin(AutoIncrement, { id: "user_seq", inc_field: "_id" });
+  userSchema.plugin(mongooseDelete, {
+    deletedAt: true,
+    overrideMethods: "all",
+    validateBeforeDelete: false,
+    validateBeforeRestore: false,
+  });
+}
  
 
 // --- Hash password khi tạo / cập nhật ---
@@ -119,5 +121,5 @@ userSchema.methods.comparePassword = function (plain) {
   return bcrypt.compare(plain, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 module.exports = User;
