@@ -6,6 +6,7 @@ function PrivateRoute({ role }) {
   console.log("PrivateRoute user:", user, "required role:", role);
   if (!user) return <Navigate to="/login" />;
 
+  // console.log("User role:", user.role);
   if (role && user.role !== role) return <Navigate to="/" />;
 
   return <Outlet />;

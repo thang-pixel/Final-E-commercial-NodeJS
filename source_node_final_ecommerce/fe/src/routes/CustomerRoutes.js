@@ -12,34 +12,25 @@ import Login from "../pages/auth/Login";
 import Logout from "../pages/auth/Logout";
 import Category from "../pages/customer/Category";
 import Register from "../pages/auth/Register";
-import { RequireAuth, RequireGuest } from "./RequiredAuthRoute";
 function CustomerRoutes() {
   const { user } = useAuth();
   return (
     <Routes>
-      {/* Guest-only pages */}
-      <Route element={<RequireGuest />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-
-      {/* Ai cũng vào được (public for guests) với layout khách */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/logout" element={<Logout />} />
       <Route path="/" element={<CustomerLayout user={user} />}>
-        <Route index element={<Home />} />
+        <Route path="" element={<Home />} />
+        {/* <Route path="product/:id" element={<ProductDetail />} /> */}
         <Route path="products" element={<Home />} />
         <Route path="categories" element={<Category />} />
-        <Route path="carts" element={<Cart />} /> {/* guest vẫn xem/checkout */}
-        
-        {/* Private: bắt buộc login */}
-        <Route element={<RequireAuth />}>
-          <Route path="profile" element={<Profile />} />
-          <Route path="orders" element={<Order />} />
-          <Route path="logout" element={<Logout />} />
-        </Route>
+        <Route path="carts" element={<Cart />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="orders" element={<Order />} />
       </Route>
       <Route
         path="/admin/*"
-        element={<ErrorPage status={403} message="Forbidden Access" />}
+        element={<ErrorPage status={401} message="Unauthorized Access" />}
       />
       <Route
         path="*"

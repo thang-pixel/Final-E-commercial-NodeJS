@@ -16,8 +16,7 @@ export function RequireAuth() {
 }
 
 export function RequireGuest() {
-  const { user, loading } = useAuth();
-  if (loading) return null;
+  const { user } = useAuth();
 
   // đã login thì không cho vào trang guest-only (login/register)
   if (user) return <Navigate to="/" replace />;

@@ -35,6 +35,7 @@ function Login() {
     setLoading(true);
     setErr('');
     const result = await dispatch(loginUser(Email, password));
+    console.log('Login result:', result);
     setLoading(false);
     if (!result.success) {
       setErr(result.message);
@@ -68,11 +69,11 @@ function Login() {
         return;
       }
       
-      // if (user.role === "admin") {
-      //   navigate("/admin", { replace: true });
-      // } else {
-      //   navigate("/", { replace: true });
-      // }
+      if (user.role === 'admin') {
+        navigate('/admin/home');
+      } else {
+        navigate('/');
+      }
     }
   }, [user, from, navigate]);
 

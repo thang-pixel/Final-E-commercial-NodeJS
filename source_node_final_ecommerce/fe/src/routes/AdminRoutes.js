@@ -31,7 +31,7 @@ function AdminRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<Logout />} />
       <Route element={<PrivateRoute role="admin" />}>
-        <Route path="/" element={<AdminLayout user={user} />}>
+        <Route element={<AdminLayout user={user} />}>
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Dashboard />} />
           <Route path="brands" element={<Outlet />}>
