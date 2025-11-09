@@ -30,7 +30,7 @@ import {
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCategory, getAll } from '../../../redux/reducers/categorySlice';
+import { deleteCategory, getAllCategory } from '../../../redux/reducers/categorySlice';
 import { API_DOMAIN } from '../../../constants/apiDomain';
 import CategoryTable from '../../../components/admin/Category/CategoryTable';
 import CategoryGrid from '../../../components/admin/Category/CategoryGrid'; 
@@ -77,7 +77,7 @@ const CategoryList = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAll(query));
+    dispatch(getAllCategory(query));
   }, [dispatch, query]);
 
   // Search debounce
@@ -97,7 +97,7 @@ const CategoryList = () => {
     setDateRange();
     setPage(1);
     setSorter();
-    dispatch(getAll({}));
+    dispatch(getAllCategory({}));
   };
 
   // modal delete

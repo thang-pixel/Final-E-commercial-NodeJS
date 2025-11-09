@@ -7,11 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import TechnicalSpecs from '../../../components/admin/Product/TechnicalSpecs';
 import AddProductVariant from '../../../components/admin/Product/AddProductVariant';
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
-import { getAll } from '../../../redux/reducers/categorySlice';
 import { getAllBrands } from '../../../redux/reducers/brandSlice';
 import UploadImagesProduct from '../../../components/admin/Product/UploadImagesProduct';
 import UploadThumbnailProduct from '../../../components/admin/Product/UploadThumbnailProduct';
 import { addProduct } from '../../../redux/reducers/productSlice'; 
+import { getAllCategory } from '../../../redux/reducers/categorySlice';
 // import axios from "axios";
 
 const { Option } = Select;
@@ -20,19 +20,19 @@ const AddProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [formAdd] = Form.useForm();
   const navigate = useNavigate();
-  const { categories, loading: categoriesLoading } = useSelector(
+  const { categories } = useSelector(
     (state) => state.categories
   );
-  const { brands, loading: brandsLoading } = useSelector(
+  const { brands } = useSelector(
     (state) => state.brands
   );
-  const { loading: productLoading } = useSelector(
+  const { message: messageAdd  } = useSelector(
     (state) => state.products
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
   useEffect(() => {
     dispatch(getAllBrands());
@@ -88,19 +88,25 @@ const AddProduct = () => {
       formData.append('images', file.originFileObj);
     });
 
+    // set loading state
+    setIsAdding(true);
     try {
       await dispatch(addProduct(formData)).unwrap();
       console.log('✅ Submit payload:', formData);
+      messageApi.success(messageAdd || 'Thêm sản phẩm thành công!');
       formAdd.resetFields();
       setThumbnail(null);
       setImages([]);
       setVariants([]);
       setSpecs([]);
+
       // navigate('/admin/products'); 
     } catch (error) {
-      messageApi.error('Đã xảy ra lỗi khi lưu sản phẩm');
+      messageApi.error(messageAdd || 'Đã xảy ra lỗi khi lưu sản phẩm');
       console.error('Error saving product:', error);
-    } 
+    } finally {
+      setIsAdding(false);
+    }
     // await axios.post("/api/products", payload);
   };
 

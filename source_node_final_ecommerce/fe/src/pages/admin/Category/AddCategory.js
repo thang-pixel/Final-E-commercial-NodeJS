@@ -2,7 +2,7 @@ import { Container, Typography } from '@mui/material';
 import { Card, Input, Select, Button, Row, Col, Form, message } from 'antd';
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { useDispatch, useSelector } from 'react-redux';
-import { add, getAll } from '../../../redux/reducers/categorySlice';
+import { addCategory, getAllCategory } from '../../../redux/reducers/categorySlice';
 import { useEffect } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -18,14 +18,14 @@ const AddCategory = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     // Fetch categories for parent category selection
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
   // const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
     console.log('Submitted values:', values);
     try {
-      const result = await dispatch(add(values)).unwrap();
+      const result = await dispatch(addCategory(values)).unwrap();
       messageApi.success(result.message || 'Thêm danh mục thành công!');
       form.resetFields();
     } catch (err) {

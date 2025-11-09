@@ -13,7 +13,7 @@ import {
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { getAll } from '../../../redux/reducers/categorySlice';
+import { getAllCategory } from '../../../redux/reducers/categorySlice';
 import { addBrand } from '../../../redux/reducers/brandSlice';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +50,7 @@ const AddBrand = () => {
 
   // load categories for selection
   useEffect(() => {
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
 
   return (

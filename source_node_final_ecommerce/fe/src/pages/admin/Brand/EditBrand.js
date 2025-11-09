@@ -14,7 +14,7 @@ import {
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getAll } from '../../../redux/reducers/categorySlice';
+import { getAllCategory } from '../../../redux/reducers/categorySlice';
 import { editBrand, getBrandById } from '../../../redux/reducers/brandSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { API_DOMAIN } from '../../../constants/apiDomain';
@@ -95,7 +95,7 @@ const EditBrand = () => {
 
   // load categories for selection
   useEffect(() => {
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
 
   return (

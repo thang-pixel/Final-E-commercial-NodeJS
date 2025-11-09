@@ -3,8 +3,8 @@ import { Card, Input, Select, Button, Row, Col, Form, message, Spin } from 'antd
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-  edit,
-  getAll,
+  editCategory, 
+  getAllCategory,
   getCategoryById,
 } from '../../../redux/reducers/categorySlice';
 import { useEffect } from 'react';
@@ -24,7 +24,7 @@ const EditCategory = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     // Fetch categories for parent category selection
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
   useEffect(() => {
     // Fetch current category data
@@ -48,7 +48,7 @@ const EditCategory = () => {
     console.log('Submit payload:', values);
     
     try {
-      const result = await dispatch(edit({ id, categoryData: values })).unwrap();
+      const result = await dispatch(editCategory({ id, categoryData: values })).unwrap();
       messageApi.success(result.message || 'Cập nhật danh mục thành công!');
     } catch (err) {
       messageApi.error(err.message || 'Cập nhật danh mục thất bại!');

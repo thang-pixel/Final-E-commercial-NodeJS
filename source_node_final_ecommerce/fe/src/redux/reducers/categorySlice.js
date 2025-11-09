@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { API_DOMAIN } from '../../constants/apiDomain';
 
-export const getAll = createAsyncThunk('categories/getAll', async (queryParams = {}, { rejectWithValue }) => {
+export const getAllCategory = createAsyncThunk('categories/getAll', async (queryParams = {}, { rejectWithValue }) => {
   try {
     const res = await axios.get(`${API_DOMAIN}/api/categories`, { params: queryParams });
     if (res.data.success) {
@@ -34,7 +34,7 @@ export const getCategoryById = createAsyncThunk('categories/getById', async (id,
   }
 });
 
-export const add = createAsyncThunk('categories/add', async (categoryData, { rejectWithValue }) => {
+export const addCategory = createAsyncThunk('categories/add', async (categoryData, { rejectWithValue }) => {
   try {
     const res = await axios.post(`${API_DOMAIN}/api/categories`, categoryData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -50,7 +50,7 @@ export const add = createAsyncThunk('categories/add', async (categoryData, { rej
   }
 });
 
-export const edit = createAsyncThunk('categories/edit', async ({ id, categoryData }, { rejectWithValue }) => {
+export const editCategory = createAsyncThunk('categories/edit', async ({ id, categoryData }, { rejectWithValue }) => {
   try {
     const res = await axios.put(`${API_DOMAIN}/api/categories/edit/${id}`, categoryData);
     if (res.data.success)
@@ -90,7 +90,7 @@ const categorySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getAll.fulfilled, (state, action) => {
+      .addCase(getAllCategory.fulfilled, (state, action) => {
         state.categories = action.payload.categories;
         state.meta = action.payload.meta;
         state.message = action.payload.message;
@@ -100,14 +100,14 @@ const categorySlice = createSlice({
         state.currentCategory = action.payload;
         state.loading = false;
       })
-      .addCase(add.fulfilled, (state, action) => {
+      .addCase(addCategory.fulfilled, (state, action) => {
         if (action.payload?.data) {
           state.categories.push(action.payload.data);
         }
         state.message = action.payload.message;
         state.loading = false;
       })
-      .addCase(edit.fulfilled, (state, action) => {
+      .addCase(editCategory.fulfilled, (state, action) => {
         const updated = action.payload.data;
         const index = state.categories.findIndex(cat => cat._id === updated._id);
         if (index !== -1) state.categories[index] = updated;
