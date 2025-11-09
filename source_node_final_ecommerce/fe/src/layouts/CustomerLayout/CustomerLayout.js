@@ -1,5 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
 import './CustomerLayout.css';
 import CustomerFooter from '../../components/customer/CustomerFooter';
@@ -25,6 +25,7 @@ function CustomerLayout(props) {
         'Giày dép',
         'Túi xách',
     ];
+
     // ESC để đóng + khóa scroll khi mở
     useEffect(() => {
         const onKey = (e) => e.key === 'Escape' && setDrawerOpen(false);
@@ -35,6 +36,25 @@ function CustomerLayout(props) {
             document.body.style.overflow = '';
         };
     }, [drawerOpen]);
+
+    // Đóng menu profile khi click ra ngoài
+    const profileMenuRef = useRef();
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                profileMenuRef.current &&
+                !profileMenuRef.current.contains(event.target)
+            ) {
+                setShowProfileMenu(false);
+            }
+        }
+        if (showProfileMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showProfileMenu]);
 
     const [activePage, setActivePage] = useState(ACTIVE_PAGES.home);
     const handleActivePage = (page) => {
@@ -47,7 +67,11 @@ function CustomerLayout(props) {
     );
     const activeNavItemClasses = clsx(
         ' bg-white/20 border-b-2 font-semibold border-white'
+<<<<<<< HEAD
     ); 
+=======
+    );
+>>>>>>> thang
 
     const handleToggleNav = (isCollapsed) => {
         const hamburger = document.querySelector(
@@ -118,49 +142,52 @@ function CustomerLayout(props) {
 
                         <div
                             className={'nav-item--account relative'}
-                            onClick={() =>
-                                handleActivePage(ACTIVE_PAGES.profile)
-                            }
+                            ref={profileMenuRef}
                         >
-                            <Link to={'/profile'} className='flex justify-center items-center'>
+                            <div
+                                onClick={() => setShowProfileMenu((v) => !v)}
+                                style={{ cursor: 'pointer' }}
+                                className="flex justify-center items-center"
+                            >
                                 <AccountCircle />
                                 <p className="p-2">{`Chào ${user?.username || user?.full_name || user?.email || "Khách"}!`}</p>
-                            </Link>
-                            <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20">
-                                <ul>
-                                    {user && (
-                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                            
-                                            <Link to={'/profile'}>Tài khoản của tôi</Link>
-                                        </li>
-                                    )}
-
-                                    {user && (
-                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                            <Link to={'/orders'}>Đơn hàng của tôi</Link>
-                                        </li>
-                                    )}
-
-                                    {user &&(
-                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                            <Link to={'/carts'}>Giỏ hàng của tôi</Link>
-                                        </li>
-                                    )}
-
-                                    {user && (
-                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                            <Link to={'/logout'}>Đăng xuất</Link>
-                                        </li>
-                                    )}
-                                    
-                                    {!user && (
-                                        <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                            <Link to={'/login'}>Đăng nhập</Link>
-                                        </li>
-                                    )}
-                                    
-                                </ul>
                             </div>
+                            {showProfileMenu && (
+                                <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20">
+                                    <ul>
+                                        {user && (
+                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                                <Link to={'/profile'}>Tài khoản của tôi</Link>
+                                            </li>
+                                        )}
+
+                                        {user && (
+                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                                <Link to={'/orders'}>Đơn hàng của tôi</Link>
+                                            </li>
+                                        )}
+
+                                        {user &&(
+                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                                <Link to={'/carts'}>Giỏ hàng của tôi</Link>
+                                            </li>
+                                        )}
+
+                                        {user && (
+                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                                <Link to={'/logout'}>Đăng xuất</Link>
+                                            </li>
+                                        )}
+                                        
+                                        {!user && (
+                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
+                                                <Link to={'/login'}>Đăng nhập</Link>
+                                            </li>
+                                        )}
+                                        
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                     </nav>
                     <div className="layout-customer__nav--hamburger mr-2">
@@ -195,219 +222,3 @@ function CustomerLayout(props) {
 }
 
 export default CustomerLayout;
-
-// import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-// import { useMemo, useState } from "react";
-// import AppBar from "@mui/material/AppBar";
-// import Toolbar from "@mui/material/Toolbar";
-// import Container from "@mui/material/Container";
-// import IconButton from "@mui/material/IconButton";
-// import Typography from "@mui/material/Typography";
-// import Box from "@mui/material/Box";
-// import Button from "@mui/material/Button";
-// import Drawer from "@mui/material/Drawer";
-// import List from "@mui/material/List";
-// import ListItemButton from "@mui/material/ListItemButton";
-// import ListItemText from "@mui/material/ListItemText";
-// import Divider from "@mui/material/Divider";
-// import useMediaQuery from "@mui/material/useMediaQuery";
-// import { useTheme } from "@mui/material/styles";
-// import MenuIcon from "@mui/icons-material/Menu";
-// import CloseIcon from "@mui/icons-material/Close";
-
-// const navItems = [
-//   { label: "Sản phẩm", to: "/products" },
-//   { label: "Đơn hàng", to: "/orders" },
-// ];
-
-// export default function CustomerLayout({ user }) {
-//   const theme = useTheme();
-//   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
-//   const [open, setOpen] = useState(false);
-//   const location = useLocation();
-
-//   const activePath = useMemo(() => location.pathname, [location.pathname]);
-
-//   const toggleDrawer = (v) => () => setOpen(v);
-
-//   const NavButtons = (
-//     <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-//       {navItems.map((item) => {
-//         const isActive = activePath.startsWith(item.to);
-//         return (
-//           <Button
-//             key={item.to}
-//             component={NavLink}
-//             to={item.to}
-//             sx={{
-//               textTransform: "none",
-//               fontWeight: isActive ? 700 : 500,
-//               borderBottom: isActive ? "2px solid currentColor" : "2px solid transparent",
-//               borderRadius: 1,
-//             }}
-//             color="inherit"
-//           >
-//             {item.label}
-//           </Button>
-//         );
-//       })}
-//     </Box>
-//   );
-
-//   const AuthButtons = (
-//     <Box sx={{ display: "flex", gap: 1, alignItems: "center", ml: "auto" }}>
-//       {!user ? (
-//         <Button component={Link} to="/login" color="inherit" sx={{ textTransform: "none" }}>
-//           Đăng nhập
-//         </Button>
-//       ) : (
-//         <>
-//         <Button
-//             key={"cart"}
-//             component={NavLink}
-//             to={"/cart"}
-//             sx={{
-//               textTransform: "none",
-//               fontWeight: activePath.startsWith("/cart") ? 700 : 500,
-//               borderBottom: activePath.startsWith("/cart") ? "2px solid currentColor" : "2px solid transparent",
-//               borderRadius: 1,
-//             }}
-//             color="inherit"
-//           >
-//             Giỏ hàng
-//           </Button>
-
-//         <Button
-//           component={Link}
-//           to="/profile"
-//           color="inherit"
-//           sx={{ textTransform: "none", fontWeight: 600 }}
-//         >
-//           Chào {user.username}!
-//         </Button>
-//         </>
-//       )}
-//     </Box>
-//   );
-
-//   return (
-//     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-//       {/* AppBar */}
-//       <AppBar position="fixed" color="primary" elevation={1}>
-//         <Container maxWidth="lg">
-//           <Toolbar disableGutters sx={{ gap: 2 }}>
-//             {/* Logo + brand */}
-//             <Box component={Link} to="/" sx={{ display: "flex", alignItems: "center", textDecoration: "none", color: "inherit" }}>
-//               <Box
-//                 component="img"
-//                 src="/logo192.png"
-//                 alt="Logo"
-//                 sx={{ width: 40, height: 40, mr: 1, borderRadius: 1, objectFit: "cover" }}
-//               />
-//               <Typography variant="h6" noWrap>My Shop</Typography>
-//             </Box>
-
-//             {/* Desktop nav */}
-//             {isMdUp ? (
-//               <>
-//                 <Box sx={{ ml: 3 }}>{NavButtons}</Box>
-//                 {AuthButtons}
-//               </>
-//             ) : (
-//               // Mobile: hamburger + right auth (login/profile can be moved into drawer if thích)
-//               <>
-//                 <Box sx={{ ml: "auto" }}>{AuthButtons}</Box>
-//                 <IconButton
-//                   color="inherit"
-//                   edge="end"
-//                   sx={{ ml: 1 }}
-//                   onClick={toggleDrawer(true)}
-//                   aria-label="open navigation"
-//                 >
-//                   <MenuIcon />
-//                 </IconButton>
-//               </>
-//             )}
-//           </Toolbar>
-//         </Container>
-//       </AppBar>
-
-//       {/* Drawer for mobile */}
-//       <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-//         <Box sx={{ width: 280, display: "flex", flexDirection: "column", height: "100%" }} role="presentation">
-//           <Box sx={{ display: "flex", alignItems: "center", p: 2, gap: 1 }}>
-//             <IconButton onClick={toggleDrawer(false)} aria-label="close">
-//               <CloseIcon />
-//             </IconButton>
-//             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Menu</Typography>
-//           </Box>
-//           <Divider />
-//           <List sx={{ p: 1 }}>
-//             {navItems.map((item) => {
-//               const isActive = activePath.startsWith(item.to);
-//               return (
-//                 <ListItemButton
-//                   key={item.to}
-//                   component={NavLink}
-//                   to={item.to}
-//                   onClick={toggleDrawer(false)}
-//                   selected={isActive}
-//                   sx={{
-//                     borderRadius: 1,
-//                     "&.Mui-selected": {
-//                       bgcolor: "action.selected",
-//                     },
-//                   }}
-//                 >
-//                   <ListItemText primary={item.label} />
-//                 </ListItemButton>
-//               );
-//             })}
-//           </List>
-//           <Box sx={{ mt: "auto", p: 2 }}>
-//             {!user ? (
-//               <Button
-//                 fullWidth
-//                 variant="contained"
-//                 component={Link}
-//                 to="/login"
-//                 onClick={toggleDrawer(false)}
-//                 sx={{ textTransform: "none" }}
-//               >
-//                 Đăng nhập
-//               </Button>
-//             ) : (
-//               <Button
-//                 fullWidth
-//                 variant="outlined"
-//                 component={Link}
-//                 to="/profile"
-//                 onClick={toggleDrawer(false)}
-//                 sx={{ textTransform: "none" }}
-//               >
-//                 Chào {user.username}!
-//               </Button>
-//             )}
-//           </Box>
-//         </Box>
-//       </Drawer>
-
-//       {/* Toolbar spacer to offset fixed AppBar */}
-//       <Toolbar />
-
-//       {/* Main */}
-//       <Box component="main" sx={{ flex: 1, py: 3 }}>
-//         <Container maxWidth="lg">
-//           <Outlet context={{ user }} />
-//         </Container>
-//       </Box>
-
-//       {/* Footer (bạn có thể giữ CustomerFooter cũ) */}
-//       <Box component="footer" sx={{ bgcolor: "grey.100", py: 3 }}>
-//         <Container maxWidth="lg">
-//           {/* <CustomerFooter /> hoặc nội dung footer của bạn */}
-//         </Container>
-//       </Box>
-//     </Box>
-//   );
-// }
