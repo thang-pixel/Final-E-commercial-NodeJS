@@ -67,11 +67,7 @@ function CustomerLayout(props) {
     );
     const activeNavItemClasses = clsx(
         ' bg-white/20 border-b-2 font-semibold border-white'
-<<<<<<< HEAD
     ); 
-=======
-    );
->>>>>>> thang
 
     const handleToggleNav = (isCollapsed) => {
         const hamburger = document.querySelector(
