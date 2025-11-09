@@ -6,6 +6,8 @@ import AllRoute from './routes/AllRoute';
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/reducers/authSlice";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 function App() {
     const dispatch = useDispatch();
 
@@ -18,10 +20,13 @@ function App() {
     }, [dispatch]);
     return (
         <div className="App">
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <AllRoute />
-            </ThemeProvider>
+            {/* Thêm GoogleOAuthProvider và truyền clientId */}
+            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <AllRoute />
+                </ThemeProvider>
+            </GoogleOAuthProvider>
         </div>
     );
 }
