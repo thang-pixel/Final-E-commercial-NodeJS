@@ -1,10 +1,10 @@
-import { Card, Select, Input, Button, Col, Row } from "antd";
+import { Card, Select, Input, Button, Col, Row, Typography } from 'antd';
 
 const { Option } = Select;
 
-const TechnicalSpecs = ({ specs, setSpecs }) => {
+const TechnicalSpecs = ({ specs, setSpecs, showError }) => {
   const addSpec = () => {
-    setSpecs([...specs, { key: "", value: "" }]);
+    setSpecs([...specs, { key: '', value: '' }]);
   };
 
   const updateSpec = (index, field, value) => {
@@ -18,14 +18,14 @@ const TechnicalSpecs = ({ specs, setSpecs }) => {
   };
 
   const specOptions = [
-    "RAM",
-    "CPU",
-    "Storage",
-    "Screen",
-    "Battery",
-    "Camera",
-    "OS",
-    "Weight",
+    'RAM',
+    'CPU',
+    'Storage',
+    'Screen',
+    'Battery',
+    'Camera',
+    'OS',
+    'Weight',
   ];
 
   return (
@@ -36,8 +36,8 @@ const TechnicalSpecs = ({ specs, setSpecs }) => {
             <Select
               placeholder="Chọn thông số"
               value={spec.key}
-              onChange={(v) => updateSpec(i, "key", v)}
-              style={{ width: "100%" }}
+              onChange={(v) => updateSpec(i, 'key', v)}
+              style={{ width: '100%' }}
             >
               {specOptions.map((opt) => (
                 <Option key={opt} value={opt}>
@@ -51,7 +51,7 @@ const TechnicalSpecs = ({ specs, setSpecs }) => {
             <Input
               placeholder="Giá trị"
               value={spec.value}
-              onChange={(e) => updateSpec(i, "value", e.target.value)}
+              onChange={(e) => updateSpec(i, 'value', e.target.value)}
             />
           </Col>
 
@@ -59,7 +59,7 @@ const TechnicalSpecs = ({ specs, setSpecs }) => {
             <Button
               danger
               onClick={() => removeSpec(i)}
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
             >
               Xoá
             </Button>
@@ -70,6 +70,16 @@ const TechnicalSpecs = ({ specs, setSpecs }) => {
       <Button type="dashed" onClick={addSpec} block>
         + Thêm thông số
       </Button>
+
+      {/* ⚠️ Hiển thị lỗi tổng thể nếu không có thông số nào */}
+      {showError && specs.length === 0 && (
+        <Typography.Text
+          type="danger"
+          style={{ display: 'block', marginTop: 8 }}
+        >
+          Cần nhập ít nhất 1 thông số kỹ thuật
+        </Typography.Text>
+      )}
     </Card>
   );
 };

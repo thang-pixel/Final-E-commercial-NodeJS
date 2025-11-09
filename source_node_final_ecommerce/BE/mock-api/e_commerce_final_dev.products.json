@@ -1,0 +1,89 @@
+[{
+  "_id": 1,
+  "brand_id": 1,
+  "category_id": 1,
+  "name": "Test 1",
+  "description": "Mô tả sản phẩm test 1",
+  "specifications": [
+    {
+      "key": "Storage",
+      "value": "64GB"
+    },
+    {
+      "key": "CPU",
+      "value": "AAA"
+    },
+    {
+      "key": "Screen",
+      "value": "64x64"
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "/uploads/products/1761970558384_apple-logo.png"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "/uploads/products/1761970558384_apple-logo.png"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "/uploads/products/1761970558384_oppo-logo.png"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "/uploads/products/1761970558385_realme-logo.png"
+    }
+  ],
+  "variants": [
+    {
+      "color": "Green",
+      "storage": "128GB",
+      "original_price": 8000000,
+      "price": 10000000,
+      "currency": "VND",
+      "stock_quantity": 10,
+      "SKU": "B1-PX-V1",
+      "id": 1
+    },
+    {
+      "color": "Red",
+      "storage": "256GB",
+      "original_price": 8000000,
+      "price": 10000000,
+      "currency": "VND",
+      "stock_quantity": 10,
+      "SKU": "B1-PX-V2",
+      "id": 2
+    },
+    {
+      "color": "Blue",
+      "storage": "512GB",
+      "original_price": 8000000,
+      "price": 2000000,
+      "currency": "VND",
+      "stock_quantity": 10,
+      "SKU": "B1-PX-V3",
+      "id": 3
+    }
+  ],
+  "min_price": 2000000,
+  "max_price": 10000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-01T04:15:58.413Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-01T04:15:58.413Z"
+  },
+  "slug": "test-1",
+  "__v": 0
+}]

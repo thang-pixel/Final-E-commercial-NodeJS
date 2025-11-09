@@ -1,0 +1,24 @@
+[{
+  "_id": {
+    "$oid": "68e22c2db6a0ade25e09164a"
+  },
+  "id": "brand_seq",
+  "reference_value": null,
+  "seq": 2
+},
+{
+  "_id": {
+    "$oid": "68e23594b6a0ade25e09164b"
+  },
+  "id": "category_seq",
+  "reference_value": null,
+  "seq": 9
+},
+{
+  "_id": {
+    "$oid": "6905897ead16073c5862336f"
+  },
+  "reference_value": null,
+  "id": "product_seq",
+  "seq": 1
+}]

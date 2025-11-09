@@ -1,130 +1,170 @@
-[
-  {
-    "_id": 1,
-    "name": "Apple",
-    "description": "Thương hiệu Apple",
-    "image": "/uploads/products/1761922722000_apple-logo.png",
-    "deleted": false,
-    "createdAt": {
-      "$date": "2025-10-05T08:28:29.099Z"
-    },
-    "updatedAt": {
-      "$date": "2025-10-31T14:58:42.014Z"
-    },
-    "slug": "apple",
-    "__v": 0,
-    "category_id": 1
+[{
+  "_id": 1,
+  "name": "Apple",
+  "description": "Thương hiệu Apple",
+  "image": "/uploads/products/1761922722000_apple-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-05T08:28:29.099Z"
   },
-  {
-    "_id": 2,
-    "name": "Oppo",
-    "category_id": 1,
-    "description": "Thương hiệu Oppo",
-    "image": "/uploads/products/1761921609925_oppo-logo.png",
-    "deleted": false,
-    "createdAt": {
-      "$date": "2025-10-31T10:17:22.550Z"
-    },
-    "updatedAt": {
-      "$date": "2025-10-31T14:44:37.444Z"
-    },
-    "slug": "oppo",
-    "__v": 0
+  "updatedAt": {
+    "$date": "2025-10-31T14:58:42.014Z"
   },
-  {
-    "_id": 3,
-    "name": "Samsung",
-    "category_id": 1,
-    "description": "Thương hiệu điện thoại và TV hàng đầu Hàn Quốc",
-    "image": "/uploads/products/samsung-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:49:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:49:00.000Z" },
-    "slug": "samsung",
-    "__v": 0
+  "slug": "apple",
+  "__v": 0,
+  "category_id": 1,
+  "status": "ACTIVE"
+},
+{
+  "_id": 2,
+  "name": "Oppo",
+  "category_id": 1,
+  "description": "Thương hiệu Oppo",
+  "image": "/uploads/products/1761921609925_oppo-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T10:17:22.550Z"
   },
-  {
-    "_id": 4,
-    "name": "Xiaomi",
-    "category_id": 1,
-    "description": "Thương hiệu điện thoại, tablet, và đồ gia dụng thông minh",
-    "image": "/uploads/products/xiaomi-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:50:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:50:00.000Z" },
-    "slug": "xiaomi",
-    "__v": 0
+  "updatedAt": {
+    "$date": "2025-10-31T14:44:37.444Z"
   },
-  {
-    "_id": 5,
-    "name": "Asus",
-    "category_id": 2,
-    "description": "Laptop, máy tính bảng và linh kiện công nghệ Asus",
-    "image": "/uploads/products/asus-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:51:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:51:00.000Z" },
-    "slug": "asus",
-    "__v": 0
+  "slug": "oppo",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 3,
+  "name": "Samsung",
+  "category_id": 1,
+  "description": "Thương hiệu điện thoại và TV hàng đầu Hàn Quốc",
+  "image": "/uploads/products/samsung-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:49:00.000Z"
   },
-  {
-    "_id": 6,
-    "name": "Dell",
-    "category_id": 2,
-    "description": "Máy tính xách tay và máy chủ thương hiệu Dell",
-    "image": "/uploads/products/dell-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:52:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:52:00.000Z" },
-    "slug": "dell",
-    "__v": 0
+  "updatedAt": {
+    "$date": "2025-10-31T15:49:00.000Z"
   },
-  {
-    "_id": 7,
-    "name": "Sony",
-    "category_id": 10,
-    "description": "Tivi, tai nghe, loa và thiết bị giải trí của Sony",
-    "image": "/uploads/products/sony-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:53:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:53:00.000Z" },
-    "slug": "sony",
-    "__v": 0
+  "slug": "samsung",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 4,
+  "name": "Xiaomi",
+  "category_id": 1,
+  "description": "Thương hiệu điện thoại, tablet, và đồ gia dụng thông minh",
+  "image": "/uploads/products/xiaomi-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:50:00.000Z"
   },
-  {
-    "_id": 8,
-    "name": "LG",
-    "category_id": 10,
-    "description": "Tivi và thiết bị gia dụng LG",
-    "image": "/uploads/products/lg-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:54:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:54:00.000Z" },
-    "slug": "lg",
-    "__v": 0
+  "updatedAt": {
+    "$date": "2025-10-31T15:50:00.000Z"
   },
-  {
-    "_id": 9,
-    "name": "Bose",
-    "category_id": 8,
-    "description": "Thương hiệu tai nghe và loa Bose",
-    "image": "/uploads/products/bose-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:55:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:55:00.000Z" },
-    "slug": "bose",
-    "__v": 0
+  "slug": "xiaomi",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 5,
+  "name": "Asus",
+  "category_id": 2,
+  "description": "Laptop, máy tính bảng và linh kiện công nghệ Asus",
+  "image": "/uploads/products/asus-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:51:00.000Z"
   },
-  {
-    "_id": 10,
-    "name": "Logitech",
-    "category_id": 9,
-    "description": "Phụ kiện công nghệ Logitech",
-    "image": "/uploads/products/logitech-logo.png",
-    "deleted": false,
-    "createdAt": { "$date": "2025-10-31T15:56:00.000Z" },
-    "updatedAt": { "$date": "2025-10-31T15:56:00.000Z" },
-    "slug": "logitech",
-    "__v": 0
-  }
-]
+  "updatedAt": {
+    "$date": "2025-10-31T15:51:00.000Z"
+  },
+  "slug": "asus",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 6,
+  "name": "Dell",
+  "category_id": 2,
+  "description": "Máy tính xách tay và máy chủ thương hiệu Dell",
+  "image": "/uploads/products/dell-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:52:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-31T15:52:00.000Z"
+  },
+  "slug": "dell",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 7,
+  "name": "Sony",
+  "category_id": 10,
+  "description": "Tivi, tai nghe, loa và thiết bị giải trí của Sony",
+  "image": "/uploads/products/sony-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:53:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-31T15:53:00.000Z"
+  },
+  "slug": "sony",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 8,
+  "name": "LG",
+  "category_id": 10,
+  "description": "Tivi và thiết bị gia dụng LG",
+  "image": "/uploads/products/lg-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:54:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-31T15:54:00.000Z"
+  },
+  "slug": "lg",
+  "__v": 0,
+  "status": "ACTIVE"
+},
+{
+  "_id": 9,
+  "name": "Bose",
+  "category_id": 8,
+  "description": "Thương hiệu tai nghe và loa Bose",
+  "image": "/uploads/products/bose-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:55:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-31T15:52:37.215Z"
+  },
+  "slug": "bose",
+  "__v": 0,
+  "status": "INACTIVE"
+},
+{
+  "_id": 10,
+  "name": "Logitech",
+  "category_id": 9,
+  "description": "Phụ kiện công nghệ Logitech",
+  "image": "/uploads/products/logitech-logo.png",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-10-31T15:56:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-31T15:56:00.000Z"
+  },
+  "slug": "logitech",
+  "__v": 0,
+  "status": "ACTIVE"
+}]

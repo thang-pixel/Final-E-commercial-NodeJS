@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import "./AdminLayout.css";
-import AdminFooter from "../../components/admin/AdminFooter";
-import AdminMenu from "../../components/admin/AdminMenu";
+import AdminFooter from "../../components/admin/Partials/AdminFooter";
+import AdminMenu from "../../components/admin/Navigation/AdminMenu";
 import { LeftCircleOutlined, MenuOutlined, DownOutlined } from "@ant-design/icons";
 import {
   Layout, Breadcrumb, Dropdown, Space, ConfigProvider, theme, Drawer, Grid
