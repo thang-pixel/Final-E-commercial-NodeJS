@@ -9,7 +9,7 @@ const addressSubSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     is_default: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: true }
 );
 
 const userSchema = new mongoose.Schema(

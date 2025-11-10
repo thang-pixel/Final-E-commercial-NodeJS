@@ -1,11 +1,19 @@
 const { body } = require('express-validator');
 const { USER_ROLES } = require('../../constants/dbEnum');
-
+const jwt = require('jsonwebtoken');
 const authRequired = (req, res, next) => {
-  if (!req.user) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: 'Unauthorized' });
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // console.log("Decoded user:", decoded);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error("JWT error:", err);
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  next();
 };
 
 const roleRequired = (req, res, next) => {
