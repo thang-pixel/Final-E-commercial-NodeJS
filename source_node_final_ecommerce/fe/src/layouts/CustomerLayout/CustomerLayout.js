@@ -7,6 +7,7 @@ import { ACTIVE_PAGES } from '../../constants/pageContants';
 import SearchHome from '../../components/customer/SearchHome';
 import CategoryDrawer from '../../pages/customer/Category/CategoryDrawer';
 import { Close, Menu, AccountCircle, ShoppingCart } from '@mui/icons-material';
+import { Person, ListAlt, ShoppingCart as CartIcon, Logout, Login } from '@mui/icons-material';
 
 function CustomerLayout(props) {
     const { user } = props;
@@ -142,48 +143,56 @@ function CustomerLayout(props) {
                         >
                             <div
                                 onClick={() => setShowProfileMenu((v) => !v)}
-                                style={{ cursor: 'pointer' }}
-                                className="flex justify-center items-center"
+                                style={{ cursor: 'pointer', position: 'relative' }}
+                                className="flex justify-center items-center gap-2 group"
                             >
-                                <AccountCircle />
-                                <p className="p-2">{`Chào ${user?.username || user?.full_name || user?.email || "Khách"}!`}</p>
+                                <AccountCircle fontSize="large" />
+                                <p className="p-2 font-semibold">{`Chào ${user?.username || user?.full_name || user?.email || "Khách"}!`}</p>
+                                <span className={`arrow-down ${showProfileMenu ? 'open' : ''}`}></span>
                             </div>
-                            {showProfileMenu && (
-                                <div className="menuProfile bg-white rounded-md shadow-md absolute right-0 top-full mt-2 w-36 z-20">
-                                    <ul>
-                                        {user && (
-                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                                <Link to={'/profile'}>Tài khoản của tôi</Link>
-                                            </li>
-                                        )}
-
-                                        {user && (
-                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                                <Link to={'/orders'}>Đơn hàng của tôi</Link>
-                                            </li>
-                                        )}
-
-                                        {user &&(
-                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                                <Link to={'/carts'}>Giỏ hàng của tôi</Link>
-                                            </li>
-                                        )}
-
-                                        {user && (
-                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                                <Link to={'/logout'}>Đăng xuất</Link>
-                                            </li>
-                                        )}
-                                        
-                                        {!user && (
-                                            <li className="hover:bg-gray-100 hover:text-cyan-400 p-2">
-                                                <Link to={'/login'}>Đăng nhập</Link>
-                                            </li>
-                                        )}
-                                        
-                                    </ul>
-                                </div>
-                            )}
+                            <div
+                                className={`menuProfile-modern absolute right-0 top-full mt-2 min-w-[180px] z-20 transition-all duration-300 ${
+                                    showProfileMenu ? 'visible opacity-100 scale-100' : 'invisible opacity-0 scale-95'
+                                }`}
+                            >
+                                <ul className="py-2">
+                                    {user && (
+                                        <li className="menuProfile-item" onClick={() => setShowProfileMenu(false)}>
+                                            <Link to={'/profile'}>
+                                                <Person className="mr-2" /> Tài khoản của tôi
+                                            </Link>
+                                        </li>
+                                    )}
+                                    {user && (
+                                        <li className="menuProfile-item" onClick={() => setShowProfileMenu(false)}>
+                                            <Link to={'/orders'}>
+                                                <ListAlt className="mr-2" /> Đơn hàng của tôi
+                                            </Link>
+                                        </li>
+                                    )}
+                                    {user && (
+                                        <li className="menuProfile-item" onClick={() => setShowProfileMenu(false)}>
+                                            <Link to={'/carts'}>
+                                                <CartIcon className="mr-2" /> Giỏ hàng của tôi
+                                            </Link>
+                                        </li>
+                                    )}
+                                    {user && (
+                                        <li className="menuProfile-item" onClick={() => setShowProfileMenu(false)}>
+                                            <Link to={'/logout'}>
+                                                <Logout className="mr-2" /> Đăng xuất
+                                            </Link>
+                                        </li>
+                                    )}
+                                    {!user && (
+                                        <li className="menuProfile-item" onClick={() => setShowProfileMenu(false)}>
+                                            <Link to={'/login'}>
+                                                <Login className="mr-2" /> Đăng nhập
+                                            </Link>
+                                        </li>
+                                    )}
+                                </ul>
+                            </div>
                         </div>
                     </nav>
                     <div className="layout-customer__nav--hamburger mr-2">

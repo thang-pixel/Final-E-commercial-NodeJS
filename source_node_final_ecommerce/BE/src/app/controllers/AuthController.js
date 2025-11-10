@@ -108,7 +108,7 @@ class AuthController {
           provider: provider,
           providerId: profile.providerId,
           avatar: profile.avatar || "",
-          phone: `0000000000` // phone required in schema -> use unique placeholder
+          phone: `${Date.now()}` // phone required in schema -> use unique placeholder
         });
       } else {
         // update provider info if needed
