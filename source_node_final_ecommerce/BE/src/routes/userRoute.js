@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../app/controllers/UserController');
-const { authRequired } = require('../app/middlewares/AuthMiddleware');
+const { authRequired,adminRequired } = require('../app/middlewares/AuthMiddleware');
 
 
 // // User router
@@ -23,5 +23,11 @@ router.post('/me/address', authRequired, UserController.addAddress);
 router.put('/me/address/:id', authRequired, UserController.updateAddress);
 router.delete('/me/address/:id', authRequired, UserController.deleteAddress);
 
+
+// Admin quản lý user
+router.get('/', authRequired, adminRequired, UserController.getAll);
+router.put('/:id', authRequired, adminRequired, UserController.updateUser);
+router.patch('/:id/ban', authRequired, adminRequired, UserController.banUser);
+router.patch('/:id/unban', authRequired, adminRequired, UserController.unbanUser);
 
 module.exports = router;

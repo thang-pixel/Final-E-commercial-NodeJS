@@ -87,6 +87,62 @@ class UserController {
       res.status(500).json({ message: err.message });
     }
   }
+
+
+  // Lấy danh sách tất cả user (admin)
+  async getAll(req, res) {
+    try {
+      const users = await UserModel.find().select("-password");
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  // Cập nhật thông tin user bất kỳ (admin)
+  async updateUser(req, res) {
+    try {
+      const user = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json(user);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  // Ban (khóa) user
+  async banUser(req, res) {
+    try {
+      const user = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { status: "inactive" },
+        { new: true }
+      );
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json({ message: "User banned", user });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  // Unban (mở khóa) user
+  async unbanUser(req, res) {
+    try {
+      const user = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { status: "active" },
+        { new: true }
+      );
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.json({ message: "User unbanned", user });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
 }
 
 module.exports = new UserController();
