@@ -1,13 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { API_DOMAIN } from '../../constants/apiDomain';
-import axios from 'axios';
+import { api } from '../../api/axios';
+// import api from 'api';
 
 // get all products
 export const getAllProducts = createAsyncThunk(
   'products/all',
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_DOMAIN}/products`, { params: queryParams });
+      const response = await api.get(`/api/products`, { params: queryParams });
       if (response.data.success){
         return {
           data: response.data.data,
@@ -32,7 +33,7 @@ export const getProductById = createAsyncThunk(
   'products/id',
   async (productId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_DOMAIN}/products/${productId}/detail`);
+      const response = await api.get(`/api/products/${productId}/detail`);
       if (response.data.success) {
         return {
           data: response.data.data,
@@ -53,9 +54,9 @@ export const getProductById = createAsyncThunk(
 // get product by slug
 export const getProductBySlug = createAsyncThunk(
   'products/slug',
-  async (productId, { rejectWithValue }) => {
+  async (slug, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_DOMAIN}/products/${productId}`);
+      const response = await api.get(`/api/products/${slug}`);
       if (response.data.success) {
         return {
           data: response.data.data,
@@ -78,7 +79,7 @@ export const addProduct = createAsyncThunk(
   'products/add',
   async (productData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_DOMAIN}/api/products`, productData, {
+      const res = await api.post(`/api/products`, productData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -104,7 +105,7 @@ export const editProduct = createAsyncThunk(
   'products/edit',
   async ({ productId, productData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API_DOMAIN}/api/products/${productId}`, productData, {
+      const res = await api.put(`/api/products/${productId}`, productData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -130,8 +131,8 @@ export const changeProductStatus = createAsyncThunk(
   'products/changeStatus',
   async ({ productId, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch(
-        `${API_DOMAIN}/api/products/${productId}/change-status`,
+      const res = await api.patch(
+        `/api/products/${productId}/change-status`,
         { status }
       );
 
@@ -157,7 +158,7 @@ export const softDeleteProduct = createAsyncThunk(
   'products/softDelete',
   async (productId, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`${API_DOMAIN}/api/products/${productId}/soft-delete`);
+      const res = await api.delete(`/api/products/${productId}/soft-delete`);
 
       if (res.data.success) {
         return {
@@ -181,7 +182,7 @@ export const forceDeleteProduct = createAsyncThunk(
   'products/forceDelete',
   async (productId, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`${API_DOMAIN}/api/products/${productId}/force-delete`);
+      const res = await api.delete(`/api/products/${productId}/force-delete`);
       if (res.data.success) {
         return {
           data: productId,
@@ -204,7 +205,7 @@ export const restoreProduct = createAsyncThunk(
   'products/restore',
   async (productId, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_DOMAIN}/api/products/${productId}/restore`);
+      const res = await api.post(`/api/products/${productId}/restore`);
 
       if (res.data.success) {
         return {
@@ -244,13 +245,17 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
           .addCase(getAllProducts.fulfilled, (state, action) => {
-            state.products = action.payload.products;
+            state.products = action.payload.data;
             state.meta = action.payload.meta;
             state.message = action.payload.message;
             state.loading = false;
           })
           .addCase(getProductById.fulfilled, (state, action) => {
-            state.currentProduct = action.payload;
+            state.currentProduct = action.payload.data;
+            state.loading = false;
+          })
+          .addCase(getProductBySlug.fulfilled, (state, action) => {
+            state.currentProduct = action.payload.data;
             state.loading = false;
           })
           .addCase(addProduct.fulfilled, (state, action) => {

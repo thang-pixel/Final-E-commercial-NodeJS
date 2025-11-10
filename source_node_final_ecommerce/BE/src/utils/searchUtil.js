@@ -8,6 +8,8 @@ const sortObj = (sort_whitelist, default_field = 'name', req) => {
         ? [req.query.sort]
         : [];
 
+    // console.log("Sort parameters received: ", sortParams);
+
     const sortObj = {};
     for (const token of sortParams) {
         const [rawField, rawOrder] = String(token).split('_');
@@ -16,6 +18,8 @@ const sortObj = (sort_whitelist, default_field = 'name', req) => {
         const order = (rawOrder || 'asc').toLowerCase() === 'asc' ? 1 : -1;
         sortObj[field] = order;
     }
+
+    // console.log("Constructed sort object: ", sortObj);
 
     // Mặc định: mới nhất trước, rồi name để ổn định
     if (Object.keys(sortObj).length === 0) {

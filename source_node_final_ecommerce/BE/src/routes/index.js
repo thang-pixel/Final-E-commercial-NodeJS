@@ -11,10 +11,12 @@ const promotionRoute = require('./promotionRoute');
 const homeRoute = require('./homeRoute');
 var createError = require('http-errors');
 const authRoute = require('./authRoute');
-const { adminRequired } = require('../app/middlewares/AuthMiddleware');
+const { adminRequired, tryAuth } = require('../app/middlewares/AuthMiddleware');
 
 function route(app) {
     app.use(globalLimiter);
+     // ✅ Gắn trước mọi route để luôn có req.user (guest/user/admin)
+    app.use(tryAuth);
     // app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/cart', cartRoute);
@@ -47,6 +49,7 @@ function route(app) {
         res.status(err.status || 500).json({
             status: err.status || 500,
             message: err.message,
+            errors: err.errors || err,
         });
     });
 }

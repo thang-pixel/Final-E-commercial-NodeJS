@@ -1,4 +1,4 @@
-const { PRODUCT_STATUSES } = require('../../constants/dbEnum');
+const { PRODUCT_STATUSES, USER_ROLES } = require('../../constants/dbEnum');
 const {
   sortObj,
   filterProduct,
@@ -11,8 +11,9 @@ class ProductController {
   // Hỗ trợ: ?category_id=1&brand_ids=1,2,3&range_prices=100-500&ratings=4&sort=price_asc&sort=createdAt_desc
   async search(req, res) {
     try {
-      const { category_id, keyword } = req.query;
+      const { category_id } = req.query;
       const { brand_ids, range_prices, ratings } = req.query;
+      let { keyword = '' } = req.query;
 
       // --- Filter ---
       let filter = {
@@ -38,10 +39,15 @@ class ProductController {
         rating: 'average_rating',
       };
 
+      // console.log('sort ', req.query);
+
       const sort = sortObj(SORT_WHITELIST, 'name', req);
 
       // --- Pagination ---
       const { page, limit, skip, totalPages } = paginationParam(req, 5);
+
+      // hide fields based on role
+      let fieldsToHide = selectFieldUtil(req.user?.role);
 
       // --- Query ---
       const opts = { collation: { locale: 'vi', strength: 1 } }; // hỗ trợ tên có dấu
@@ -50,6 +56,7 @@ class ProductController {
           .sort(sort)
           .skip(skip)
           .limit(limit)
+          .select(fieldsToHide)
           .lean(),
         ProductModel.countDocuments(filter),
       ]);
@@ -79,25 +86,30 @@ class ProductController {
 
   // [GET] | /products/:slug
   async show(req, res) {
-    let { slug } = req.params;
-    let query = slug ? { slug } : {};
-
     try {
-      const data = await ProductModel.findOne(query);
 
-      if (data && data.length > 0) {
-        res.status(200).json({
-          success: true,
-          message: 'Chi tiết sản phẩm',
-          data,
-        });
-      } else {
-        res.status(404).json({
-          success: false,
-          message: 'Chưa có sản phẩm',
-          data: null,
-        });
+      if (!req.params.slug)
+        return res
+          .status(400)
+          .json({ success: false, message: 'Missing slug' });
+      const slug = decodeURIComponent(req.params.slug).trim().toLowerCase();
+
+      // select fields to hide with role
+      let fieldsToHide = '';
+      if (req.user?.role !== USER_ROLES.ADMIN) {
+        fieldsToHide += '-variants.original_price ';
       }
+      // console.log(req.user);
+
+      const doc = await ProductModel.findOne({ slug })
+        .select(fieldsToHide) 
+        .lean();
+
+      if (!doc)
+        return res
+          .status(404)
+          .json({ success: false, message: 'Product not found' });
+      return res.json({ success: true, data: doc, message: 'OK' });
     } catch (error) {
       res.status(500).json({
         success: false,
