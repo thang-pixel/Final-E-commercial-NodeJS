@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const { USER_ROLES } = require('../../constants/dbEnum');
-const jwt = require('jsonwebtoken');
 
 // yêu cầu đăng nhập có token hợp lệ
 const authRequired = (req, res, next) => {

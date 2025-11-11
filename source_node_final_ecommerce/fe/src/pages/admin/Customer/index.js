@@ -20,7 +20,7 @@ const CustomerList = () => {
     axios.get(`${API_DOMAIN}/api/users`, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setUsers(res.data));
-  }, [editOpen]);
+  }, [editOpen, token]);
 
   // Open edit dialog
   const handleEdit = (user) => {

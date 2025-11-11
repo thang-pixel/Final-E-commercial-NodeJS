@@ -5,8 +5,8 @@ on:
     branches: [ main, dev ]
   pull_request:
     branches: [ main, dev ]
-
 jobs:
+  # 1. CI chung: lint / test / build thử
   ci:
     runs-on: ubuntu-latest
 
@@ -46,7 +46,26 @@ jobs:
         working-directory: fe
         run: npm run build
 
-  build-and-deploy:
+  # 2. CD cho DEV (branch dev): build & deploy với docker-compose.dev.yml
+  deploy_dev:
+    needs: ci
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH to DEV & deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          script: |
+            cd /var/www/source_node_final_ecommerce
+            git pull origin dev
+            docker compose -f docker-compose.dev.yml up -d --build
+
+  # 3. CD cho PROD (branch main): build image & deploy với docker-compose.prod.yml
+  deploy_prod:
     needs: ci
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -67,7 +86,8 @@ jobs:
           context: ./BE
           file: ./BE/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-be:${{ github.sha }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ecom-be:${{ github.sha }}
 
       - name: Build & push FE image
         uses: docker/build-push-action@v6
@@ -75,14 +95,15 @@ jobs:
           context: ./fe
           file: ./fe/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-fe:${{ github.sha }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/ecom-fe:${{ github.sha }}
 
-      - name: Deploy via SSH
+      - name: SSH to PROD & deploy
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             cd /var/www/source_node_final_ecommerce
             export BE_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/ecom-be:${{ github.sha }}

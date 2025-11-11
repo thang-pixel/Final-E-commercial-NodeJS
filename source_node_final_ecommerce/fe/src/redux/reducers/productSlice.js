@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { API_DOMAIN } from '../../constants/apiDomain';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'; 
 import { api } from '../../api/axios';
 // import api from 'api';
 
