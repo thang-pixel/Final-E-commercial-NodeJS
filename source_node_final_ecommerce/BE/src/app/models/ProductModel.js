@@ -84,7 +84,11 @@ productSchema.pre("save", function (next) {
       if (!variant.SKU) {
         const brandPart = this.brand_id ? `B${this.brand_id}` : "B0";
         const prodPart = this._id ? `P${this._id}` : "PX";
-        const varPart = `V${idx + 1}`;
+        const color = variant.color;
+        const storage = variant.storage;
+        let varPart = ""; 
+        varPart += `-${storage.replace(/\s+/g, '').toUpperCase()}`;
+        varPart += `-V${idx + 1}`;
         variant.SKU = `${brandPart}-${prodPart}-${varPart}`;
       }
       variant.id = idx + 1; // Gán ID nội bộ

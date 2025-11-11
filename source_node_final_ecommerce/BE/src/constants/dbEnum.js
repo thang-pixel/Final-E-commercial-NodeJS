@@ -1,7 +1,7 @@
 const USER_ROLES = {
-    ADMIN: 'ADMIN',
-    CUSTOMER: 'CUSTOMER',
-    GUEST: 'GUEST',
+    ADMIN: 'admin',
+    CUSTOMER: 'customer',
+    GUEST: 'guest',
 };
 
 const USER_STATUSES = {

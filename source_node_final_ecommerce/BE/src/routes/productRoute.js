@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get('/search', ProductController.search);
 router.get('/:slug', ProductController.show);
-router.get('/:id/detail', ProductController.detail);
+router.get('/:id/detail', adminRequired, ProductController.detail);
 router.get('/', ProductController.search);
 router.post('/:id/restore', adminRequired, ProductController.restore);
 router.post('/', adminRequired, productRules, uploadProduct.fields([
