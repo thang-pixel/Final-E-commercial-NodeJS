@@ -30,15 +30,15 @@ export default function GridProductsHomePage({
       >
         {products.map((p) => (
           <>
-            <Box key={p.id ?? p._id + 's'} sx={{ height: '100%' }}>
+            <Box key={p.id ?? p._id} sx={{ height: '100%' }}>
               <ProductCard product={p} />
             </Box>
-            <Box key={p.id ?? p._id + 'ss'} sx={{ height: '100%' }}>
+            {/* <Box key={p.id ?? p._id + 'ss'} sx={{ height: '100%' }}>
               <ProductCard product={p} />
             </Box>
             <Box key={p.id ?? p._id  + 'sss'} sx={{ height: '100%' }}>
               <ProductCard product={p}/>
-            </Box>
+            </Box> */}
           </>
         ))}
       </Box>

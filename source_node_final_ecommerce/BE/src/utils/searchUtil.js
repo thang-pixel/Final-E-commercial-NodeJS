@@ -42,12 +42,10 @@ const filterProduct = (filter, brand_ids, range_prices, ratings) => {
 
     let range_prices_arr = [];
     if (typeof range_prices === 'string' && range_prices.trim()) {
-        range_prices_arr = [
-            range_prices.split(',').map((p) => {
+        range_prices_arr = range_prices.split(',').map((p) => {
                 const [min, max] = p.split('-').map((x) => Number(x.trim()));
                 return { min, max };
-            }),
-        ];
+            });
     }
 
     let ratings_arr = [];
@@ -63,17 +61,19 @@ const filterProduct = (filter, brand_ids, range_prices, ratings) => {
             if (isNaN(min)) min = 0;
             if (isNaN(max)) max = Number.MAX_SAFE_INTEGER;
             return {
-                price: { $gte: min, $lte: max },
+                min_price: { $gte: min, $lte: max },
             };
         });
     }
     if (ratings_arr.length > 0) {
         filter.average_rating = { $in: ratings_arr };
     }
+
+    console.log("Filter after processing:", filter);
     return filter;
 };
 
-const paginationParam = (req, limitDefault = 5, total) => {
+const paginationParam = (req, limitDefault = 5) => {
     const page = parseInt(req.query.page, 10) || 1;
 
     let limit = parseInt(req.query.limit, 10) || limitDefault;
@@ -81,13 +81,21 @@ const paginationParam = (req, limitDefault = 5, total) => {
     limit = Math.min(Math.max(1, limit), 50);
     const skip = (page - 1) * limit;
 
-    const totalPages = Math.max(1, Math.ceil(total / limit)); // luôn >= 1 để đáp ứng yêu cầu hiển thị số trang
 
-    return { page, limit, skip, totalPages };
+    return { page, limit, skip };
 };
+
+const selectFieldByRole = (role) => {
+  let fieldsToHide = '';
+  if (role !== 'admin') {
+    fieldsToHide += '-variants.original_price ';
+  }
+  return fieldsToHide;
+}
 
 module.exports = {
     sortObj,
     filterProduct,
     paginationParam,
+    selectFieldByRole,
 };

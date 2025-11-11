@@ -3,6 +3,7 @@ const {
   sortObj,
   filterProduct,
   paginationParam,
+  selectFieldByRole,
 } = require('../../utils/searchUtil');
 const ProductModel = require('../models/ProductModel');
 
@@ -14,6 +15,7 @@ class ProductController {
       const { category_id } = req.query;
       const { brand_ids, range_prices, ratings } = req.query;
       let { keyword = '' } = req.query;
+      console.log('Query parameters:', req.query);
 
       // --- Filter ---
       let filter = {
@@ -44,22 +46,26 @@ class ProductController {
       const sort = sortObj(SORT_WHITELIST, 'name', req);
 
       // --- Pagination ---
-      const { page, limit, skip, totalPages } = paginationParam(req, 5);
-
+      const { page, limit, skip } = paginationParam(req, 5);
+      
+      
       // hide fields based on role
-      let fieldsToHide = selectFieldUtil(req.user?.role);
-
+      let fieldsToHide = selectFieldByRole(req.user?.role);
+      
       // --- Query ---
       const opts = { collation: { locale: 'vi', strength: 1 } }; // hỗ trợ tên có dấu
       const [items, total] = await Promise.all([
         ProductModel.find(filter, null, opts)
-          .sort(sort)
-          .skip(skip)
-          .limit(limit)
-          .select(fieldsToHide)
-          .lean(),
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .select(fieldsToHide)
+        .lean(),
         ProductModel.countDocuments(filter),
       ]);
+
+      // tinh toán tổng số trang
+      const totalPages = Math.max(1, Math.ceil(total / limit)); // luôn >= 1 để đáp ứng yêu cầu hiển thị số trang
 
       return res.status(200).json({
         success: true,
@@ -95,10 +101,7 @@ class ProductController {
       const slug = decodeURIComponent(req.params.slug).trim().toLowerCase();
 
       // select fields to hide with role
-      let fieldsToHide = '';
-      if (req.user?.role !== USER_ROLES.ADMIN) {
-        fieldsToHide += '-variants.original_price ';
-      }
+      let fieldsToHide = selectFieldByRole(req.user?.role);
       // console.log(req.user);
 
       const doc = await ProductModel.findOne({ slug })
