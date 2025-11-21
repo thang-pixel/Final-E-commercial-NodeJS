@@ -17,7 +17,7 @@ export default function ProductCard({ product }) {
   } = product;
 
   const raw = images?.[0]?.img_url || '';
-  const thumbnail = (API_DOMAIN + raw).replace(/([^:]\/)\/+/g, '$1'); // tránh // trùng
+  const thumbnail = raw; // url ảnh trên cloudinary đã là url đầy đủ
 
   return (
     <>

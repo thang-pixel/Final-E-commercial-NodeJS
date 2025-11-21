@@ -190,7 +190,7 @@ export default function ProductDetail() {
     <Box sx={{ p: { xs: 1.5, md: 2 } }}>
       <Grid container spacing={3} display="flex" wrap="wrap">
         {/* Gallery */}
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid item size={{ xs: 12, md: 4 }}>
           <Gallery images={images} name={data.name} />
           {/* Yêu cầu: ít nhất 3 ảnh */}
           {images.length < 3 && (
@@ -201,7 +201,7 @@ export default function ProductDetail() {
         </Grid>
 
         {/* Info */}
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid item size={{ xs: 12, md: 8 }}>
           <Stack spacing={1.25}>
             <Typography variant="h5" fontWeight={700}>
               {data.name}
@@ -361,13 +361,13 @@ export default function ProductDetail() {
               </Button>
             </Stack>
 
-            <Divider sx={{ my: 1 }} />
           </Stack>
         </Grid>
 
         {/* description */}
         {/* Description: tối thiểu hiển thị 5 dòng (giữ xuống dòng) */}
         <Grid item size={12}>
+          <Divider sx={{ my: 1 }} />  
           <Box>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Mô tả
@@ -656,9 +656,9 @@ function fmtVND(v) {
 }
 
 function normalizeUrl(path = '') {
-  const base = (API_DOMAIN || '').replace(/\/+$/, '');
+  // const base = (API_DOMAIN || '').replace(/\/+$/, '');
   const p = String(path || '').replace(/^\/+/, '');
-  return `${base}/${p}`;
+  return `${p}`;
 }
 
 function DetailSkeleton() {

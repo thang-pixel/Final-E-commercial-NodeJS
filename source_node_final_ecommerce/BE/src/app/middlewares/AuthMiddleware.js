@@ -54,8 +54,13 @@ function authRequired2(req, res, next) {
 
 // Yêu cầu thuộc 1 trong các role cho phép
 function roleRequired(...roles) {
+  if (typeof roles === 'string') {
+    roles = [roles];
+  }
+  console.log('Allowed roles:', roles);
   return (req, res, next) => {
     const role = req.user?.role || 'guest';
+    console.log('User role:', role);
     if (!roles.includes(role)) {
       return res.status(403).json({ success: false, message: 'Forbidden' });
     }

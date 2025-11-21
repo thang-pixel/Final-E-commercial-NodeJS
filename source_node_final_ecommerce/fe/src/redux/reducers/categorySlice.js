@@ -1,10 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { API_DOMAIN } from '../../constants/apiDomain';
+import { api } from '../../api/axios'; 
 
 export const getAllCategory = createAsyncThunk('categories/getAll', async (queryParams = {}, { rejectWithValue }) => {
   try {
-    const res = await axios.get(`${API_DOMAIN}/api/categories`, { params: queryParams });
+    const res = await api.get(`/api/categories`, { params: queryParams });
     if (res.data.success) {
       return {
         categories: res.data.data,
@@ -23,7 +22,7 @@ export const getAllCategory = createAsyncThunk('categories/getAll', async (query
 
 export const getCategoryById = createAsyncThunk('categories/getById', async (id, { rejectWithValue }) => {
   try {
-    const res = await axios.get(`${API_DOMAIN}/api/categories/${id}/show`);
+    const res = await api.get(`/api/categories/${id}/show`);
     if (res.data.success) return res.data.data;
     return rejectWithValue({ message: res.data.message, errors: res.data.errors });
   } catch (error) {
@@ -36,7 +35,7 @@ export const getCategoryById = createAsyncThunk('categories/getById', async (id,
 
 export const addCategory = createAsyncThunk('categories/add', async (categoryData, { rejectWithValue }) => {
   try {
-    const res = await axios.post(`${API_DOMAIN}/api/categories`, categoryData, {
+    const res = await api.post(`/api/categories`, categoryData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     if (res.data.success)
@@ -52,7 +51,7 @@ export const addCategory = createAsyncThunk('categories/add', async (categoryDat
 
 export const editCategory = createAsyncThunk('categories/edit', async ({ id, categoryData }, { rejectWithValue }) => {
   try {
-    const res = await axios.put(`${API_DOMAIN}/api/categories/edit/${id}`, categoryData);
+    const res = await api.put(`/api/categories/edit/${id}`, categoryData);
     if (res.data.success)
       return { data: res.data.data, message: res.data.message };
     return rejectWithValue({ message: res.data.message });
@@ -66,10 +65,11 @@ export const editCategory = createAsyncThunk('categories/edit', async ({ id, cat
 
 export const deleteCategory = createAsyncThunk('categories/delete', async (id, { rejectWithValue }) => {
   try {
-    const res = await axios.delete(`${API_DOMAIN}/api/categories/${id}`);
+    const res = await api.delete(`/api/categories/${id}`);
     if (res.data.success) return { data: id, message: res.data.message };
     return rejectWithValue({ message: res.data.message });
   } catch (error) {
+    console.log(error);
     return rejectWithValue({
       message: error.response?.data?.message || 'Delete Category Failed',
       errors: error.response?.data?.errors || null,

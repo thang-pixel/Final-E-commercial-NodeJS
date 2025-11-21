@@ -1,12 +1,11 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { API_DOMAIN } from '../../constants/apiDomain';
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'; 
+import { api } from '../../api/axios';
 
 export const getAllBrands = createAsyncThunk(
   'brands/all',
   async (queryParams = {}, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_DOMAIN}/api/brands`, {
+      const res = await api.get(`/api/brands`, {
         params: queryParams,
       });
       if (res.data.success) {
@@ -30,7 +29,7 @@ export const getBrandById = createAsyncThunk(
   'brands/getById',
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_DOMAIN}/api/brands/${id}/detail`); 
+      const res = await api.get(`/api/brands/${id}/detail`); 
       if (res.data.success) return res.data.data;
       
       return rejectWithValue({
@@ -50,7 +49,7 @@ export const addBrand = createAsyncThunk(
   'brands/add',
   async (brandData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_DOMAIN}/api/brands`, brandData, {
+      const res = await api.post(`/api/brands`, brandData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (res.data.success) return {
@@ -74,8 +73,8 @@ export const editBrand = createAsyncThunk(
   'brands/edit',
   async ({ id, brandData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(
-        `${API_DOMAIN}/api/brands/${id}/edit`,
+      const res = await api.put(
+        `/api/brands/${id}/edit`,
         brandData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -102,8 +101,8 @@ export const changeBrandStatus = createAsyncThunk(
   'brands/changeStatus',
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch(
-        `${API_DOMAIN}/api/brands/${id}/change-status`,
+      const res = await api.patch(
+        `/api/brands/${id}/change-status`,
         { status }
       );
       if (res.data.success) return res.data.data;
@@ -126,7 +125,7 @@ export const deleteBrand = createAsyncThunk(
   'brands/delete',
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`${API_DOMAIN}/api/brands/${id}`);
+      const res = await api.delete(`/api/brands/${id}`);
       if (res.data.success) return {
         data: id,
         message: res.data.message,

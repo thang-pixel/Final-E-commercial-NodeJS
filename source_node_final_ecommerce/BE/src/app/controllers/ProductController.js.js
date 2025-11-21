@@ -8,9 +8,9 @@ const {
 const ProductModel = require('../models/ProductModel');
 
 class ProductController {
-  // [GET] | /api/products/search
+  // [GET] | /api/products
   // Hỗ trợ: ?category_id=1&brand_ids=1,2,3&range_prices=100-500&ratings=4&sort=price_asc&sort=createdAt_desc
-  async search(req, res) {
+  async index(req, res) {
     try {
       const { category_id } = req.query;
       const { brand_ids, range_prices, ratings } = req.query;
@@ -47,20 +47,19 @@ class ProductController {
 
       // --- Pagination ---
       const { page, limit, skip } = paginationParam(req, 5);
-      
-      
+
       // hide fields based on role
       let fieldsToHide = selectFieldByRole(req.user?.role);
-      
+
       // --- Query ---
       const opts = { collation: { locale: 'vi', strength: 1 } }; // hỗ trợ tên có dấu
       const [items, total] = await Promise.all([
         ProductModel.find(filter, null, opts)
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .select(fieldsToHide)
-        .lean(),
+          .sort(sort)
+          .skip(skip)
+          .limit(limit)
+          .select(fieldsToHide)
+          .lean(),
         ProductModel.countDocuments(filter),
       ]);
 
@@ -90,10 +89,42 @@ class ProductController {
     }
   }
 
+  // [GET] | /products/search elastic
+  async search(req, res) {
+    const q = req.query.q || '';
+    const page = parseInt(req.query.page || '1', 10);
+    const size = parseInt(req.query.size || '12', 10);
+    const from = (page - 1) * size;
+
+    try {
+      // const result = await es.search({
+      //   index: 'products',
+      //   from,
+      //   size,
+      //   query: q
+      //     ? {
+      //         multi_match: {
+      //           query: q,
+      //           fields: ['name^3', 'description', 'category'],
+      //           fuzziness: 'AUTO',
+      //         },
+      //       }
+      //     : { match_all: {} },
+      // });
+
+      // res.json({
+      //   total: result.hits.total.value,
+      //   items: result.hits.hits.map((h) => h._source),
+      // });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Search error' });
+    }
+  }
+
   // [GET] | /products/:slug
   async show(req, res) {
     try {
-
       if (!req.params.slug)
         return res
           .status(400)
@@ -105,7 +136,7 @@ class ProductController {
       // console.log(req.user);
 
       const doc = await ProductModel.findOne({ slug })
-        .select(fieldsToHide) 
+        .select(fieldsToHide)
         .lean();
 
       if (!doc)
@@ -201,10 +232,12 @@ class ProductController {
         data: null,
       });
     }
+
+    console.log('Uploaded files:', req.files);
     const thumbnailImage = req.files?.thumbnail?.[0];
     const thumbnail = thumbnailImage
       ? {
-          img_url: `/uploads/products/${thumbnailImage.filename}`,
+          img_url: thumbnailImage.path,
           type: 'THUMBNAIL',
           id: 1,
         }
@@ -212,7 +245,7 @@ class ProductController {
 
     const images =
       req.files?.images?.map((file, index) => ({
-        img_url: `/uploads/products/${file.filename}`,
+        img_url: file.path,
         type: 'IMAGES',
         id: index + 2,
       })) || [];

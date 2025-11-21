@@ -37,7 +37,8 @@ function CustomerRoutes() {
       <Route
         path="/admin/*"
         element={<ErrorPage status={401} message="Unauthorized Access" />}
-      />
+      /> 
+      <Route path="/forbidden" element={<ErrorPage status={403} message="Forbidden" />} />
       <Route
         path="*"
         element={<ErrorPage status={404} message="Page Not Found" />}

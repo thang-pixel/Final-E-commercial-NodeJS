@@ -1,6 +1,6 @@
 const express = require('express');
 const ProductController = require('../app/controllers/ProductController.js');
-const { uploadProduct } = require('../config/multer/multerConfig.js');
+const upload = require('../config/multer/multerConfig.js');
 const { adminRequired } = require('../app/middlewares/AuthMiddleware.js');
 const { productRules } = require('../app/middlewares/validationRules.js');
 const router = express.Router();
@@ -14,9 +14,9 @@ const router = express.Router();
 router.get('/search', ProductController.search);
 router.get('/:slug', ProductController.show);
 router.get('/:id/detail', adminRequired, ProductController.detail);
-router.get('/', ProductController.search);
+router.get('/', ProductController.index);
 router.post('/:id/restore', adminRequired, ProductController.restore);
-router.post('/', adminRequired, productRules, uploadProduct.fields([
+router.post('/', adminRequired, productRules, upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'thumbnail', maxCount: 1 }
 ]), ProductController.store);
