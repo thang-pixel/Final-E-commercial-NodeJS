@@ -20,7 +20,7 @@ const CategoryGrid = ({
             hoverable
             cover={
               <img
-                src={p.image}
+                src={p.image_url ? p.image_url : ''}
                 alt={p.name}
                 style={{
                   height: 140,

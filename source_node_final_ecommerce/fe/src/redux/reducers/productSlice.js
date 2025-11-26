@@ -104,9 +104,11 @@ export const editProduct = createAsyncThunk(
   'products/edit',
   async ({ productId, productData }, { rejectWithValue }) => {
     try {
-      const res = await api.put(`/api/products/${productId}`, productData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      console.log('👉 Edit payload:', productData);
+      // return; 
+      const res = await api.put(`/api/products/${productId}`,
+         productData,        
+      );
 
       if (res.data.success) {
         return {
@@ -157,7 +159,7 @@ export const softDeleteProduct = createAsyncThunk(
   'products/softDelete',
   async (productId, { rejectWithValue }) => {
     try {
-      const res = await api.delete(`/api/products/${productId}/soft-delete`);
+      const res = await api.delete(`/api/products/${productId}/soft`);
 
       if (res.data.success) {
         return {
@@ -222,6 +224,110 @@ export const restoreProduct = createAsyncThunk(
     }
   }
 );
+
+// product voi variants
+// add variant
+export const addProductVariant = createAsyncThunk(
+  'products/addVariant',
+  async ({ productId, ...variantData }, { rejectWithValue }) => { 
+    try {
+      const res = await api.post(
+        `/api/product-variants/products/${productId}/variants`,  
+        variantData
+      );
+      if (res.data.success) {
+        return {
+          data: res.data.data,
+          message: res.data.message,
+        };
+      } else {
+        return rejectWithValue({ message: res.data.message, errors: res.data.errors });
+      }
+    } catch (error) {
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Add Product Variant Failed',
+        errors: error.response?.data?.errors || null,
+      });
+    }
+  }
+);
+
+// update variant status
+export const updateVariantStatus = createAsyncThunk(
+  'products/updateVariantStatus',
+  async ({ variantId, productId, status }, { rejectWithValue }) => {  
+    try {
+      const res = await api.patch(
+        `/api/product-variants/products/${productId}/variants/${variantId}/status`,
+        { status }
+      );
+      if (res.data.success) {
+        return {
+          data: res.data.data,
+          message: res.data.message,
+        };
+      } else {
+        return rejectWithValue({ message: res.data.message, errors: res.data.errors });
+      }
+    } catch (error) {
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Update Variant Status Failed',
+        errors: error.response?.data?.errors || null,
+      });
+    }
+  }
+);
+
+// update variant
+export const updateVariant = createAsyncThunk(
+  'products/updateVariant',
+  async ({ variantId, productId, ...data }, { rejectWithValue }) => { 
+    try {
+      const res = await api.put(
+        `/api/product-variants/products/${productId}/variants/${variantId}`,
+        data
+      );
+      if (res.data.success) {
+        return {
+          data: res.data.data,
+          message: res.data.message,
+        };
+      } else {
+        return rejectWithValue({ message: res.data.message, errors: res.data.errors });
+      }
+    } catch (error) {
+      console.log('Error updating variant:', error);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Update Product Variant Failed',
+        errors: error.response?.data?.errors || null,
+      });
+    }
+  }
+);
+
+// delete variant
+export const deleteVariant = createAsyncThunk(
+  'products/deleteVariant',
+  async ({ variantId, productId }, { rejectWithValue }) => { 
+    try {
+      const res = await api.delete(`/api/product-variants/products/${productId}/variants/${variantId}`);
+      if (res.data.success) {
+        return {
+          data: variantId,
+          message: res.data.message,
+        };
+      } else {
+        return rejectWithValue({ message: res.data.message, errors: res.data.errors });
+      }
+    } catch (error) {
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Delete Product Variant Failed',
+        errors: error.response?.data?.errors || null,
+      });
+    }
+  }
+);
+
 
 const initState = {
   products: [],
@@ -300,6 +406,19 @@ const productSlice = createSlice({
           .addCase(restoreProduct.fulfilled, (state, action) => {
             state.products.push(action.payload.data);
             state.currentProduct = action.payload.data;
+            state.message = action.payload.message;
+            state.loading = false;
+          })
+          .addCase(updateVariant.fulfilled, (state, action) => {
+            const updatedVariant = action.payload.data;
+            if (state.currentProduct && state.currentProduct.variants) {
+              const variantIndex = state.currentProduct.variants.findIndex(
+                (variant) => variant._id === updatedVariant._id
+              );
+              if (variantIndex !== -1) {
+                state.currentProduct.variants[variantIndex] = updatedVariant;
+              }
+            }
             state.message = action.payload.message;
             state.loading = false;
           })

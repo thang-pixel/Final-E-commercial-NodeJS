@@ -42,14 +42,14 @@ const EditBrand = () => {
         name: currentBrand.name,
         description: currentBrand.description,
         status: currentBrand.deleted ? 'INACTIVE' : 'ACTIVE',
-        category_id: currentBrand.category_id._id,
-        image: currentBrand.image
+        category_id: currentBrand.category_id?._id,
+        image: currentBrand.image_url
           ? [
               {
                 uid: '-1',
-                name: currentBrand.image.split('/').pop(),
+                name: currentBrand.image_url.split('/').pop(),
                 status: 'done',
-                url: `${API_DOMAIN}${currentBrand.image}`,
+                url: `${currentBrand.image_url}`,
               },
             ]
           : [],
@@ -61,28 +61,21 @@ const EditBrand = () => {
     console.log('Submit payload:', values);
 
     let valuesSubmit = { ...values };
-    if (Array.isArray(values.image) && values.image.length > 0) {
-      const fileObj = values.image[0];
-      if (fileObj.originFileObj) {
-        // ảnh mới upload
-        valuesSubmit.image = fileObj.originFileObj;
-      } else if (fileObj.url) {
-        // ảnh cũ giữ nguyên
-        valuesSubmit.image = fileObj.url.replace(API_DOMAIN, '');
-      } else {
-        valuesSubmit.image = null;
-      }
+    
+    if (values.image && values.image.length > 0) {
+      valuesSubmit.image = values.image[0]?.originFileObj || null;
     } else {
-      valuesSubmit.image = null;
+      valuesSubmit.image_url = currentBrand.image_url || null;
     }
+
     try {
       const result = await dispatch(
         editBrand({ id, brandData: valuesSubmit })
       ).unwrap();
       
       await messageApi.success({
-        content: (result.message || 'Cập nhật thương hiệu thành công!') + ' Về trang danh sách sau 3s.',
-        duration: 3,
+        content: (result.message || 'Cập nhật thương hiệu thành công!') + ' Về trang danh sách sau 2s.',
+        duration: 2,
       });
 
       // ✅ Điều hướng về trang danh sách
@@ -116,7 +109,7 @@ const EditBrand = () => {
       <Skeleton
         active
         loading={loading || !currentBrand}
-        paragraph={{ rows: 8 }}
+        paragraph={{ rows: 15 }}
         avatar={false}
       >
         <Card title="Thông tin cơ bản" style={{ marginBottom: 20 }}>
@@ -147,8 +140,8 @@ const EditBrand = () => {
                   <Select
                     placeholder="Danh mục"
                     options={categories.map((cat) => ({
-                      label: cat.name,
-                      value: cat._id,
+                      label: cat?.name,
+                      value: cat?._id,
                     }))}
                   />
                 </Form.Item>

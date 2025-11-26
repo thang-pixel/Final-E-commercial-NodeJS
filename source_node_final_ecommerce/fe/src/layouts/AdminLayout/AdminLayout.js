@@ -27,6 +27,7 @@ export default function AdminLayout({ user }) {
   const title = useMemo(() => {
     const map = new Map([
       ["/admin/home", "Trang chủ"],
+      ["/admin/profile", "Hồ sơ"],
       ["/admin/products", "Sản phẩm"],
       ["/admin/brands", "Thương hiệu"],
       ["/admin/categories", "Danh mục"],
@@ -55,7 +56,7 @@ export default function AdminLayout({ user }) {
   }, [location.pathname]);
 
   const userMenuItems = [
-    { key: "profile", label: <Link to="/profile">Hồ sơ của tôi</Link> },
+    { key: "profile", label: <Link to="profile">Hồ sơ của tôi</Link> },
     { type: "divider" },
     { key: "logout", label: <Link to="/logout">Đăng xuất</Link>, danger: true },
   ];
@@ -155,15 +156,15 @@ export default function AdminLayout({ user }) {
                 </Badge>
               </div>
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
-                <a href="/profile" onClick={(e) => e.preventDefault()} className="user-chip">
+                <Link to="profile" onClick={(e) => e.preventDefault()} className="user-chip">
                   <Space>
                     <Person />
                     <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {user?.username || "Admin"}
+                      {user?.full_name || "ADMIN No full_name"}
                     </span>
                     <DownOutlined />
                   </Space>
-                </a>
+                </Link>
               </Dropdown>
             </div>
           </Header>

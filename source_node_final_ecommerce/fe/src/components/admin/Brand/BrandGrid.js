@@ -1,10 +1,9 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Row, Space, Tag, Tooltip } from 'antd';
-import { API_DOMAIN } from '../../../constants/apiDomain';
 import { Link } from 'react-router-dom';
 
 const BrandGrid = ({ brands, meta, page, pageSize, setPage, STATUS, onDelete }) => {
-  console.log('BrandGrid render', brands);
+  // console.log('BrandGrid render', brands);
   return (
     <Row gutter={[12, 12]}>
       {brands.map((p) => {
@@ -17,11 +16,11 @@ const BrandGrid = ({ brands, meta, page, pageSize, setPage, STATUS, onDelete }) 
               hoverable
               cover={
                 <img
-                  src={`${API_DOMAIN}${p.image}`}
+                  src={`${p.image_url}`}
                   alt={p.name}
                   style={{
                     height: 140,
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                   }}
                 />
               }

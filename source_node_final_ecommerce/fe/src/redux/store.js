@@ -4,7 +4,7 @@ import categoryReducer from './reducers/categorySlice.js';
 import brandReducer from './reducers/brandSlice.js';
 import productReducer from './reducers/productSlice.js';
 
-
+ 
 const store = configureStore({
   reducer: {
     auth: authReducer,

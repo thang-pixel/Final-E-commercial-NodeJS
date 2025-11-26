@@ -7,6 +7,8 @@ import {
   DatePicker,
   Divider,
   Input,
+  message,
+  Modal,
   Row,
   Segmented,
   Select,
@@ -28,51 +30,48 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
+import {
+  getAllProducts,
+  softDeleteProduct,
+} from '../../../redux/reducers/productSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import ProductGrid from '../../../components/admin/Product/ProductGrid';
+import { getAllCategory } from '../../../redux/reducers/categorySlice';
+import { getAllBrands } from '../../../redux/reducers/brandSlice';
 
 const { RangePicker } = DatePicker;
 
-const STATUS = [
+const PRODUCT_STATUS = [
   { label: 'Đang bán', value: 'ACTIVE', color: 'green' },
   { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
   { label: 'Hết hàng', value: 'OUT', color: 'red' },
 ];
 
-// TODO: Thay bằng API thật
-async function mockFetch(params) {
-  const total = 42;
-  const items = Array.from({ length: params.pageSize }, (_, i) => {
-    const id = (params.page - 1) * params.pageSize + i + 1;
-    return {
-      _id: String(id),
-      name: `Sản phẩm ${id}`,
-      sku: `SKU-${id}`,
-      price: 199000 + (id % 7) * 10000,
-      brand: ['Apple', 'Samsung', 'Xiaomi', 'Sony'][id % 4],
-      category: ['Điện thoại', 'Tai nghe', 'Laptop', 'Phụ kiện'][id % 4],
-      status: STATUS[id % 3].value,
-      stock: [0, 3, 12, 52][id % 4],
-      createdAt: dayjs().subtract(id, 'day').toISOString(),
-      cover: `https://picsum.photos/seed/p${id}/400/300`,
-    };
-  });
-  return new Promise((r) => setTimeout(() => r({ items, total }), 250));
-}
+const ProductList = () => {
+  const [messageApi, contextHolderMessage] = message.useMessage();
+  const [modal, contextHolderModal] = Modal.useModal();
 
-export default function ProductList() {
+  const { products, meta: metaProducts } = useSelector(
+    (state) => state.products
+  );
+  const { categories } = useSelector((state) => state.categories);
+  const { brands } = useSelector((state) => state.brands);
+
+  const dispatch = useDispatch();
   // View state
   const [view, setView] = useState('table'); // "table" | "grid"
   const [loading, setLoading] = useState(false);
 
   // Filters
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState();
-  const [brand, setBrand] = useState();
+  const [category_id, setCategory_id] = useState();
+  const [brand_id, setBrand_id] = useState();
   const [status, setStatus] = useState();
   const [dateRange, setDateRange] = useState();
 
   // Paging/Sort
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(5);
   const [sorter, setSorter] = useState(); // { field, order }
 
   // Data
@@ -83,27 +82,31 @@ export default function ProductList() {
   const query = useMemo(
     () => ({
       q,
-      category,
-      brand,
+      category_id,
+      brand_id,
       status,
       dateFrom: dateRange?.[0]?.startOf('day').toISOString(),
       dateTo: dateRange?.[1]?.endOf('day').toISOString(),
       page,
-      pageSize,
+      limit: pageSize,
       sort: sorter?.order
-        ? `${sorter.field}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`
+        ? `${sorter.field}_${sorter.order === 'ascend' ? 'asc' : 'desc'}`
         : undefined,
     }),
-    [q, category, brand, status, dateRange, page, pageSize, sorter]
+    [q, category_id, brand_id, status, dateRange, page, pageSize, sorter]
   );
 
   // Fetch
   const fetchData = async (override = {}) => {
     setLoading(true);
     try {
-      const res = await mockFetch({ ...query, ...override });
-      setData(res.items);
-      setTotal(res.total);
+      console.log({ ...query, ...override });
+      const res = await dispatch(
+        getAllProducts({ ...query, ...override })
+      ).unwrap();
+      console.log(res);
+      setData(res.data);
+      setTotal(res.data?.length > 0 ? res?.meta?.totalItems : 0);
     } finally {
       setLoading(false);
     }
@@ -111,7 +114,12 @@ export default function ProductList() {
 
   useEffect(() => {
     fetchData(); /* eslint-disable-next-line */
-  }, [category, brand, status, dateRange, page, pageSize, sorter]);
+  }, [category_id, brand_id, status, dateRange, page, pageSize, sorter]);
+  // fetch categories, brands for filters
+  useEffect(() => {
+    dispatch(getAllCategory());
+    dispatch(getAllBrands());
+  }, [dispatch]);
 
   // Search debounce
   const dRef = useRef();
@@ -127,16 +135,16 @@ export default function ProductList() {
 
   const reset = () => {
     setQ('');
-    setCategory();
-    setBrand();
+    setCategory_id();
+    setBrand_id();
     setStatus();
     setDateRange();
     setPage(1);
     setSorter();
     fetchData({
       q: '',
-      category: undefined,
-      brand: undefined,
+      category_id: undefined,
+      brand_id: undefined,
       status: undefined,
       dateFrom: undefined,
       dateTo: undefined,
@@ -148,59 +156,65 @@ export default function ProductList() {
   // Table columns
   const columns = [
     {
+      title: 'ID',
+      dataIndex: '_id',
+      width: 40,
+      sorter: (a, b) => a._id - b._id,
+    },
+    {
       title: 'Sản phẩm',
       dataIndex: 'name',
       width: 120,
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, r) => (
         <>
-          {view === 'table' ? (
-            text
-          ) : (
-            <Space>
-              <img
-                src={r.cover}
-                alt={r.name}
-                style={{
-                  width: 44,
-                  height: 32,
-                  objectFit: 'cover',
-                  borderRadius: 6,
-                }}
-              />
-              <div>
-                <div style={{ fontWeight: 600 }}>{text}</div>
-                <div style={{ fontSize: 12, color: '#64748b' }}>{r.sku}</div>
-              </div>
-            </Space>
-          )}
+          <Space>
+            <img
+              src={r.images?.[0]?.img_url}
+              alt={r.name}
+              style={{
+                width: 32,
+                height: 32,
+                objectFit: 'contain',
+                borderRadius: 6,
+              }}
+            />
+            <div>
+              <div style={{ fontWeight: 600 }}>{text}</div>
+              <div style={{ fontSize: 12, color: '#64748b' }}>{r.sku}</div>
+            </div>
+          </Space>
         </>
       ),
     },
     {
       title: 'Giá',
-      dataIndex: 'price',
-      sorter: (a, b) => a.price - b.price,
-      width: 120,
+      dataIndex: 'min_price',
+      sorter: (a, b) => a.min_price - b.min_price,
+      width: 80,
       align: 'right',
       render: (v) => v.toLocaleString('vi-VN') + ' ₫',
     },
-    { title: 'Thương hiệu', dataIndex: 'brand', sorter: true, width: 140 },
     {
-      title: 'Kho',
-      dataIndex: 'stock',
-      sorter: (a, b) => a.stock - b.stock,
-      width: 100,
-      render: (v) => (
-        <Tag color={v === 0 ? 'red' : v < 5 ? 'orange' : 'green'}>{v}</Tag>
-      ),
+      title: 'Thương hiệu',
+      dataIndex: 'brand_id',
+      sorter: true,
+      width: 80,
+      render: (v) => v?.name || '',
+    },
+    {
+      title: 'Danh mục',
+      dataIndex: 'category_id',
+      sorter: true,
+      width: 80,
+      render: (v) => v?.name || '',
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
-      width: 140,
+      width: 80,
       render: (v) => {
-        const s = STATUS.find((x) => x.value === v);
+        const s = PRODUCT_STATUS.find((x) => x.value === v);
         return <Tag color={s?.color}>{s?.label}</Tag>;
       },
     },
@@ -208,23 +222,38 @@ export default function ProductList() {
       title: 'Tạo lúc',
       dataIndex: 'createdAt',
       sorter: true,
-      width: 160,
-      render: (v) => dayjs(v).format('DD/MM/YYYY'),
+      width: 100,
+      render: (v) => dayjs(v).format('DD/MM/YYYY HH:mm'),
     },
     {
       title: 'Thao tác',
-      width: 150,
+      width: 100,
       fixed: 'right',
       render: (_, r) => (
         <Space>
           <Tooltip title="Xem">
-            <Button size="small" icon={<EyeOutlined />} />
+            <Link to={`${r._id}/detail`}>
+              <Button size="small" icon={<EyeOutlined />} />
+            </Link>
           </Tooltip>
           <Tooltip title="Sửa">
-            <Button size="small" type="primary" ghost icon={<EditOutlined />} />
+            <Link to={`edit/${r._id}`}>
+              <Button
+                size="small"
+                type="primary"
+                ghost
+                icon={<EditOutlined />}
+              />
+            </Link>
+            {/* <Button size="small" type="primary" onClick={() => openEditPage(r._id)} ghost icon={<EditOutlined />} /> */}
           </Tooltip>
           <Tooltip title="Xoá">
-            <Button size="small" danger icon={<DeleteOutlined />} />
+            <Button
+              onClick={() => handleDeleteConfirm(r._id, r.name)}
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+            />
           </Tooltip>
         </Space>
       ),
@@ -252,200 +281,161 @@ export default function ProductList() {
     // tableLayout: tableLayout === 'unset' ? undefined : tableLayout,
   };
 
+  // modal delete
+  const handleDeleteConfirm = (id, name) => {
+    modal.confirm({
+      title: 'Xác nhận xoá',
+      content: `Bạn có chắc chắn muốn xoá sản phẩm id = ${id} (${name}) này không?`,
+      okText: 'Xoá',
+      okType: 'danger',
+      cancelText: 'Huỷ',
+      centered: true,
+      onOk: async () => {
+        try {
+          const result = await dispatch(
+            softDeleteProduct(parseInt(id, 10))
+          ).unwrap();
+          messageApi.success(`Xoá thành công! ID: ${result.data}`);
+          // refetch
+          fetchData();
+        } catch (error) {
+          messageApi.error(error.message || 'Xoá thất bại!');
+          console.error('Delete product error:', error);
+        }
+      },
+    });
+  };
+
   return (
-    <Space direction="vertical" style={{ display: 'block' }} size={12}>
-      {/* <Typography.Title level={4}>Danh sách sản phẩm</Typography.Title> */}
-      {/* Toolbar */}
-      <Row gutter={[8, 8]} align="middle">
-        <Col xs={24} md={10}>
-          <Input
-            allowClear
-            prefix={<SearchOutlined />}
-            placeholder="Tìm theo tên, SKU..."
-            value={q}
-            onChange={onSearchChange}
-          />
-        </Col>
-        <Col xs={12} md={4}>
-          <Select
-            allowClear
-            placeholder="Danh mục"
-            value={category}
-            onChange={setCategory}
-            options={[
-              { label: 'Điện thoại', value: 'Điện thoại' },
-              { label: 'Tai nghe', value: 'Tai nghe' },
-              { label: 'Laptop', value: 'Laptop' },
-              { label: 'Phụ kiện', value: 'Phụ kiện' },
-            ]}
-            style={{ width: '100%' }}
-          />
-        </Col>
-        <Col xs={12} md={4}>
-          <Select
-            allowClear
-            placeholder="Thương hiệu"
-            value={brand}
-            onChange={setBrand}
-            options={['Apple', 'Samsung', 'Xiaomi', 'Sony'].map((v) => ({
-              label: v,
-              value: v,
-            }))}
-            style={{ width: '100%' }}
-          />
-        </Col>
-        <Col xs={12} md={3}>
-          <Select
-            allowClear
-            placeholder="Trạng thái"
-            value={status}
-            onChange={setStatus}
-            options={STATUS.map((s) => ({ label: s.label, value: s.value }))}
-            style={{ width: '100%' }}
-          />
-        </Col>
-        <Col xs={12} md={6}>
-          <RangePicker
-            value={dateRange}
-            onChange={setDateRange}
-            style={{ width: '100%' }}
-          />
-        </Col>
+    <>
+      {contextHolderMessage}
+      {contextHolderModal}
 
-        <Col xs={24} md="auto" style={{ marginLeft: 'auto' }}>
-          <Space wrap>
-            <Button icon={<ReloadOutlined />} onClick={reset}>
-              Làm mới
-            </Button>
-            <Button type="primary" icon={<PlusOutlined />}>
-              <Link to="add">Thêm sản phẩm</Link>            
-            </Button>
-            <Segmented
-              value={view}
-              onChange={setView}
-              options={[
-                { label: 'Bảng', value: 'table', icon: <TableOutlined /> },
-                { label: 'Lưới', value: 'grid', icon: <AppstoreOutlined /> },
-              ]}
+      <Space direction="vertical" style={{ display: 'block' }} size={12}>
+        {/* <Typography.Title level={4}>Danh sách sản phẩm</Typography.Title> */}
+        {/* Toolbar */}
+        <Row gutter={[8, 8]} align="middle">
+          <Col xs={24} md={10}>
+            <Input
+              allowClear
+              prefix={<SearchOutlined />}
+              placeholder="Tìm theo tên, SKU..."
+              value={q}
+              onChange={onSearchChange}
             />
-          </Space>
-        </Col>
-      </Row>
-
-      <Divider style={{ margin: '10px 0' }} />
-
-      <Row gutter={[8, 8]} justify="center" align="middle">
-        <Col span={24} style={{ textAlign: 'center' }}>
-          <Typography.Title level={5} style={{ margin: 0 }}>
-            Danh sách sản phẩm
-          </Typography.Title>
-        </Col>
-
-        {/* hiển thị danh sách sản phẩm */}
-
-        <Col span={24}>
-          {/* Content */}
-          {view === 'table' ? (
-            <Table
-              rowKey="_id"
-              {...tableProps}
-              loading={loading}
-              columns={columns}
-              dataSource={data}
-              onChange={onTableChange}
-              pagination={{
-                total,
-                current: page,
-                pageSize,
-                showSizeChanger: true,
-                showTotal: (t) => `${t} sản phẩm`,
-              }}
-              scroll={{ x: '100%', y: 600 }}
+          </Col>
+          <Col xs={12} md={4}>
+            <Select
+              allowClear
+              placeholder="Danh mục"
+              value={category_id}
+              onChange={setCategory_id}
+              options={categories.map((c) => ({
+                label: c?.name,
+                value: c?._id,
+              }))}
+              style={{ width: '100%' }}
             />
-          ) : (
-            <Row gutter={[12, 12]}>
-              {data.map((p) => (
-                <Col defaultValue={24} xs={12} md={8} lg={6} xl={4} key={p._id}>
-                  <Card
-                    size="small"
-                    hoverable
-                    cover={
-                      <img
-                        src={p.cover}
-                        alt={p.name}
-                        style={{ height: 140, objectFit: 'cover' }}
-                      />
-                    }
-                    actions={[
-                      <EyeOutlined key="v" />,
-                      <EditOutlined key="e" />,
-                      <DeleteOutlined key="d" />,
-                    ]}
-                  >
-                    <Card.Meta
-                      title={<div style={{ fontWeight: 600 }}>{p.name}</div>}
-                      description={
-                        <Space
-                          direction="vertical"
-                          size={4}
-                          style={{ width: '100%' }}
-                        >
-                          <div
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                            }}
-                          >
-                            <span>{p.brand}</span>
-                            <span>{p.price.toLocaleString('vi-VN')} ₫</span>
-                          </div>
-                          <Space>
-                            <Tag
-                              color={
-                                p.stock === 0
-                                  ? 'red'
-                                  : p.stock < 5
-                                  ? 'orange'
-                                  : 'green'
-                              }
-                            >
-                              Kho: {p.stock}
-                            </Tag>
-                            <Tag
-                              color={
-                                STATUS.find((s) => s.value === p.status)?.color
-                              }
-                            >
-                              {STATUS.find((s) => s.value === p.status)?.label}
-                            </Tag>
-                          </Space>
-                        </Space>
-                      }
-                    />
-                  </Card>
-                </Col>
-              ))}
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Space>
-                  <Button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page <= 1}
-                  >
-                    Trang trước
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={page * pageSize >= total}
-                  >
-                    Trang sau
-                  </Button>
-                </Space>
-              </Col>
-            </Row>
-          )}
-        </Col>
-      </Row>
-    </Space>
+          </Col>
+          <Col xs={12} md={4}>
+            <Select
+              allowClear
+              placeholder="Thương hiệu"
+              value={brand_id}
+              onChange={setBrand_id}
+              options={brands.map((b) => ({ label: b?.name, value: b?._id }))}
+              style={{ width: '100%' }}
+            />
+          </Col>
+          <Col xs={12} md={3}>
+            <Select
+              allowClear
+              placeholder="Trạng thái"
+              value={status}
+              onChange={setStatus}
+              options={PRODUCT_STATUS.map((s) => ({
+                label: s.label,
+                value: s.value,
+              }))}
+              style={{ width: '100%' }}
+            />
+          </Col>
+          <Col xs={12} md={6}>
+            <RangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              style={{ width: '100%' }}
+            />
+          </Col>
+
+          <Col xs={24} md="auto" style={{ marginLeft: 'auto' }}>
+            <Space wrap>
+              <Button icon={<ReloadOutlined />} onClick={reset}>
+                Làm mới
+              </Button>
+              <Button type="primary" icon={<PlusOutlined />}>
+                <Link to="add">Thêm sản phẩm</Link>
+              </Button>
+              <Segmented
+                value={view}
+                onChange={setView}
+                options={[
+                  { label: 'Bảng', value: 'table', icon: <TableOutlined /> },
+                  { label: 'Lưới', value: 'grid', icon: <AppstoreOutlined /> },
+                ]}
+              />
+            </Space>
+          </Col>
+        </Row>
+
+        <Divider style={{ margin: '10px 0' }} />
+
+        <Row gutter={[8, 8]} justify="center" align="middle">
+          <Col span={24} style={{ textAlign: 'center' }}>
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              Danh sách sản phẩm
+            </Typography.Title>
+          </Col>
+
+          {/* hiển thị danh sách sản phẩm */}
+
+          <Col span={24}>
+            {/* Content */}
+            {view === 'table' ? (
+              <Table
+                rowKey="_id"
+                {...tableProps}
+                loading={loading}
+                columns={columns}
+                dataSource={data}
+                onChange={onTableChange}
+                pagination={{
+                  total,
+                  current: page,
+                  pageSize,
+                  showSizeChanger: true,
+                  showTotal: (t) => `${t} sản phẩm`,
+                }}
+                scroll={{ x: '100%', y: 600 }}
+              />
+            ) : (
+              <ProductGrid
+                products={data}
+                page={page}
+                pageSize={pageSize}
+                meta={products?.meta}
+                loading={loading}
+                onPageChange={(p) => setPage(p)}
+                onPageSizeChange={(size) => setPageSize(size)}
+                onDelete={handleDeleteConfirm}
+                STATUS={PRODUCT_STATUS}
+              />
+            )}
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
-}
+};
+
+export default ProductList;

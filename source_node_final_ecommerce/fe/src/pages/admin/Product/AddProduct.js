@@ -12,11 +12,13 @@ import UploadImagesProduct from '../../../components/admin/Product/UploadImagesP
 import UploadThumbnailProduct from '../../../components/admin/Product/UploadThumbnailProduct';
 import { addProduct } from '../../../redux/reducers/productSlice'; 
 import { getAllCategory } from '../../../redux/reducers/categorySlice';
+import { useGlobalLoading } from '../../../context/LoadingContext';
 // import axios from "axios";
 
 const { Option } = Select;
 
 const AddProduct = () => {
+  const { setSpinning } = useGlobalLoading();
   const [messageApi, contextHolder] = message.useMessage();
   const [formAdd] = Form.useForm();
   const navigate = useNavigate();
@@ -31,12 +33,23 @@ const AddProduct = () => {
   );
   const dispatch = useDispatch();
 
+
+  // lay tat ca danh muc
   useEffect(() => {
-    dispatch(getAllCategory());
+    dispatch(getAllCategory({ limit: 100}));
   }, [dispatch]);
+
+  // lay tat ca thuong hieu
   useEffect(() => {
-    dispatch(getAllBrands());
+    dispatch(getAllBrands({ limit: 100}));
   }, [dispatch]);
+
+  const getAttributeByCategory = (categoryId) => {
+    if (!categoryId) return [];
+    const category = categories.find((cat) => cat._id === categoryId);
+    console.log('Category selected:', category);
+    return category ? category.attributes : [];
+  }
 
   const [thumbnail, setThumbnail] = useState(null);
   const [images, setImages] = useState([]);
@@ -49,13 +62,22 @@ const AddProduct = () => {
     variants: false,
   });
   const [isAdding, setIsAdding] = useState(false);
+  const [categoryAttributes, setCategoryAttributes] = useState([]);
 
   const handleSubmit = async () => {
     const newErrors = {
       specs: specs.length === 0 || specs.some((s) => !s.key || !s.value),
       thumbnail: !thumbnail,
       images: images.length < 3,
-      variants: variants.length === 0,
+      variants: variants.length < 2 || variants.some((v) => {
+        // kiểm tra các thuộc tính động
+        for (const attr of categoryAttributes) {
+          if (!v.attributes?.[attr.code]) {
+            return true;
+          }
+        }
+        return false;
+      }),
     };
 
     setErrors(newErrors);
@@ -77,6 +99,7 @@ const AddProduct = () => {
     formData.append('category_id', productInfo.category_id);
     formData.append('description', productInfo.description);
     formData.append('status', productInfo.status);
+    console.log('Product Info:', JSON.stringify(specs), JSON.stringify(variants));
     formData.append('specifications', JSON.stringify(specs)); // object phải stringify
     formData.append('variants', JSON.stringify(variants));
 
@@ -90,22 +113,28 @@ const AddProduct = () => {
 
     // set loading state
     setIsAdding(true);
+    setSpinning(true);
+    console.log('Submitting product with data:', formData);
     try {
-      await dispatch(addProduct(formData)).unwrap();
-      console.log('✅ Submit payload:', formData);
-      messageApi.success(messageAdd || 'Thêm sản phẩm thành công!');
-      formAdd.resetFields();
-      setThumbnail(null);
-      setImages([]);
-      setVariants([]);
-      setSpecs([]);
 
-      // navigate('/admin/products'); 
+      const result = await dispatch(addProduct(formData)).unwrap();
+      messageApi.success({
+        content: result.message || 'Thêm sản phẩm thành công!',
+        duration: 2,
+      });
+      // formAdd.resetFields();
+      // setThumbnail(null);
+      // setImages([]);
+      // setVariants([]);
+      // setSpecs([]);
+
+      navigate('/admin/products'); 
     } catch (error) {
-      messageApi.error(messageAdd || 'Đã xảy ra lỗi khi lưu sản phẩm');
+      messageApi.error(error.message || 'Đã xảy ra lỗi khi lưu sản phẩm');
       console.error('Error saving product:', error);
     } finally {
       setIsAdding(false);
+      setSpinning(false);
     }
     // await axios.post("/api/products", payload);
   };
@@ -192,6 +221,7 @@ const AddProduct = () => {
                     label: item.name,
                     value: item._id,
                   }))}
+                  onChange={(val) => setCategoryAttributes(getAttributeByCategory(val))}
                 />
               </Form.Item>
             </Col>
@@ -240,6 +270,7 @@ const AddProduct = () => {
             variants={variants}
             setVariants={setVariants}
             showError={errors.variants}
+            categoryAttributes={categoryAttributes}
           />
         </div>
         {/* ================= Trạng thái & Lưu ================= */}
