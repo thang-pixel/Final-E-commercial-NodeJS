@@ -24,7 +24,7 @@ function ErrorPage({ role, status, message }) {
           </Link>
         ) : (
           <Link
-            to={role === "ADMIN" ? "/admin" : "/"}
+            to={role === "admin" ? "/admin" : "/"}
             className="inline-block px-6 py-3 bg-teal-500 text-white font-bold rounded-lg shadow-md hover:bg-teal-600 transition-colors duration-300 ease-in-out"
           >
             Quay về trang chủ

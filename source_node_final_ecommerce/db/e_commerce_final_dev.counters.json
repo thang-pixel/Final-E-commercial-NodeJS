@@ -1,0 +1,40 @@
+[{
+  "_id": {
+    "$oid": "68e22c2db6a0ade25e09164a"
+  },
+  "id": "brand_seq",
+  "reference_value": null,
+  "seq": 16
+},
+{
+  "_id": {
+    "$oid": "68e23594b6a0ade25e09164b"
+  },
+  "id": "category_seq",
+  "reference_value": null,
+  "seq": 19
+},
+{
+  "_id": {
+    "$oid": "6905897ead16073c5862336f"
+  },
+  "reference_value": null,
+  "id": "product_seq",
+  "seq": 18
+},
+{
+  "_id": {
+    "$oid": "6925209184ef3a0c41fd5249"
+  },
+  "reference_value": null,
+  "id": "user_seq",
+  "seq": 1
+},
+{
+  "_id": {
+    "$oid": "69272ad622434c9f9ea0b7e4"
+  },
+  "reference_value": null,
+  "id": "product_variant_seq",
+  "seq": 33
+}]

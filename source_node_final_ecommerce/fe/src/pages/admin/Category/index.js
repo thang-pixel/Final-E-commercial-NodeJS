@@ -1,7 +1,7 @@
 // src/pages/admin/Product/index.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Button, 
+  Button,
   Col,
   DatePicker,
   Divider,
@@ -12,7 +12,7 @@ import {
   Segmented,
   Select,
   Skeleton,
-  Space, 
+  Space,
   Tag,
   Tooltip,
   Typography,
@@ -30,10 +30,13 @@ import {
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCategory, getAll } from '../../../redux/reducers/categorySlice';
+import {
+  deleteCategory,
+  getAllCategory,
+} from '../../../redux/reducers/categorySlice';
 import { API_DOMAIN } from '../../../constants/apiDomain';
 import CategoryTable from '../../../components/admin/Category/CategoryTable';
-import CategoryGrid from '../../../components/admin/Category/CategoryGrid'; 
+import CategoryGrid from '../../../components/admin/Category/CategoryGrid';
 const STATUS = [
   { label: 'Đang hoạt động', value: 'ACTIVE', color: 'green' },
   { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
@@ -77,7 +80,7 @@ const CategoryList = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAll(query));
+    dispatch(getAllCategory(query));
   }, [dispatch, query]);
 
   // Search debounce
@@ -97,7 +100,7 @@ const CategoryList = () => {
     setDateRange();
     setPage(1);
     setSorter();
-    dispatch(getAll({}));
+    dispatch(getAllCategory({}));
   };
 
   // modal delete
@@ -112,7 +115,7 @@ const CategoryList = () => {
       onOk: async () => {
         try {
           await dispatch(deleteCategory(id)).unwrap();
-          messageApi.success('Đã xoá thương hiệu thành công!');
+          messageApi.success('Đã xoá danh mục thành công!');
         } catch (error) {
           messageApi.error(error.message || 'Xoá thất bại!');
         }
@@ -122,6 +125,8 @@ const CategoryList = () => {
 
   // Table columns
   const columns = [
+    { title: 'ID', dataIndex: '_id', width: 50, sorter: (a, b) => a._id - b._id },
+
     {
       title: 'Tên danh mục',
       dataIndex: 'name',
@@ -130,16 +135,28 @@ const CategoryList = () => {
       render: (text, r) => (
         <>
           {view === 'table' ? (
-            text
+            <div className="flex items-center justify-between gap-1">
+              {text}
+              <img
+                src={r.image_url}
+                alt={r.name}
+                style={{
+                  width: 32,
+                  height: 32,
+                  objectFit: 'contain',
+                  borderRadius: 6,
+                }}
+              />
+            </div>
           ) : (
             <Space>
               <img
-                src={API_DOMAIN + r.image}
+                src={r.image_url}
                 alt={r.name}
                 style={{
                   width: 44,
                   height: 32,
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                   borderRadius: 6,
                 }}
               />
@@ -153,7 +170,7 @@ const CategoryList = () => {
       ),
     },
     { title: 'Mô tả', dataIndex: 'description', width: 160 },
-    { title: 'Danh mục cha', dataIndex: 'parent_id', width: 140 },
+    { title: 'Danh mục cha', dataIndex: 'parent_id', width: 80 },
     {
       title: 'Số sản phẩm',
       dataIndex: 'productCount',
@@ -174,7 +191,7 @@ const CategoryList = () => {
       dataIndex: 'createdAt',
       sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
       width: 160,
-      render: (v) => dayjs(v).format('DD/MM/YYYY'),
+      render: (v) => dayjs(v).format('DD/MM/YYYY hh:mm A'),
     },
     {
       title: 'Thao tác',

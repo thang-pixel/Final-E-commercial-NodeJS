@@ -13,12 +13,13 @@ import {
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { getAll } from '../../../redux/reducers/categorySlice';
+import { getAllCategory } from '../../../redux/reducers/categorySlice';
 import { addBrand } from '../../../redux/reducers/brandSlice';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const AddBrand = () => {
+
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -35,8 +36,15 @@ const AddBrand = () => {
     valuesSubmit.image = values.image?.[0]?.originFileObj || null;
     try {
       const result = await dispatch(addBrand(valuesSubmit)).unwrap();
-      messageApi.success(result.message || 'Thêm thương hiệu thành công!');
+      
       form.resetFields();
+      messageApi.success({
+        content: `Thêm thương hiệu "${result?.data?.name}" thành công!`,
+        duration: 2,
+        onClose: () => {
+          navigate('/admin/brands');
+        },
+      });
 
     } catch (error) {
       messageApi.error(error.message || 'Thêm thương hiệu thất bại!');
@@ -50,7 +58,7 @@ const AddBrand = () => {
 
   // load categories for selection
   useEffect(() => {
-    dispatch(getAll());
+    dispatch(getAllCategory());
   }, [dispatch]);
 
   return (

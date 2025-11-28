@@ -1,0 +1,1204 @@
+[{
+  "_id": 1,
+  "product_id": 3,
+  "original_price": 8000000,
+  "price": 11000000,
+  "stock": 100,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "6928124b874067980422d8eb"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "6928124b874067980422d8ec"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "3 GB",
+      "_id": {
+        "$oid": "6928124b874067980422d8ed"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-26T16:29:10.856Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T08:56:43.458Z"
+  },
+  "SKU": "P3-COLBLA-STO128-RAM3GB",
+  "__v": 0
+},
+{
+  "_id": 2,
+  "product_id": 3,
+  "original_price": 8500000,
+  "price": 10000000,
+  "stock": 100,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "GREY",
+      "_id": {
+        "$oid": "69276409a933ce26c03733d5"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "69276409a933ce26c03733d6"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "3 GB",
+      "_id": {
+        "$oid": "69276409a933ce26c03733d7"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-26T19:00:58.418Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T07:41:00.693Z"
+  },
+  "__v": 0,
+  "SKU": "P3-COLGRE-STO128-RAM3GB"
+},
+{
+  "_id": 3,
+  "product_id": 3,
+  "SKU": "P3-COLRED-STO128-RAM3GB",
+  "original_price": 8000000,
+  "price": 10000000,
+  "stock": 1000,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "RED",
+      "_id": {
+        "$oid": "6927579dd940b513fa026195"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "6927579dd940b513fa026196"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "3 GB",
+      "_id": {
+        "$oid": "6927579dd940b513fa026197"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": true,
+  "createdAt": {
+    "$date": "2025-11-26T19:14:25.721Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-26T20:36:41.550Z"
+  },
+  "__v": 0,
+  "deletedAt": {
+    "$date": "2025-11-26T20:36:41.548Z"
+  }
+},
+{
+  "_id": 10,
+  "product_id": 4,
+  "SKU": "P4-COLBLACK-STO64G-RAM4GB",
+  "original_price": 11000000,
+  "price": 12000000,
+  "stock": 10,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "692815df874067980422d93c"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "64 GB",
+      "_id": {
+        "$oid": "692815df874067980422d93d"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "4 GB",
+      "_id": {
+        "$oid": "692815df874067980422d93e"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-27T09:11:59.801Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:11:59.801Z"
+  }
+},
+{
+  "_id": 11,
+  "product_id": 4,
+  "SKU": "P4-COLRED-STO64GB-RAM4GB",
+  "original_price": 11000000,
+  "price": 11500000,
+  "stock": 10,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "RED",
+      "_id": {
+        "$oid": "692815df874067980422d93f"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "64 GB",
+      "_id": {
+        "$oid": "692815df874067980422d940"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "4 GB",
+      "_id": {
+        "$oid": "692815df874067980422d941"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-27T09:11:59.801Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:11:59.801Z"
+  }
+},
+{
+  "_id": 13,
+  "product_id": 5,
+  "SKU": "P5-COLORRED-STORAGE256-RAM6GB",
+  "original_price": 14000000,
+  "price": 16000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "RED",
+      "_id": {
+        "$oid": "69281fee97d73e0ac3b2e02e"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69281fee97d73e0ac3b2e02f"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "69281fee97d73e0ac3b2e030"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-27T09:24:00.001Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:54:54.113Z"
+  }
+},
+{
+  "_id": 14,
+  "product_id": 5,
+  "SKU": "P5-COLBLUE-STO128GB-RAM6GB",
+  "original_price": 12000000,
+  "price": 14000000,
+  "stock": 10,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLUE",
+      "_id": {
+        "$oid": "692818af874067980422d95c"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "692818af874067980422d95d"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "692818af874067980422d95e"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-27T09:24:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:24:00.000Z"
+  }
+},
+{
+  "_id": 4,
+  "product_id": 5,
+  "SKU": "P5-COLORRED-STORAGE128-RAM6GB",
+  "original_price": 12000000,
+  "price": 14500000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "RED",
+      "_id": {
+        "$oid": "69281eb197d73e0ac3b2dfec"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "69281eb197d73e0ac3b2dfed"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "69281eb197d73e0ac3b2dfee"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T09:49:37.597Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:49:37.597Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 5,
+  "product_id": 6,
+  "SKU": "P6-COLORBLA-STORAGE256-RAM6GB",
+  "original_price": 15000000,
+  "price": 17000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "69282512f51795c635b03d02"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69282512f51795c635b03d03"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "69282512f51795c635b03d04"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T10:14:31.970Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:16:50.423Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 6,
+  "product_id": 6,
+  "SKU": "P6-COLORBLU-STORAGE256-RAM6GB",
+  "original_price": 16000000,
+  "price": 18000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLUE",
+      "_id": {
+        "$oid": "69282502f51795c635b03ce1"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69282502f51795c635b03ce2"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "69282502f51795c635b03ce3"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T10:16:34.376Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:16:34.376Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 7,
+  "product_id": 6,
+  "SKU": "P6-COLORBLA-STORAGE128-RAM6GB",
+  "original_price": 14000000,
+  "price": 16000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "6928273ae8971b099005d551"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "6928273ae8971b099005d552"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "6928273ae8971b099005d553"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T10:26:02.109Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:26:02.109Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 8,
+  "product_id": 9,
+  "SKU": "P9-COLBLACK-STO256GB",
+  "original_price": 28000000,
+  "price": 32000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "692835b04096f5510aadc897"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692835b04096f5510aadc898"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:27:44.177Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:27:44.177Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 9,
+  "product_id": 9,
+  "SKU": "P9-COLORANGE-STO512GB",
+  "original_price": 35000000,
+  "price": 40000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "ORANGE",
+      "_id": {
+        "$oid": "692835b04096f5510aadc89c"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "692835b04096f5510aadc89d"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:27:44.187Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:27:44.187Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 16,
+  "product_id": 10,
+  "SKU": "P10-COLPINK-STO256GB",
+  "original_price": 20000000,
+  "price": 22000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "PINK",
+      "_id": {
+        "$oid": "692837e94096f5510aadc8fc"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692837e94096f5510aadc8fd"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:37:13.996Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:37:13.996Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 17,
+  "product_id": 10,
+  "SKU": "P10-COLBLUE-STO256GB",
+  "original_price": 22000000,
+  "price": 25000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLUE",
+      "_id": {
+        "$oid": "692838064096f5510aadc910"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692838064096f5510aadc911"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:37:42.599Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:37:42.599Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 18,
+  "product_id": 11,
+  "SKU": "P11-COLWHITE-STO256GB",
+  "original_price": 9000000,
+  "price": 12000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "WHITE",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca13"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca14"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:57:14.261Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:57:14.261Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 19,
+  "product_id": 11,
+  "SKU": "P11-COLBLACK-STO256GB",
+  "original_price": 9000000,
+  "price": 12000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca18"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca19"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:57:14.270Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:57:14.270Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 20,
+  "product_id": 12,
+  "SKU": "P12-COLBLUE-STO128GB",
+  "original_price": 12000000,
+  "price": 14000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLUE",
+      "_id": {
+        "$oid": "69283e304096f5510aadca46"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "128 GB",
+      "_id": {
+        "$oid": "69283e304096f5510aadca47"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:04:00.448Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:04:00.448Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 21,
+  "product_id": 12,
+  "SKU": "P12-COLBLACK-STO256GB",
+  "original_price": 14000000,
+  "price": 17000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "69283e304096f5510aadca4b"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "69283e304096f5510aadca4c"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:04:00.453Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:04:00.453Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 22,
+  "product_id": 13,
+  "SKU": "P13-STO512GB-RAM16GB",
+  "original_price": 35000000,
+  "price": 38000000,
+  "stock": 4,
+  "image": "",
+  "attributes": [
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "692845274096f5510aadcb04"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692845274096f5510aadcb05"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:33:43.343Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:33:43.343Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 23,
+  "product_id": 13,
+  "SKU": "P13-STO512GB-RAM24GB",
+  "original_price": 4000000,
+  "price": 45000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "692845274096f5510aadcb09"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "24 GB",
+      "_id": {
+        "$oid": "692845274096f5510aadcb0a"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:33:43.353Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:33:43.353Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 24,
+  "product_id": 14,
+  "SKU": "P14-BRAHP-RAM16GB-COLGREY",
+  "original_price": 10000000,
+  "price": 14000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "brand",
+      "value": "HP",
+      "_id": {
+        "$oid": "692849074096f5510aadcb26"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692849074096f5510aadcb27"
+      }
+    },
+    {
+      "code": "color",
+      "value": "GREY",
+      "_id": {
+        "$oid": "692849074096f5510aadcb28"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:50:15.413Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:50:15.413Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 25,
+  "product_id": 14,
+  "SKU": "P14-BRAHP-RAM32GB-COLBLACK",
+  "original_price": 14000000,
+  "price": 18000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "brand",
+      "value": "HP",
+      "_id": {
+        "$oid": "692849074096f5510aadcb2c"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "32 GB",
+      "_id": {
+        "$oid": "692849074096f5510aadcb2d"
+      }
+    },
+    {
+      "code": "color",
+      "value": "BLACK",
+      "_id": {
+        "$oid": "692849074096f5510aadcb2e"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:50:15.420Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:50:15.420Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 26,
+  "product_id": 15,
+  "SKU": "P15-BRAMACBOOK-RAM16GB-COLNAVY",
+  "original_price": 20000000,
+  "price": 25000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "brand",
+      "value": "Macbook",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb63"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb64"
+      }
+    },
+    {
+      "code": "color",
+      "value": "NAVY",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb65"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:01:40.129Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:01:40.129Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 27,
+  "product_id": 15,
+  "SKU": "P15-BRAMACBOOK-RAM32GB-COLYELLOW",
+  "original_price": 20000000,
+  "price": 25000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "brand",
+      "value": "Macbook",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb69"
+      }
+    },
+    {
+      "code": "ram",
+      "value": "32 GB",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb6a"
+      }
+    },
+    {
+      "code": "color",
+      "value": "YELLOW",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb6b"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:01:40.135Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:01:40.135Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 28,
+  "product_id": 16,
+  "SKU": "P16-RAM16GB-COLGREY-STO512GB",
+  "original_price": 10000000,
+  "price": 13000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbd9"
+      }
+    },
+    {
+      "code": "color",
+      "value": "GREY",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbda"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbdb"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:13:19.127Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:13:19.127Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 29,
+  "product_id": 16,
+  "SKU": "P16-RAM32GB-COLGREY-STO512GB",
+  "original_price": 13000000,
+  "price": 16000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "32 GB",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbdf"
+      }
+    },
+    {
+      "code": "color",
+      "value": "GREY",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbe0"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbe1"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:13:19.136Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:13:19.136Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 30,
+  "product_id": 17,
+  "SKU": "P17-RAM16GB-COLNAVY-STO256GB",
+  "original_price": 17000000,
+  "price": 20000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc52"
+      }
+    },
+    {
+      "code": "color",
+      "value": "NAVY",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc53"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc54"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:31:51.740Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:31:51.740Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 31,
+  "product_id": 17,
+  "SKU": "P17-RAM16GB-COLVÀNGDỒNG-STO512GB",
+  "original_price": 20000000,
+  "price": 25000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc58"
+      }
+    },
+    {
+      "code": "color",
+      "value": "Vàng dồng",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc59"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "512 GB",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc5a"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:31:51.745Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:31:51.745Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 32,
+  "product_id": 18,
+  "SKU": "P18-RAM16GB-COLYELLOW-STO256GB",
+  "original_price": 22000000,
+  "price": 26000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc76"
+      }
+    },
+    {
+      "code": "color",
+      "value": "YELLOW",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc77"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc78"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:39:49.538Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:39:49.538Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 33,
+  "product_id": 18,
+  "SKU": "P18-RAM16GB-COLNAVY-STO256GB",
+  "original_price": 22000000,
+  "price": 26000000,
+  "stock": 5,
+  "image": "",
+  "attributes": [
+    {
+      "code": "ram",
+      "value": "16 GB",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc7c"
+      }
+    },
+    {
+      "code": "color",
+      "value": "NAVY",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc7d"
+      }
+    },
+    {
+      "code": "storage",
+      "value": "256 GB",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc7e"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:39:49.543Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:39:49.543Z"
+  },
+  "__v": 0
+}]

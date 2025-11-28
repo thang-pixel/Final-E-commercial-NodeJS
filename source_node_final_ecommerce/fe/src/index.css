@@ -2,5 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* custom styles menu admin cho ant design */
-/* --- Mặc định item --- */
+
+:root {
+  --color-primary: #2bddf4; /* aqua chủ đạo */
+  --color-primary-dark: #07d3d3; /* aqua đậm */
+  --color-primary-light: #aaf6ff; /* aqua nhạt hơn */
+  --color-primary-lighter: #e4fbff; /* nền siêu nhẹ */
+  --color-white: #ffffff; 
+  --color-secondary: #e2e2e2; /* màu phụ (light grey) */
+  --box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;;
+
+  /* Gradient dùng chung */
+  --gradient-primary: linear-gradient(
+    120deg,
+    var(--color-primary-light),
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+  /* Gradient nền sáng dịu */
+  --gradient-soft: radial-gradient(
+    circle at top left,
+    var(--color-primary-light) 20%,
+    var(--color-primary-lighter) 80%,
+    #ffffff 90%
+  );
+  
+  --color-bg: #f5fbfb; /* nền chung */
+  --color-text: #023039; /* chữ màu đậm cho dễ đọc */
+  --color-white: #ffffff;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.box-ra8-p8 {
+  padding: 8px;
+  box-shadow: var(--box-shadow);
+  border-radius: 8px;
+}

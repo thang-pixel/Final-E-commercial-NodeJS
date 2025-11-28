@@ -1,0 +1,52 @@
+[{
+  "_id": 1,
+  "full_name": "Trần Thuyên",
+  "username": "tranthuyen2222",
+  "email": "52300070@gmail.com",
+  "phone": "0373436166",
+  "password": "$2b$10$j2SxzpYKP39CWIXaLd4UgeG4IKs/X969iHgSnCM2WSLiJS8CRnUZC",
+  "role": "customer",
+  "status": "active",
+  "provider": "local",
+  "point": 0,
+  "addresses": [
+    {
+      "name": "Le Van Luong, Tan Phong, Quan 7",
+      "is_default": true
+    },
+    {
+      "name": "Nguyen Hữu Thọ, Tan Hưng, Quan 7",
+      "is_default": false
+    }
+  ],
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-09-11T15:50:49.789Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-11T15:50:49.789Z"
+  },
+  "__v": 0
+},
+{
+  "_id": 3,
+  "full_name": "Trần Thuyên",
+  "username": "tranth",
+  "email": "52300073@gmail.com",
+  "phone": "0373436168",
+  "password": "$2b$10$LaqSyKaCoqNorv4bheBRXuv28uoWdDV8FBxn6UWl9tn2ZFGe41oG6",
+  "role": "customer",
+  "status": "active",
+  "provider": "local",
+  "point": 0,
+  "avatar": "",
+  "deleted": false,
+  "addresses": [],
+  "createdAt": {
+    "$date": "2025-09-11T16:40:39.861Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-11T16:40:39.861Z"
+  },
+  "__v": 0
+}]

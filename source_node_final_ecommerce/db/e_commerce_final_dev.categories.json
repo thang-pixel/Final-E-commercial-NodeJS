@@ -1,0 +1,242 @@
+[{
+  "_id": 11,
+  "name": "Điện thoại",
+  "description": "Điện thoại",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "color",
+      "label": "Màu sắc",
+      "type": "color"
+    },
+    {
+      "code": "storage",
+      "label": "Dung lượng",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T05:11:48.784Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:26:56.748Z"
+  },
+  "slug": "dien-thoai",
+  "__v": 0,
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764047507/ecommerce-nodejs-final/1764047507122-smartphone.jpg"
+},
+{
+  "_id": 12,
+  "name": "Đồng hồ thông minh",
+  "description": "Đồng hồ thông minh",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "color",
+      "label": "Màu sắc",
+      "type": "color"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T05:14:06.192Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-25T05:22:49.297Z"
+  },
+  "slug": "dong-ho-thong-minh",
+  "__v": 0,
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764047644/ecommerce-nodejs-final/1764047644012-smartclock.jpg"
+},
+{
+  "_id": 13,
+  "name": "Điện tử",
+  "description": "Danh mục điện tử: điện thoại, laptop, máy tính bảng, PC, đồng hồ, thiết bị,...\nEDIT CATE OK",
+  "parent_id": null,
+  "attributes": [
+    {
+      "code": "color",
+      "label": "Màu sắc",
+      "type": "color"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T05:22:39.400Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-25T06:50:16.878Z"
+  },
+  "slug": "dien-tu",
+  "__v": 0,
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764048157/ecommerce-nodejs-final/1764048157911-electronic.jpg"
+},
+{
+  "_id": 14,
+  "name": "Desktop",
+  "description": "Máy tính để bàn",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "storage",
+      "label": "Ổ cứng",
+      "type": "select"
+    },
+    {
+      "code": "ram",
+      "label": "RAM",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T05:29:17.681Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:28:47.379Z"
+  },
+  "slug": "desktop",
+  "__v": 0,
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764048555/ecommerce-nodejs-final/1764048554673-PC.jpg"
+},
+{
+  "_id": 15,
+  "name": "Laptop",
+  "description": "Máy tính xách tay",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "ram",
+      "label": "RAM",
+      "type": "select"
+    },
+    {
+      "code": "color",
+      "label": "Màu sắc",
+      "type": "color"
+    },
+    {
+      "code": "storage",
+      "label": "Ổ cứng",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T05:35:34.850Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:07:30.183Z"
+  },
+  "slug": "laptop",
+  "__v": 0,
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764048927/ecommerce-nodejs-final/1764048923239-laptop.jpg"
+},
+{
+  "_id": 16,
+  "name": "Phụ kiện điện tử",
+  "description": "Phụ kiện như: tai nghe, chuột, bàn phím, ốp lưng, ",
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764056670/ecommerce-nodejs-final/1764056670641-phukiendienthoai.jpg",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "color",
+      "label": "Màu sắc",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T07:44:32.332Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-25T07:44:32.332Z"
+  },
+  "slug": "phu-kien-dien-tu",
+  "__v": 0
+},
+{
+  "_id": 17,
+  "name": "Iphone 15 series",
+  "description": "ee",
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764061940/ecommerce-nodejs-final/1764061938405-xiaomi.jpg",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "e",
+      "label": "e",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": true,
+  "createdAt": {
+    "$date": "2025-11-25T09:12:21.915Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-25T09:46:37.987Z"
+  },
+  "slug": "iphone-15-series",
+  "__v": 0,
+  "deletedAt": {
+    "$date": "2025-11-25T09:46:37.986Z"
+  }
+},
+{
+  "_id": 18,
+  "name": "Cate đã có brand",
+  "description": "eee",
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764062775/ecommerce-nodejs-final/1764062772646-xiaomi.jpg",
+  "parent_id": null,
+  "attributes": [
+    {
+      "code": "e",
+      "label": "e",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-25T09:26:17.251Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:06:47.694Z"
+  },
+  "slug": "cate-da-co-brand",
+  "__v": 0,
+  "deletedAt": {
+    "$date": "2025-11-25T09:44:25.683Z"
+  }
+},
+{
+  "_id": 19,
+  "name": "Màn hình",
+  "description": "Màn hình máy tính PC, laptop",
+  "image_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764245866/ecommerce-nodejs-final/1764245868292-monitor.jpg",
+  "parent_id": 13,
+  "attributes": [
+    {
+      "code": "Screen",
+      "label": "Kích thước màn hình",
+      "type": "select"
+    }
+  ],
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:17:50.500Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:17:50.500Z"
+  },
+  "slug": "man-hinh",
+  "__v": 0
+}]

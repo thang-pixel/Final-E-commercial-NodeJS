@@ -1,6 +1,6 @@
 .layout-customer__header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 80px !important;
+    /* height: 80px !important; */
 }
 .layout-customer__nav {
     /* background-color: rgb(0, 255, 26)!important; */
@@ -9,7 +9,7 @@
 .layout-customer__main {
     padding-top: 100px !important;
     min-height: calc(100vh - 100px);
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
 }
 
 .layout-customer__nav--menu {
@@ -45,6 +45,51 @@
 .nav-item--account:hover .menuProfile {
     display: block !important;
 }
+.menuProfile-modern {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    padding: 8px 0;
+    min-width: 180px;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+.menuProfile-modern.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+.menuProfile-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    border: none;
+    background: none;
+}
+.menuProfile-item:hover {
+    background: #e0f7fa;
+    color: #0288d1;
+    transform: scale(1.03);
+}
+.arrow-down {
+    display: inline-block;
+    margin-left: 4px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+    transition: transform 0.3s;
+}
+.arrow-down.open {
+    transform: rotate(180deg);
+}
 
 @media (min-width: 768px) {
     .layout-customer__nav--menu {
@@ -76,4 +121,34 @@
     .layout-customer__nav--hamburger {
         display: block;
     }
+}
+
+
+/* cate list */
+.menuCategoryItem{
+    position: relative;
+    transition: background-color 0.5s ease;
+}
+
+.menuCategoryItem:hover {
+    background-color: #e0f7fa;
+    cursor: pointer;
+} 
+
+/* ✅ Sửa selector: bỏ .menuCategoryItem thứ 2 */
+.menuCategoryItem:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px; /* ✅ Giảm width để đẹp hơn */
+    height: 100%;
+    background: #0288d1; /* ✅ Chỉ cần background */
+    border-radius: 0 4px 4px 0; /* ✅ Bo góc phải */
+}
+
+/* ✅ Thêm padding-left để text không bị che bởi ::before */
+.menuCategoryItem:hover {
+    padding-left: 8px;
 }

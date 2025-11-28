@@ -51,6 +51,11 @@ app.get('/api/health', (req, res) => {
 // route init
 route(app);
 
+// elastic search init
+// const initProductIndex = require('./lib/initProductIndex');
+// initProductIndex().catch(console.error);
+
+
 app.listen(PORT, () =>
     console.log(`Example app listening on PORT http://localhost:${PORT}`)
 );

@@ -3,7 +3,7 @@ import { Button, Card, Col, Row, Space, Tag, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 
 const ProductGrid = ({
-  categories,
+  products,
   meta,
   page,
   pageSize,
@@ -11,26 +11,27 @@ const ProductGrid = ({
   STATUS,
   onDelete,
 }) => {
+  console.log('Rendering ProductGrid with products:', products);
   return (
     <Row gutter={[12, 12]}>
-      {categories.map((p) => (
+      {products.map((p) => (
         <Col defaultValue={24} xs={12} md={8} lg={6} xl={4} key={p._id}>
           <Card
             size="small"
             hoverable
             cover={
               <img
-                src={p.image}
+                src={p.images?.[0]?.img_url || '/no-image.png'}
                 alt={p.name}
                 style={{
                   height: 140,
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                 }}
               />
             }
             actions={[
               <Tooltip title="Xem">
-                <Link to={`${p._id}`}>
+                <Link to={`${p._id}/detail`}>
                   <Button size="small" ghost icon={<EyeOutlined />} />
                 </Link>
               </Tooltip>,

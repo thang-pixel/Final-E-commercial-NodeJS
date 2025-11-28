@@ -1,0 +1,1140 @@
+[{
+  "_id": 2,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "iphone XS",
+  "description": "iPhone X 64 GB là cụm từ được rất nhiều người mong chờ muốn biết và tìm kiếm trên Google bởi đây là chiếc điện thoại mà Apple kỉ niệm 10 năm iPhone đầu tiên được bán ra.\r\nThiết kế mang tính đột phá\r\nNhư các bạn cũng đã biết thì đã 4 năm kể từ chiếc điện thoại iPhone 6 và iPhone 6 Plus thì Apple vẫn chưa có thay đổi nào đáng kể trong thiết kế của mình.",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "3GB",
+      "_id": {
+        "$oid": "692685abf862cf43d5251ad6"
+      }
+    },
+    {
+      "key": "Storage",
+      "value": "64GB",
+      "_id": {
+        "$oid": "692685abf862cf43d5251ad7"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132266/ecommerce-nodejs-final/1764132266035-ipX.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132266/ecommerce-nodejs-final/1764132266037-ipX2.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132266/ecommerce-nodejs-final/1764132266038-ipX3.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132266/ecommerce-nodejs-final/1764132266039-ipX4.jpg"
+    }
+  ],
+  "min_price": 10000000,
+  "max_price": 10500000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-26T04:44:27.960Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-26T04:44:27.960Z"
+  },
+  "slug": "iphone-xs",
+  "__v": 0
+},
+{
+  "_id": 3,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "Iphone XS max",
+  "description": "Hoàn toàn xứng đáng với những gì được mong chờ, phiên bản cao cấp nhất iPhone Xs Max 64 GB của Apple năm nay nổi bật với chip A12 Bionic mạnh mẽ, màn hình rộng đến 6.5 inch, cùng camera kép trí tuệ nhân tạo và Face ID được nâng cấp.\r\nThiết kế cao cấp với viền thép không gỉ và mặt kính cường lực\r\nĐiện thoại iPhone Xs Max sở hữu lối thiết kế vô cùng đẹp mắt với những đường cong mềm mại được thừa hưởng từ chiếc iPhone đời trước đó.",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "3GB",
+      "_id": {
+        "$oid": "69268690f862cf43d5251ae8"
+      }
+    },
+    {
+      "key": "Storage",
+      "value": "64GB",
+      "_id": {
+        "$oid": "69268690f862cf43d5251ae9"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764134583/ecommerce-nodejs-final/1764134581875-vi-vn-iphone-xs-max-thumbvideo.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132493/ecommerce-nodejs-final/1764132493405-ipX2.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132494/ecommerce-nodejs-final/1764132493406-ipX3.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764132493/ecommerce-nodejs-final/1764132493407-ipX4.jpg"
+    },
+    {
+      "id": 1764134585309,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764134583/ecommerce-nodejs-final/1764134581908-iphone-xs-max-note1.jpg"
+    }
+  ],
+  "min_price": 10000000,
+  "max_price": 100000002,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-26T04:48:16.131Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T08:56:43.455Z"
+  },
+  "slug": "iphone-xs-max",
+  "__v": 0
+},
+{
+  "_id": 4,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "Iphone 11",
+  "description": "Apple đã chính thức trình làng bộ 3 siêu phẩm iPhone 11, trong đó phiên bản iPhone 11 64GB có mức giá rẻ nhất nhưng vẫn được nâng cấp mạnh mẽ như iPhone Xr ra mắt trước đó.\r\nNâng cấp mạnh mẽ về camera\r\nNói về nâng cấp thì camera chính là điểm có nhiều cải tiến nhất trên thế hệ iPhone mới.\r\nNếu như trước đây iPhone Xr chỉ có một camera thì nay với iPhone 11 chúng ta sẽ có tới hai camera ở mặt sau.\r\nNgoài camera chính vẫn có độ phân giải 12 MP thì chúng ta sẽ có thêm một camera góc siêu rộng và cũng với độ phân giải tương tự.",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "4 GB",
+      "_id": {
+        "$oid": "692815df874067980422d935"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Apple A13 Bionic",
+      "_id": {
+        "$oid": "692815df874067980422d936"
+      }
+    },
+    {
+      "key": "OS",
+      "value": "iOS 17",
+      "_id": {
+        "$oid": "692815df874067980422d937"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764234712/ecommerce-nodejs-final/1764234714616-vi-vn-iphone-11-up-3.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764234712/ecommerce-nodejs-final/1764234714617-ip11.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764234712/ecommerce-nodejs-final/1764234714663-iphone-11-note-new.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764234715/ecommerce-nodejs-final/1764234714663-vi-vn-iphone-11-up-11.jpg"
+    }
+  ],
+  "min_price": 11500000,
+  "max_price": 12000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T09:11:59.782Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:11:59.782Z"
+  },
+  "slug": "iphone-11",
+  "__v": 0
+},
+{
+  "_id": 5,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "Iphone 14",
+  "description": "iPhone 14 chính hãng VNA - Máy mới nguyên hộp, chưa active\r\n\r\niPhone 14 chính hãng - sản phẩm được mong đợi của Apple trong năm 2023. iPhone 14 được trang bị nhiều tính năng và cải tiến đáng chú ý như thiết kế mới, màn hình lớn hơn, hệ điều hành với hiệu năng vượt trội, camera chất lượng cao, pin dung lượng lớn, và kết nối 5G và Wi-Fi 6E. Với những tính năng này, iPhone 14 và các model iPhone 14 Series sẽ mang lại trải nghiệm tuyệt vời cho người dùng và là sự lựa chọn đáng cân nhắc cho những ai đang tìm kiếm một sản phẩm smartphone mới.",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "6 GB",
+      "_id": {
+        "$oid": "692818af874067980422d954"
+      }
+    },
+    {
+      "key": "Screen",
+      "value": "6,1 inches",
+      "_id": {
+        "$oid": "692818af874067980422d955"
+      }
+    },
+    {
+      "key": "OS",
+      "value": "iOS 16",
+      "_id": {
+        "$oid": "692818af874067980422d956"
+      }
+    },
+    {
+      "key": "Camera",
+      "value": "Camera góc rộng: 12MP Camera góc siêu rộng: 12MP",
+      "_id": {
+        "$oid": "692818af874067980422d957"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764235435/ecommerce-nodejs-final/1764235436665-iphone-14-xanh-1-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764235435/ecommerce-nodejs-final/1764235436666-apple-iphone-14-128gb-chinh-hang-vna-red-159319-1759.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764235436/ecommerce-nodejs-final/1764235436670-ip14many.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764235435/ecommerce-nodejs-final/1764235436670-ip14xanh.jpg"
+    }
+  ],
+  "min_price": 14000000,
+  "max_price": 16000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T09:23:59.989Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T09:54:54.107Z"
+  },
+  "slug": "iphone-14",
+  "__v": 0
+},
+{
+  "_id": 6,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "Iphone 15",
+  "description": "iPhone 15 - Nâng tầm đẳng cấp với vô vàn tính năng nổi bật\r\nSau sự kiện iPhone 17 vừa ra mắt, thị trường điện thoại đã có nhiều biến động về giá, khiến iPhone 15 trở thành một sự lựa chọn hàng đầu cho những người đam mê công nghệ và sự sành điệu mà vẫn tiết kiệm chi phí. Với màn hình Dynamic Island Super Retina XDR kích thước 6.1 inch, máy thể hiện hình ảnh vô cùng sắc nét và sống động. Đồng thời, dòng sản phẩm này được thiết kế với mặt lưng kính nhám chống bám bụi, bám vân tay, mang đến trải nghiệm thoải mái cho người dùng. Cụ thể từng tính năng vượt trội như thế nào thì hãy cùng CLICKBUY tìm hiểu qua bài viết này nhé.",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "Apple A16 Bionic",
+      "_id": {
+        "$oid": "6928218697d73e0ac3b2e07c"
+      }
+    },
+    {
+      "key": "Battery",
+      "value": "3.349 mAh",
+      "_id": {
+        "$oid": "6928218697d73e0ac3b2e07d"
+      }
+    },
+    {
+      "key": "Hệ điều hành",
+      "value": "iOS 16",
+      "_id": {
+        "$oid": "6928218697d73e0ac3b2e07e"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764237690/ecommerce-nodejs-final/1764237691591-ip15.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764237689/ecommerce-nodejs-final/1764237691592-ip15many.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764237690/ecommerce-nodejs-final/1764237691636-iphone-15-black-197355-3091.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764237697/ecommerce-nodejs-final/1764237691638-iphone-15-green-197355-3095.jpg"
+    }
+  ],
+  "min_price": 16000000,
+  "max_price": 18000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T10:01:42.163Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:26:02.127Z"
+  },
+  "slug": "iphone-15",
+  "__v": 0
+},
+{
+  "_id": 7,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "iPhone 15 Pro Max",
+  "description": "iPhone 15 Pro Max là thế hệ iPhone cao cấp trên thị trường smartphone dù đã ra từ năm 2023. Với thiết kế bền bỉ cùng cấu hình khủng, giá của iPhone này rất cao và hiện tại giá đã giảm đi rất nhiều do bộ iPhone 17 mới nhất được ra mắt. Vì vậy, đây là thời điểm hợp lý để sở hữu sản phẩm với giá cực ưu đãi này.\r\nHiện nay, iPhone 15 Pro Max cũ đang có 4 màu, mỗi màu một ý nghĩa và sức hút riêng:\r\n\r\nMàu Titan Tự Nhiên (Titan Natural): Được đánh giá là màu hot nhất trong tất cả các màu, được gọi là màu hot trend của năm 2024. Màu này mang đến sự quý phái và đẳng cấp cho người sử dụng, nên rất được ưa chuộng.\r\n\r\nMàu Titan Trắng (Titan White): Mang đến sự tinh tế và sang trọng nên cũng thu hút đáng kể sự lựa chọn.\r\n...",
+  "specifications": [
+    {
+      "key": "OS",
+      "value": "iOS 17",
+      "_id": {
+        "$oid": "69282b44e8971b099005d63a"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Apple A17 Pro 6 nhân",
+      "_id": {
+        "$oid": "69282b44e8971b099005d63b"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "8 GB",
+      "_id": {
+        "$oid": "69282b44e8971b099005d63c"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240185/ecommerce-nodejs-final/1764240186805-iphone-15-black-197355-3091.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240186/ecommerce-nodejs-final/1764240186864-iphone-15-black-197355-3091.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240188/ecommerce-nodejs-final/1764240186868-iphone-15-green-197355-3095.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240185/ecommerce-nodejs-final/1764240186870-iphone-15-pro-max-black-1-1-750x500.jpg"
+    },
+    {
+      "id": 5,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240187/ecommerce-nodejs-final/1764240188135-iphone-15-pro-max-black-3-1-750x500.jpg"
+    },
+    {
+      "id": 6,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240186/ecommerce-nodejs-final/1764240188135-iphone-15-pro-max-cu-sliver-197422-4090.jpg"
+    },
+    {
+      "id": 7,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764240186/ecommerce-nodejs-final/1764240188140-iphone-15-pro-max-titan-den-2-638629415797228950-750x500.jpg"
+    }
+  ],
+  "min_price": 24000000,
+  "max_price": 25000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T10:43:16.745Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T10:43:16.745Z"
+  },
+  "slug": "iphone-15-pro-max",
+  "__v": 0
+},
+{
+  "_id": 8,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "iPhone 17 Pro Max",
+  "description": "Trong thế giới công nghệ luôn cải tiến không ngừng, iPhone 17 Pro Max xuất hiện như một tuyên ngôn về sức mạnh và sự bền bỉ. Điều đầu tiên khiến chúng ta phải kinh ngạc chính là sự ưu tiên tuyệt đối cho trải nghiệm người dùng. Hơn thế nữa, từ hiệu năng đỉnh cao của chip A19 Pro đến khả năng Zoom quang 8x mở rộng tầm nhìn nhiếp ảnh đều được đánh giá rất cao. Khám phá ngay những phân tích chân thực và chuyên sâu dưới đây để quý khách hàng có thể đưa ra lựa chọn mua sắm hoàn toàn tự tin và đúng đắn nhất.\r\n\r\n1. iPhone 17 Pro Max giá bao nhiêu, ra mắt khi nào?\r\niPhone 17 Pro Max ra mắt khi nào\r\n\r\nApple công bố iPhone 17 ProMax ngày Sep 9, 2025 (giờ Cupertino) → tương đương 00:00 10/9 giờ Việt Nam và mở bán từ 19/9. Dòng sản phẩm này cùng các phiên bản khác sẽ sớm có mặt trên thị trường, sẵn sàng chinh phục người dùng với hàng loạt nâng cấp.",
+  "specifications": [
+    {
+      "key": "Screen",
+      "value": "6.9 inches",
+      "_id": {
+        "$oid": "692830cbd2465eec6ddb0e62"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Apple A19 Pro 6 nhân",
+      "_id": {
+        "$oid": "692830cbd2465eec6ddb0e63"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "12 GB",
+      "_id": {
+        "$oid": "692830cbd2465eec6ddb0e64"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764241607/ecommerce-nodejs-final/1764241607619-ip17promax_iphone-17-pro-max-7908-hqzm-1024x1024-218698.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764241606/ecommerce-nodejs-final/1764241607620-ip17promax_white2_56659.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764241606/ecommerce-nodejs-final/1764241607677-ip17promaxblack_2_56658.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764241607/ecommerce-nodejs-final/1764241607678-ip17promaxmany.jpg"
+    }
+  ],
+  "min_price": 38000000,
+  "max_price": 45000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:06:51.522Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:06:51.522Z"
+  },
+  "slug": "iphone-17-pro-max",
+  "__v": 0
+},
+{
+  "_id": 9,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "iPhone Air",
+  "description": "iPhone Air mang trong mình thiết kế hoàn toàn mới của Apple về sự tối giản và tinh tế. Định nghĩa lại khái niệm “mỏng nhẹ” với độ dày chỉ 5.6 mm và trọng lượng 165 gram. Nếu bạn đang băn khoăn liệu sự mỏng nhẹ tối đa này có ảnh hưởng đến hiệu năng hay không, bài viết này sẽ phân tích chi tiết để bạn có thể đưa ra quyết định sở hữu sáng suốt nhất.\r\n\r\n1. iPhone Air khi nào ra mắt, giá bao nhiêu tiền?\r\niPhone đời mới nhất nhà Apple ra mắt khi nào\r\n\r\nTheo Apple công bố, năm nay điện thoại iPhone Air đã được trình làng vào ngày 10 tháng 9 năm 2025 (Giờ Việt Nam), cùng thời điểm với các mẫu iPhone 17 Series khác. Đây là thời điểm truyền thống Apple giới thiệu các sản phẩm chủ lực của mình và sự kiện thu hút được sự chú ý tối đa từ giới công nghệ và người dùng toàn cầu. Ngay sau sự kiện, sản phẩm sẽ nhanh chóng mở bán tại thị trường Việt Nam vào ngày 19 tháng 9 năm 2025.",
+  "specifications": [
+    {
+      "key": "Screen",
+      "value": "Dynamic Island, 6.5 inch",
+      "_id": {
+        "$oid": "692835b04096f5510aadc88d"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Apple A19 Pro",
+      "_id": {
+        "$oid": "692835b04096f5510aadc88e"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "12 GB",
+      "_id": {
+        "$oid": "692835b04096f5510aadc88f"
+      }
+    },
+    {
+      "key": "OS",
+      "value": "iOS",
+      "_id": {
+        "$oid": "692835b04096f5510aadc890"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764242857/ecommerce-nodejs-final/1764242859857-ip17air_iphone-air-2896-gmqe-1024x1024-218705.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764242859/ecommerce-nodejs-final/1764242859859-ip17air_2_56732.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764242859/ecommerce-nodejs-final/1764242859859-ip17airmnay.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764242859/ecommerce-nodejs-final/1764242859921-ip17air2_56859.jpg"
+    }
+  ],
+  "min_price": 32000000,
+  "max_price": 40000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:27:44.146Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:27:44.146Z"
+  },
+  "slug": "iphone-air",
+  "__v": 0
+},
+{
+  "_id": 10,
+  "brand_id": 1,
+  "category_id": 11,
+  "name": "iPhone 16",
+  "description": "Sự kiện ra mắt iPhone 16 128GB vào tháng 09/2024 đã thu hút sự chú ý toàn cầu. Apple tiếp tục chinh phục người dùng với thiết kế, hiệu năng, camera đến các tính năng độc đáo. iPhone 16 không chỉ đơn thuần là một bản nâng cấp mà còn mở ra một kỷ nguyên mới cho dòng smartphone nhà Táo với đột phá AI ấn tượng.\r\nĐẳng cấp qua thiết kế tinh xảo\r\niPhone 16 128GB đã tiếp tục xu hướng thiết kế vuông vức nhưng với một sự nâng cấp vượt trội khi sử dụng khung viền nhôm tái chế tương thích với môi trường. Chất liệu này tạo ra một cảm giác cứng cáp, mạnh mẽ và đẳng cấp hơn. Hơn nữa, mặt kính pha màu được ép ở mặt sau điện thoại vừa đẹp mắt lại vừa bền bỉ, đồng thời nhiều phối màu mới đa dạng với các phong cách và xu hướng sống cá tính.",
+  "specifications": [
+    {
+      "key": "OS",
+      "value": "iOS 18",
+      "_id": {
+        "$oid": "692837064096f5510aadc8cf"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "8 GB",
+      "_id": {
+        "$oid": "692837064096f5510aadc8d0"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Apple A18 6 nhân",
+      "_id": {
+        "$oid": "692837064096f5510aadc8d1"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764243198/ecommerce-nodejs-final/1764243199403-ip16_iphone-16-plus-256gb-4727-qiff-1024x1024-217881.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764243199/ecommerce-nodejs-final/1764243199404-ip16_iphone-16-plus-256gb-black-217881-26830.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764243199/ecommerce-nodejs-final/1764243199409-ip16_iphone-16-plus-256gb-pink-217881-26832.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764243201/ecommerce-nodejs-final/1764243201474-ip16_many2_52176.jpg"
+    }
+  ],
+  "min_price": 22000000,
+  "max_price": 25000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:33:26.887Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:37:42.608Z"
+  },
+  "slug": "iphone-16",
+  "__v": 0
+},
+{
+  "_id": 11,
+  "brand_id": 2,
+  "category_id": 11,
+  "name": "OPPO Reno 14 F",
+  "description": "OPPO Reno 14 F 12GB 256GB là chiếc điện thoại dành cho người dùng hiện đại – vừa đẹp, vừa mạnh. Máy có thiết kế mỏng nhẹ, bền bỉ, camera thông minh nhờ AI và hiệu năng ổn định. Đây là lựa chọn lý tưởng cho những ai thích vừa làm việc hiệu quả, vừa giải trí thoải mái, lại muốn thể hiện phong cách riêng của mình.\r\nThiết kế tinh xảo, bền bỉ vượt trội\r\nOPPO Reno 14 F khéo léo giải quyết bài toán khó: pin lớn nhưng máy vẫn gọn nhẹ. Dù trang bị viên pin 6000 mAh, máy chỉ dày khoảng 7.69 mm (màu hồng) và nặng 180g. Thiết kế này giúp người dùng cầm nắm thoải mái, phá vỡ suy nghĩ rằng pin dung lượng cao thì máy phải to và dày.",
+  "specifications": [
+    {
+      "key": "OS",
+      "value": " Android 15",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca0a"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Snapdragon 6 Gen 1 5G 8 nhân",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca0b"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "12 GB",
+      "_id": {
+        "$oid": "69283c9a4096f5510aadca0c"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764244615/ecommerce-nodejs-final/1764244617332-oppo-reno14-f-blue-1-638882741567326002-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764244617/ecommerce-nodejs-final/1764244617333-oppo-reno14-f-blue-5-638882741595913660-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764244617/ecommerce-nodejs-final/1764244617333-oppo-reno14-f-blue-10-638882741629770316-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764244629/ecommerce-nodejs-final/1764244617342-oppo-reno14-f-blue-note-638882747743627321.jpg"
+    }
+  ],
+  "min_price": 12000000,
+  "max_price": 12000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T11:57:14.244Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T11:57:14.244Z"
+  },
+  "slug": "oppo-reno-14-f",
+  "__v": 0
+},
+{
+  "_id": 12,
+  "brand_id": 3,
+  "category_id": 11,
+  "name": "Samsung Galaxy S25 FE",
+  "description": "Samsung Galaxy S25 FE không chỉ là bản nâng cấp phần cứng, mà còn là dấu mốc quan trọng cho trải nghiệm di động tương lai. Thiết bị kết hợp hiệu năng mạnh mẽ với trí tuệ nhân tạo Galaxy AI, mang đến một trợ lý cá nhân thông minh, luôn thấu hiểu và chủ động hỗ trợ. Đồng thời, đây cũng là mẫu FE mỏng nhẹ nhất, kết hợp thiết kế tinh tế cùng nhiều tính năng hiện đại.\r\nTinh xảo trong từng đường nét, bền bỉ theo thời gian\r\nGalaxy S25 FE được thiết kế mỏng chỉ 7.4 mm và nhẹ 190g, trở thành mẫu FE gọn gàng nhất từ trước đến nay. Viền màn hình được làm mỏng giúp hiển thị rộng rãi hơn, trong khi vẫn giữ cảm giác cầm chắc tay và thoải mái. Người dùng có thể dễ dàng sử dụng máy bằng một tay, ngay cả khi sở hữu màn hình lớn. Thiết kế camera quen thuộc của dòng Galaxy S tiếp tục được giữ lại.",
+  "specifications": [
+    {
+      "key": "OS",
+      "value": "Android 16",
+      "_id": {
+        "$oid": "69283e304096f5510aadca3d"
+      }
+    },
+    {
+      "key": "CPU",
+      "value": "Exynos 2400 10 nhân",
+      "_id": {
+        "$oid": "69283e304096f5510aadca3e"
+      }
+    },
+    {
+      "key": "RAM",
+      "value": "8 GB",
+      "_id": {
+        "$oid": "69283e304096f5510aadca3f"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764245030/ecommerce-nodejs-final/1764245030754-samsung-galaxy-s25-fe-blue-1-638938966754898129-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764245031/ecommerce-nodejs-final/1764245030754-samsung-galaxy-s25-fe-5g-8gb-128gb638949099676825952.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764245033/ecommerce-nodejs-final/1764245033545-samsung-galaxy-s25-fe-blue-5-638938966702603121-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764245034/ecommerce-nodejs-final/1764245033545-samsung-galaxy-s25-fe-note-638938969491473801.jpg"
+    }
+  ],
+  "min_price": 14000000,
+  "max_price": 17000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:04:00.438Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:04:00.438Z"
+  },
+  "slug": "samsung-galaxy-s25-fe",
+  "__v": 0
+},
+{
+  "_id": 13,
+  "brand_id": 1,
+  "category_id": 14,
+  "name": "iMac 24 inch M4",
+  "description": "Mô tả sản phẩm test 1Apple một lần nữa chứng minh vị trí dẫn đầu trong lĩnh vực công nghệ với siêu phẩm máy tính để bàn iMac 24 inch M4 16GB - 512GB. Sản phẩm này hội tụ sức mạnh hiệu suất, thiết kế thời thượng đi cùng trải nghiệm xuất sắc, mang đến giải pháp hoàn hảo cho mọi nhu cầu từ công việc chuyên sâu đến những giờ phút giải trí đầy thư giãn.\r\nThiết kế tối giản, phong cách tinh tế\r\nMáy tính để bàn Apple mang dáng vẻ thanh thoát với thiết kế mỏng nhẹ đầy tinh tế, dễ dàng trở thành điểm nhấn trong bất kỳ không gian nào. Khung máy được chế tác từ nhôm, vừa bền bỉ vừa sang trọng, chỉ nặng 4.42 kg và phần màn hình mỏng 11.5 mm, giúp bạn dễ dàng di chuyển từ bàn làm việc đến phòng khách.\r\n\r\nSự đồng bộ hoàn hảo giữa máy và bộ phụ kiện đi kèm như bàn phím, chuột không dây tạo nên sự hài hòa cả về màu sắc lẫn công năng. Các phụ kiện không chỉ đẹp mắt mà còn tối ưu hiệu quả sử dụng nhờ thiết kế thoải mái, nhạy bén và chính xác, nâng cao trải nghiệm trong cả công việc lẫn giải trí.",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "Apple M4",
+      "_id": {
+        "$oid": "692845274096f5510aadcafc"
+      }
+    },
+    {
+      "key": "Kích thước màn hình:",
+      "value": "24 inches",
+      "_id": {
+        "$oid": "692845274096f5510aadcafd"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764246814/ecommerce-nodejs-final/1764246815767-imac-24-inch-m4-xanh-duong-1-638659838375090072-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764246814/ecommerce-nodejs-final/1764246815767-imac-24-inch-m4-xanh-duong-1-638659838375090072-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764246819/ecommerce-nodejs-final/1764246815768-imac-24-inch-m4-xanh-duong-2-638659838380339491-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764246815/ecommerce-nodejs-final/1764246815768-imac-24-inch-m4-xanh-duong-3-638659838386525691-750x500.jpg"
+    }
+  ],
+  "min_price": 38000000,
+  "max_price": 45000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:33:43.328Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:33:43.328Z"
+  },
+  "slug": "imac-24-inch-m4",
+  "__v": 0
+},
+{
+  "_id": 14,
+  "brand_id": 6,
+  "category_id": 15,
+  "name": "Laptop HP 15 fc0085AU - A6VV8PA (R5 7430U",
+  "description": "Nổi bật và quá thân quen trong phân khúc laptop học tập - văn phòng giá rẻ, chiếc laptop HP 15 fc0085AU R5 7430U (A6VV8PA) với cấu hình ổn định, vận hành hiệu quả mọi tác vụ từ làm việc đến giải trí đa phương tiện. Máy hội tụ đầy đủ các yếu tố để trở thành bạn trợ thủ lý tưởng cho người dùng.\r\n• Laptop HP với vi xử lý AMD Ryzen 5 - 7430U kết hợp cùng card AMD Radeon Graphics giúp đảm nhận mượt mà từ công việc văn phòng đến giải trí, giải quyết nhanh tài liệu với Microsoft Office và Google Docs. Hơn nữa, một số công việc như thiết kế đồ hoạ thông dụng với Adobe Photoshop, Figma,...\r\n\r\n• Bộ nhớ RAM 16 GB DDR4 đảm bảo khả năng đa nhiệm mượt mà, phù hợp cho công việc đòi hỏi nhiều tài nguyên như đa nhiệm nhiều cửa sổ công việc, thiết kế đồ hoạ cơ bản mà không lo giật lag, gián đoạn. Ổ cứng SSD NVMe PCIe với dung lượng 512 GB cung cấp không gian lưu trữ rộng rãi cho nhiều ứng dụng và tệp tin khác nhau.\r\n\r\n• Màn hình 15.6 inch Full HD (1920 x 1080) mang lại hình ảnh sắc nét và sống động. Hơn nữa, kích cỡ màn hình cũng đủ lớn để chia nhỏ nhiều cửa sổ, tăng hiển thị và giúp người dùng hoàn thiện công việc linh hoạt hơn.",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "AMD Ryzen 5 - 7430U",
+      "_id": {
+        "$oid": "692849074096f5510aadcb1d"
+      }
+    },
+    {
+      "key": "Số nhân",
+      "value": "6",
+      "_id": {
+        "$oid": "692849074096f5510aadcb1e"
+      }
+    },
+    {
+      "key": "Màn hình",
+      "value": "15.6 inch",
+      "_id": {
+        "$oid": "692849074096f5510aadcb1f"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764247806/ecommerce-nodejs-final/1764247807932-hp-15-fc0085au-r5-a6vv8pa-3-638996855837433053-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764247807/ecommerce-nodejs-final/1764247807932-hp-15-fc0085au-r5-a6vv8pa-4-638996855844747758-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764247808/ecommerce-nodejs-final/1764247807937-hp-15-fc0085au-r5-a6vv8pa-13-638996855816570417-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764247810/ecommerce-nodejs-final/1764247807938-hp-15-fc0085au-r5-a6vv8pa-note-638624255322467754.jpg"
+    }
+  ],
+  "min_price": 14000000,
+  "max_price": 18000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T12:50:15.404Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T12:50:15.404Z"
+  },
+  "slug": "laptop-hp-15-fc0085au-a6vv8pa-r5-7430u",
+  "__v": 0
+},
+{
+  "_id": 15,
+  "brand_id": 1,
+  "category_id": 15,
+  "name": "Laptop MacBook Air 13 inch M4",
+  "description": "Không làm người dùng thất vọng, Apple đã cho ra mắt MacBook Air M4 16GB không chỉ là một chiếc laptop đồ họa siêu mỏng nhẹ mà còn mang đến hiệu suất mạnh mẽ với chip Apple M4 và RAM 16 GB, cùng màn hình Liquid Retina rực rỡ và thời lượng pin ấn tượng. Sản phẩm này là sự lựa chọn hoàn hảo cho mọi nhu cầu, phù hợp cho cả người dùng văn phòng, sinh viên, đặc biệt là nhà sáng tạo nội dung, thiết kế đồ hoạ.\r\nHiệu suất đồ họa ấn tượng\r\nBộ vi xử lý Apple M4 được sản xuất trên tiến trình tiên tiến của Apple, giúp tối ưu hiệu suất và tiết kiệm năng lượng vượt trội. Với 10 nhân CPU, con chip này mang lại khả năng xử lý nhanh chóng và mượt mà cho mọi tác vụ, từ công việc văn phòng, lập trình, chỉnh sửa ảnh đến biên tập video.\r\n\r\nMột trong những điểm mạnh của Apple M4 là băng thông bộ nhớ lên tới 120 GB/s, giúp đảm bảo tốc độ truyền dữ liệu nhanh chóng giữa các linh kiện, giảm độ trễ khi xử lý tác vụ nặng. Hơn nữa, con chip này còn tích hợp Neural Engine mạnh mẽ, giúp tăng tốc các tác vụ liên quan đến trí tuệ nhân tạo và học máy, như chỉnh sửa ảnh thông minh, nhận diện giọng nói và phân tích dữ liệu.",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "Apple M4",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb59"
+      }
+    },
+    {
+      "key": "Số nhân",
+      "value": "10",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb5a"
+      }
+    },
+    {
+      "key": "Screen",
+      "value": "13.6 inches",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb5b"
+      }
+    },
+    {
+      "key": "OS",
+      "value": "macOS Sequoia",
+      "_id": {
+        "$oid": "69284bb44096f5510aadcb5c"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764248484/ecommerce-nodejs-final/1764248473223-macbook-air-13-inch-m4-1-638769628427937821-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764248474/ecommerce-nodejs-final/1764248473223-macbook-air-13-inch-m4-2-638769628433757713-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764248485/ecommerce-nodejs-final/1764248473234-macbook-air-13-inch-m4-7-638769628468243979-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764248472/ecommerce-nodejs-final/1764248473234-macbook-air-13-inch-m4-11-638769628494869363-750x500.jpg"
+    }
+  ],
+  "min_price": 25000000,
+  "max_price": 25000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:01:40.122Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:01:40.122Z"
+  },
+  "slug": "laptop-macbook-air-13-inch-m4",
+  "__v": 0
+},
+{
+  "_id": 16,
+  "brand_id": 6,
+  "category_id": 15,
+  "name": "Laptop Lenovo Ideapad Slim 3 15AMN8 - 82XQ00J0VN",
+  "description": "Trong thị trường laptop học tập - văn phòng, chiếc laptop Lenovo Ideapad Slim 3 15AMN8 R5 7520U (82XQ00J0VN) nhanh chóng thu hút sự chú ý của người dùng bởi nhiều ưu điểm nổi bật. Chiếc laptop này hội tụ đầy đủ các yếu tố để trở thành người bạn đồng hành lý tưởng cho học sinh, sinh viên và nhân viên văn phòng, đáp ứng mọi nhu cầu học tập, làm việc và giải trí một cách hiệu quả.\r\n• So với các đối thủ cùng phân khúc, chiếc laptop Lenovo Ideapad này sở hữu cấu hình khá ấn tượng và mới mẻ, đáp ứng tốt mọi nhu cầu học tập, làm việc và giải trí cơ bản. Với bộ vi xử lý AMD Ryzen 5 7520U có 4 nhân, 8 luồng và tốc độ xung nhịp tối đa lên đến 4.3 GHz. Con chip này mang đến hiệu năng mạnh mẽ, xử lý mượt mà các tác vụ học tập, văn phòng phổ biến như Word, Excel, PowerPoint,...\r\n\r\n• Ngoài ra, laptop còn được trang bị card đồ họa tích hợp AMD Radeon 610M Graphics, cho phép sử dụng các ứng dụng đồ họa cơ bản. Bạn có thể thiết kế banner, logo, chỉnh sửa ảnh,... trên Photoshop một cách mượt mà.\r\n\r\n• Máy được trang bị sẵn dung lượng RAM 16 GB LPDDR5 tốc độ cao, cho phép bạn mở nhiều ứng dụng cùng lúc mà không lo máy bị chậm hay lag. Dù bạn là học sinh cần mở nhiều tab tài liệu tham khảo, sinh viên cần chạy nhiều phần mềm học tập hay nhân viên văn phòng cần thao tác nhiều ứng dụng cùng lúc, thì laptop đều có thể đáp ứng một cách hoàn hảo.",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "AMD Ryzen 5 - 7520U",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbd0"
+      }
+    },
+    {
+      "key": "Screen",
+      "value": "15.6 inches",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbd1"
+      }
+    },
+    {
+      "key": "Battery",
+      "value": "47 Wh",
+      "_id": {
+        "$oid": "69284e6f4096f5510aadcbd2"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764249190/ecommerce-nodejs-final/1764249191351-vi-vn-lenovo-ideapad-slim-3-15amn8-r5-82xq00j0vn-slider-2.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764249192/ecommerce-nodejs-final/1764249191353-lenovo-ideapad-slim-3-15amn8-r5-82xq00j0vn-12-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764249193/ecommerce-nodejs-final/1764249191357-lenovo-ideapad-slim-3-15amn8-r5-82xq00j0vn-note.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764249191/ecommerce-nodejs-final/1764249191360-vi-vn-lenovo-ideapad-slim-3-15amn8-r5-82xq00j0vn-slider-3.jpg"
+    },
+    {
+      "id": 5,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764249192/ecommerce-nodejs-final/1764249191365-vi-vn-lenovo-ideapad-slim-3-15amn8-r5-82xq00j0vn-slider-6.jpg"
+    }
+  ],
+  "min_price": 13000000,
+  "max_price": 16000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:13:19.114Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:13:19.114Z"
+  },
+  "slug": "laptop-lenovo-ideapad-slim-3-15amn8-82xq00j0vn",
+  "__v": 0
+},
+{
+  "_id": 17,
+  "brand_id": 1,
+  "category_id": 15,
+  "name": "Laptop MacBook Air 13 inch M2",
+  "description": "Mô tả sản phẩm Với sức mạnh bùng nổ đến từ bộ vi xử lý M2 cùng thiết kế của một chiếc laptop cao cấp - sang trọng, MacBook Air M2 16GB 256GB đáp ứng đầy đủ mọi nhu cầu từ học tập, văn phòng đến đồ họa, kỹ thuật nâng cao.\r\nNâng tầm mọi trải nghiệm nhờ sức mạnh bùng nổ đến từ bộ vi xử lý M2\r\nTiếp nối sự thành công của M1, thế hệ M2 sử dụng quy trình sản xuất 5 nm hiện đại với CPU 8 nhân, GPU 8 nhân cho các tác vụ thiết kế đồ họa, chỉnh sửa hình ảnh hay render video trên các ứng dụng như Photoshop, Adobe Illustrator, Adobe Premiere,... chưa bao giờ dễ dàng hơn đến thế.\r\n\r\nHiệu suất tăng cao nhờ sự hỗ trợ của 20 tỷ bóng bán dẫn, tăng hơn 25% so với thế hệ M1, tốc độ băng thông lên đến 100 GB/s, hứa hẹn cung cấp trải nghiệm nhanh hơn 15 lần so với các mẫu MacBook Air chạy chip Intel. \r\n\r\nRAM 16 GB trên MacBook Air cho khả năng đa nhiệm trơn tru kể cả với những tác vụ nặng, kết hợp bộ nhớ SSD 256 GB giúp truy xuất dữ liệu cực nhanh, không gian lưu trữ vừa đủ cho các tác vụ sử dụng khác nhau. test 1",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "Apple M2",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc4a"
+      }
+    },
+    {
+      "key": "Screen",
+      "value": "13.6 inch",
+      "_id": {
+        "$oid": "692852c74096f5510aadcc4b"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250307/ecommerce-nodejs-final/1764250303882-apple-macbook-air-m2-2022-16gb-256gb-2-2-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250303/ecommerce-nodejs-final/1764250303883-apple-macbook-air-m2-2022-16gb-256gb-1-2-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250306/ecommerce-nodejs-final/1764250303889-apple-macbook-air-m2-2022-16gb-256gb-6-2-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250302/ecommerce-nodejs-final/1764250303892-apple-macbook-air-m2-2022-16gb-256gb-ab-2.jpg"
+    }
+  ],
+  "min_price": 20000000,
+  "max_price": 25000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:31:51.726Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:31:51.726Z"
+  },
+  "slug": "laptop-macbook-air-13-inch-m2",
+  "__v": 0
+},
+{
+  "_id": 18,
+  "brand_id": 1,
+  "category_id": 15,
+  "name": "Laptop MacBook Air 15 inch M4",
+  "description": "Nếu bạn yêu thích sự linh hoạt và tiện ích của MacBook Air nhưng mong muốn một không gian hiển thị rộng rãi hơn, MacBook Air 15 inch M4 16GB/256GB chính là lựa chọn lý tưởng. Được trang bị con chip M4 mới nhất cùng màn hình lớn 15.3 inch, chiếc laptop đồ họa này mang đến trải nghiệm thị giác tối ưu, hiệu suất mạnh mẽ và thiết kế siêu mỏng nhẹ.\r\nCấu hình mạnh mẽ, hiệu suất vượt trội\r\nMacBook Air 15 inch được xây dựng trên tiến trình 3 nm thế hệ thứ hai hiện đại, giúp tối ưu hóa hiệu suất và tiết kiệm năng lượng đáng kể. Với 10 nhân CPU và băng thông bộ nhớ lên đến 120 GB/s, chiếc MacBook Air này có thể xử lý mượt mà từ các tác vụ văn phòng đến thiết kế đồ họa và lập trình phức tạp.\r\n\r\nKhông dừng lại ở đó, laptop còn tích hợp hàng loạt tính năng AI tiên tiến như nhận diện đồ họa, chuyển đổi giọng nói thành văn bản, cải thiện chất lượng video bằng công nghệ AI. Đặc biệt, với 10 nhân GPU mạnh mẽ, MacBook Air M4 16GB mang đến trải nghiệm đồ họa đỉnh cao, hỗ trợ Dynamic Caching giúp tối ưu hiệu suất thiết kế và chơi game. Công nghệ dò tia Ray Tracing bằng phần cứng cho hình ảnh chân thực, hiệu ứng ánh sáng và đổ bóng sắc nét như thật.\r\n\r\nRAMmang đến k hả năng đa nhiệm ấn tượng, giúp bạ",
+  "specifications": [
+    {
+      "key": "CPU",
+      "value": "Apple M4",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc6d"
+      }
+    },
+    {
+      "key": "Screen",
+      "value": "15.3 inch",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc6e"
+      }
+    },
+    {
+      "key": "Độ phân giải",
+      "value": "Liquid Retina",
+      "_id": {
+        "$oid": "692854a54096f5510aadcc6f"
+      }
+    }
+  ],
+  "average_rating": 0,
+  "review_count": 0,
+  "images": [
+    {
+      "id": 1,
+      "type": "THUMBNAIL",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250781/ecommerce-nodejs-final/1764250780096-macbook-air-15-inch-m4-tgdd-2-638768973181643538-750x500.jpg"
+    },
+    {
+      "id": 2,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250780/ecommerce-nodejs-final/1764250780097-macbook-air-15-inch-m4-tgdd-1-638768973171263878-750x500.jpg"
+    },
+    {
+      "id": 3,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250783/ecommerce-nodejs-final/1764250780101-macbook-air-15-inch-m4-tgdd-3-638768973188135309-750x500.jpg"
+    },
+    {
+      "id": 4,
+      "type": "IMAGES",
+      "img_url": "https://res.cloudinary.com/dubcqjth3/image/upload/v1764250780/ecommerce-nodejs-final/1764250780101-vi-vn-macbook-air-15-inch-m4-16gb-256gb-slider-3.jpg"
+    }
+  ],
+  "min_price": 26000000,
+  "max_price": 26000000,
+  "status": "ACTIVE",
+  "deleted": false,
+  "createdAt": {
+    "$date": "2025-11-27T13:39:49.529Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T13:39:49.529Z"
+  },
+  "slug": "laptop-macbook-air-15-inch-m4",
+  "__v": 0
+}]
