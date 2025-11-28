@@ -41,7 +41,7 @@ class ProductVariantController {
     }
 
     const existProduct = await ProductModel.findOne({ _id: parsedProductId });
-    if (existProduct) {
+    if (!existProduct) {
       return res.status(404).json({
         success: false,
         message: 'Sản phẩm không tồn tại',
@@ -114,11 +114,7 @@ class ProductVariantController {
         success: false,
         message: 'Thiếu thông tin cần thiết để cập nhật biến thể sản phẩm',
       });
-    }
-
-    
-
-    //
+    }     //
 
     try {
       const existVariant = await ProductVariant.findOne({
@@ -155,6 +151,8 @@ class ProductVariantController {
         { _id: parsedProductId },
         { min_price: minPrice, max_price: maxPrice }
       );
+
+      console.log('👉 Product exist:', existProduct);
 
       const updatedVariant = await ProductVariant.findOneAndUpdate(
         { product_id: parsedProductId, _id: parsedVariantId },

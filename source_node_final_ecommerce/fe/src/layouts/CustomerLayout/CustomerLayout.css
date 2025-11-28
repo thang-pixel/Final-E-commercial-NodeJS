@@ -1,6 +1,6 @@
 .layout-customer__header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    height: 80px !important;
+    /* height: 80px !important; */
 }
 .layout-customer__nav {
     /* background-color: rgb(0, 255, 26)!important; */
@@ -9,7 +9,7 @@
 .layout-customer__main {
     padding-top: 100px !important;
     min-height: calc(100vh - 100px);
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
 }
 
 .layout-customer__nav--menu {
@@ -121,4 +121,34 @@
     .layout-customer__nav--hamburger {
         display: block;
     }
+}
+
+
+/* cate list */
+.menuCategoryItem{
+    position: relative;
+    transition: background-color 0.5s ease;
+}
+
+.menuCategoryItem:hover {
+    background-color: #e0f7fa;
+    cursor: pointer;
+} 
+
+/* ✅ Sửa selector: bỏ .menuCategoryItem thứ 2 */
+.menuCategoryItem:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px; /* ✅ Giảm width để đẹp hơn */
+    height: 100%;
+    background: #0288d1; /* ✅ Chỉ cần background */
+    border-radius: 0 4px 4px 0; /* ✅ Bo góc phải */
+}
+
+/* ✅ Thêm padding-left để text không bị che bởi ::before */
+.menuCategoryItem:hover {
+    padding-left: 8px;
 }

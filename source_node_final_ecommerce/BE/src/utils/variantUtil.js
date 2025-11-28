@@ -1,10 +1,16 @@
-const buildSku = (productId, attrs) => {
-  const attrStr = (attrs || [])
-    .map((a) => `${a.code.substring(0, 3).toUpperCase()}${a.value}`)
+const buildSku = (productId, attributes) => {
+  const clearSpaces = (str) => str.replace(/\s+/g, '');
+  
+  const attrPart = attributes
+    .map((attr) => {
+      const code = clearSpaces(attr.code).substring(0, 3).toUpperCase();
+      const value = clearSpaces(attr.value).toUpperCase();
+      return `${code}${value}`;
+    })
     .join('-');
-  // Có thể slugify / toUpperCase nếu muốn
-  return `P${productId}-${attrStr}`;
-};
+  return `P${productId}-${attrPart}`;
+}
+
 module.exports = {
   buildSku,
 };

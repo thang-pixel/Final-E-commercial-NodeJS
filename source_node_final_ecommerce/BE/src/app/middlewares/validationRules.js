@@ -106,6 +106,10 @@ const productVariantRules = [
         if (v.price < v.original_price) {
           throw new Error('Giá bán không được nhỏ hơn giá gốc');
         }
+
+        if (typeof v.stock_quantity !== 'number' || v.stock_quantity < 0 || !Number.isInteger(v.stock_quantity)) {
+          throw new Error('Số lượng tồn kho phải là số nguyên và lớn hơn hoặc bằng 0');
+        }
       }
     } catch (error) {
       throw new Error('Biến thể sản phẩm không hợp lệ.' + error.message);

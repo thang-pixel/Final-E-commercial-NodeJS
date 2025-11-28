@@ -44,7 +44,7 @@ const { RangePicker } = DatePicker;
 const PRODUCT_STATUS = [
   { label: 'Đang bán', value: 'ACTIVE', color: 'green' },
   { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
-  { label: 'Hết hàng', value: 'OUT', color: 'red' },
+  { label: 'Hết hàng', value: 'OUT_OF_STOCK', color: 'red' },
 ];
 
 const ProductList = () => {
@@ -83,7 +83,7 @@ const ProductList = () => {
     () => ({
       q,
       category_id,
-      brand_id,
+      brand_ids: [brand_id],
       status,
       dateFrom: dateRange?.[0]?.startOf('day').toISOString(),
       dateTo: dateRange?.[1]?.endOf('day').toISOString(),
@@ -158,13 +158,13 @@ const ProductList = () => {
     {
       title: 'ID',
       dataIndex: '_id',
-      width: 40,
+      width: 50,
       sorter: (a, b) => a._id - b._id,
     },
     {
       title: 'Sản phẩm',
       dataIndex: 'name',
-      width: 120,
+      width: 200,
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, r) => (
         <>
@@ -173,25 +173,40 @@ const ProductList = () => {
               src={r.images?.[0]?.img_url}
               alt={r.name}
               style={{
-                width: 32,
-                height: 32,
+                width: 48,
+                height: 48,
                 objectFit: 'contain',
                 borderRadius: 6,
               }}
             />
             <div>
-              <div style={{ fontWeight: 600 }}>{text}</div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>{r.sku}</div>
+              <Link to={`${r._id}/detail`}>
+                <Typography.Paragraph
+                  strong
+                  ellipsis={{ rows: 2 }}
+                  style={{ margin: 0, maxWidth: 200 }}
+                >
+                  {r.name}
+                </Typography.Paragraph>
+              </Link>
             </div>
           </Space>
         </>
       ),
     },
     {
-      title: 'Giá',
+      title: 'Giá thấp nhất',
       dataIndex: 'min_price',
       sorter: (a, b) => a.min_price - b.min_price,
-      width: 80,
+      width: 150,
+      align: 'right',
+      render: (v) => v.toLocaleString('vi-VN') + ' ₫',
+    },
+    {
+      title: 'Giá cao nhất',
+      dataIndex: 'max_price',
+      sorter: (a, b) => a.max_price - b.max_price,
+      width: 150,
       align: 'right',
       render: (v) => v.toLocaleString('vi-VN') + ' ₫',
     },
@@ -199,20 +214,20 @@ const ProductList = () => {
       title: 'Thương hiệu',
       dataIndex: 'brand_id',
       sorter: true,
-      width: 80,
+      width: 150,
       render: (v) => v?.name || '',
     },
     {
       title: 'Danh mục',
       dataIndex: 'category_id',
       sorter: true,
-      width: 80,
+      width: 150,
       render: (v) => v?.name || '',
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
-      width: 80,
+      width: 100,
       render: (v) => {
         const s = PRODUCT_STATUS.find((x) => x.value === v);
         return <Tag color={s?.color}>{s?.label}</Tag>;
@@ -222,21 +237,21 @@ const ProductList = () => {
       title: 'Tạo lúc',
       dataIndex: 'createdAt',
       sorter: true,
-      width: 100,
+      width: 150,
       render: (v) => dayjs(v).format('DD/MM/YYYY HH:mm'),
     },
     {
       title: 'Thao tác',
-      width: 100,
+      width: 150,
       fixed: 'right',
       render: (_, r) => (
         <Space>
-          <Tooltip title="Xem">
+          <Tooltip title="Xem chi tiết và biến thể">
             <Link to={`${r._id}/detail`}>
               <Button size="small" icon={<EyeOutlined />} />
             </Link>
           </Tooltip>
-          <Tooltip title="Sửa">
+          <Tooltip title="Sửa thông tin">
             <Link to={`edit/${r._id}`}>
               <Button
                 size="small"
@@ -276,7 +291,8 @@ const ProductList = () => {
     size: 'middle',
     // expandable,
     // title: showTitle ? defaultTitle : undefined,
-    rowSelection: true,
+    // rowSelection: true,
+    className: 'admin-product-table',
     scroll: { x: '100%' },
     // tableLayout: tableLayout === 'unset' ? undefined : tableLayout,
   };

@@ -15,19 +15,22 @@ class ProductController {
   async index(req, res) {
     try {
       const { category_id } = req.query;
-      const { brand_ids, range_prices, ratings } = req.query;
+      const { brand_ids, range_prices, ratings, status } = req.query;
       let { keyword = '' } = req.query;
       console.log('Query parameters:', req.query);
 
       // --- Filter ---
-      let filter = {
-        status: PRODUCT_STATUSES.ACTIVE,
+      let filter = { 
         deleted: false,
         name: {
           $regex: keyword.trim(),
           $options: 'i', // không phân biệt hoa/thường
         },
       };
+
+      if (status && Object.values(PRODUCT_STATUSES).includes(status)) {
+        filter.status = status;
+      }
 
       if (category_id) {
         filter.category_id = Number(category_id);
@@ -39,6 +42,8 @@ class ProductController {
       const SORT_WHITELIST = {
         name: 'name',
         price: 'min_price',
+        min_price: 'min_price',
+        max_price: 'max_price',
         createdAt: 'createdAt',
         rating: 'average_rating',
       };
@@ -259,8 +264,7 @@ class ProductController {
       if (existingProduct) {
         return res.status(400).json({
           success: false,
-          message: 'Tên sản phẩm đã tồn tại',
-          data: null,
+          message: 'Tên sản phẩm đã tồn tại', 
         });
       }
 
@@ -325,7 +329,7 @@ class ProductController {
       if (parseVariants.length > 0) {
         const ProductVariantModel = require('../models/ProductVariant');
 
-        const variantsToInsert = parseVariants.map((variant, idx) => {
+        const variantsToInsert = parseVariants.map(async (variant, idx) => {
           console.log(`👉 Variant raw [${idx}]:`, variant);
 
           // Chuẩn hoá attributes: cho phép FE gửi object hoặc array
@@ -366,6 +370,13 @@ class ProductController {
 
           const SKU = buildSku(newProduct._id, attrs);
 
+          // check SKU unique
+          const existingVariant = await ProductVariant.findOne({ SKU });
+          if (existingVariant) {
+            throw new Error(`SKU đã tồn tại: ${SKU} (variant index ${idx})`);
+          }
+          console.log(`👉 Generated SKU [${idx}]:`, SKU);
+
           const variantDoc = {
             price,
             SKU: SKU,
@@ -382,7 +393,15 @@ class ProductController {
         });
 
         console.log('👉 Inserting product variants:', variantsToInsert);
-        await ProductVariantModel.insertMany(variantsToInsert);
+        let variantInserted = [];
+        for (const vPromise of variantsToInsert) {
+          const vDoc = await vPromise;
+          const vModel = new ProductVariantModel(vDoc);
+          const savedVariant = await vModel.save();
+          variantInserted.push(savedVariant);
+        }
+        // await ProductVariantModel.insertMany(variantsToInsert);
+        console.log('✅ Variants inserted:', variantInserted.length);
         console.log('✅ Inserted variants for product:', newProduct._id);
       }
 

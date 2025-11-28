@@ -4,7 +4,7 @@ import Skeleton from "@mui/material/Skeleton";
 const ProductsSkeleton = ({ count }) => {
   return (
     <>
-      <div style={{ backgroundColor: 'red' }}>
+      <div style={{ backgroundColor: '#fff', padding: '16px', borderRadius: '8px' }}>
         <Grid container spacing={2} nowrap="nowrap">
           {Array.from({ length: count }).map((_, i) => (
             <Grid key={i} item size={{ xs: 6, sm: 4, md: 3 }}>

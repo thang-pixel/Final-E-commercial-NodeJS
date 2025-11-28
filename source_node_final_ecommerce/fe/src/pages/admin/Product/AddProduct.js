@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Typography } from '@mui/material';
-import { Card, Input, Select, Button, Row, Col, message, Form } from 'antd';
+import { Card, Input, Select, Button, Row, Col, message, Form, notification } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ const { Option } = Select;
 const AddProduct = () => {
   const { setSpinning } = useGlobalLoading();
   const [messageApi, contextHolder] = message.useMessage();
+  const [notiApi, notiContextHolder] = notification.useNotification();
   const [formAdd] = Form.useForm();
   const navigate = useNavigate();
   const { categories } = useSelector(
@@ -75,6 +76,15 @@ const AddProduct = () => {
           if (!v.attributes?.[attr.code]) {
             return true;
           }
+          if (!v.price || v.price <= 0) {
+            return true;
+          }
+          if (!v.original_price || v.original_price <= 0) {
+            return true;
+          }
+          if (!v.stock_quantity || v.stock_quantity < 0) {
+            return true;
+          }
         }
         return false;
       }),
@@ -118,8 +128,13 @@ const AddProduct = () => {
     try {
 
       const result = await dispatch(addProduct(formData)).unwrap();
-      messageApi.success({
-        content: result.message || 'Thêm sản phẩm thành công!',
+      // messageApi.success({
+      //   content: result.message || 'Thêm sản phẩm thành công!',
+      //   duration: 2,
+      // });
+      notiApi.success({
+        message: 'Thêm sản phẩm thành công!',
+        description: result.message || 'Thêm sản phẩm thành công!',
         duration: 2,
       });
       // formAdd.resetFields();
@@ -128,7 +143,9 @@ const AddProduct = () => {
       // setVariants([]);
       // setSpecs([]);
 
-      navigate('/admin/products'); 
+      setTimeout(() => {
+        navigate('/admin/products'); 
+      }, 2000);
     } catch (error) {
       messageApi.error(error.message || 'Đã xảy ra lỗi khi lưu sản phẩm');
       console.error('Error saving product:', error);
@@ -142,6 +159,7 @@ const AddProduct = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {contextHolder}
+      {notiContextHolder}
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate('/admin/products')}

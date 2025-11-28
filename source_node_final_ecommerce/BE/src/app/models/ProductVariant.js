@@ -45,6 +45,7 @@ const productVariantSchema = new mongoose.Schema(
 productVariantSchema.plugin(AutoIncrement, {
   id: "product_variant_seq",
   inc_field: "_id",
+  disable_hooks: false, // Bật hooks cho insertMany
 });
  
 

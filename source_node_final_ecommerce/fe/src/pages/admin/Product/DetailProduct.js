@@ -25,6 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Column from 'antd/es/table/Column';
 import { Typography } from 'antd';
+import { createStyles } from 'antd-style';
 import {
   addProductVariant,
   deleteVariant,
@@ -35,8 +36,18 @@ import {
 import { useState } from 'react';
 import { buildSku } from '../../../utils/productVariantUtil';
 import MoneyInput from '../../../components/common/MoneyInput';
-
+import  './AdminProduct.css';
+import { formatDateTimeVn } from '../../../utils/formatTime';
+ 
 const { Paragraph } = Typography;
+
+const useStyles = createStyles(() => ({
+  root: {
+    color: '#e0e0e0',
+    borderRadius: 12,
+    boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+  },
+}));
 
 const DetailProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -199,12 +210,108 @@ const DetailProduct = () => {
       console.error('Error saving variant:', err);
       setErrorMsg(err.message || 'Đã xảy ra lỗi khi lưu biến thể');
     } finally {
+      // handleCompleteSaveOrCloseModal();
     }
   };
 
-  useEffect(() => {
-    // dispatch(getAllCategory({ limit: 100 }));
-  }, []);
+  const handleCompleteSaveOrCloseModal = () => {
+    setVariantEditing(null);
+    setErrorMsg(null);
+    formVariant.resetFields();
+    setOriginalPriceVariant(0);
+    setPriceVariant(0);
+    setStockVariant(0);
+    setOpenVariantModal(false);
+  };
+
+  const variantColumns = [
+    { title: 'SKU', dataIndex: 'SKU', key: 'SKU', width: 200 },
+    {
+      title: 'Thuộc tính',
+      key: 'attributes',
+      width: 150,
+      render: (_, variant) =>
+        variant.attributes.map((attr, idx) => (
+          <Tag color="blue" key={idx}>
+            {attr.code}: {attr.value}
+          </Tag>
+        )),
+    },
+    {
+      title: 'Giá bán',
+      dataIndex: 'price',
+      key: 'price',
+      width: 120,
+      sorter: (a, b) => a.price - b.price,
+      render: (price) =>
+        price.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        }),
+    },
+    {
+      title: 'Giá gốc',
+      dataIndex: 'original_price',
+      key: 'original_price',
+      width: 120,
+      sorter: (a, b) => a.original_price - b.original_price,
+      render: (price) =>
+        price.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        }),
+    },
+    { title: 'Kho', dataIndex: 'stock', key: 'stock', width: 100, sorter: (a, b) => a.stock - b.stock },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      width: 120,
+      render: (_, record) => (
+        <>
+          <Switch
+            checked={record.status === 'ACTIVE'}
+            checkedChildren="ACTIVE"
+            unCheckedChildren="INACTIVE"
+            onChange={(isChecked) =>
+              handleChangeVariantStatus(record, isChecked)
+            }
+            style={{ width: 100 }}
+          />
+        </>
+      ),
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 200,
+      sorter: (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      render: (date) => formatDateTimeVn(date),
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      width: 120,
+      fixed: 'right',
+      render: (_, record) => (
+        <div className="flex-between">
+          <Button
+            type="link"
+            onClick={() => openEditVariant(record)}
+            icon={<EditOutlined type="small" />}
+          ></Button>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteVariant(record)}
+            icon={<DeleteOutlined type="small" />}
+          ></Button>
+        </div>
+      ),
+    },
+  ];
 
   useEffect(() => {
     dispatch(getProductById(id));
@@ -229,10 +336,7 @@ const DetailProduct = () => {
       setOriginalPriceVariant(variantEditing?.original_price || 0);
       setStockVariant(variantEditing?.stock || 0);
     } else {
-      formVariant.resetFields();
-      setPriceVariant(0);
-      setOriginalPriceVariant(0);
-      setStockVariant(0);
+      handleCompleteSaveOrCloseModal(); 
     }
   }, [variantEditing, formVariant]);
 
@@ -261,22 +365,22 @@ const DetailProduct = () => {
           {/* 1️⃣ Thông tin cơ bản */}
           <Card title="Thông tin cơ bản" style={{ marginBottom: 24 }}>
             <Row gutter={[16, 16]}>
-              <Col span={12}>
+              <Col span={{ xs: 24, sm: 12 }}>
                 <Typography.Text strong>Tên sản phẩm:</Typography.Text>
                 <div>{currentProduct.name}</div>
               </Col>
 
-              <Col span={12}>
+              <Col span={{ xs: 24, sm: 12 }}>
                 <Typography.Text strong>Danh mục:</Typography.Text>
                 <div>{currentProduct.category_id.name}</div>
               </Col>
 
-              <Col span={12}>
+              <Col span={{ xs: 24, sm: 12 }}>
                 <Typography.Text strong>Thương hiệu:</Typography.Text>
                 <div>{currentProduct.brand_id.name}</div>
               </Col>
 
-              <Col span={12}>
+              <Col span={{ xs: 24, sm: 12 }}>
                 <Typography.Text strong>Trạng thái:</Typography.Text>
                 <Tag
                   color={currentProduct.status === 'ACTIVE' ? 'green' : 'red'}
@@ -297,7 +401,7 @@ const DetailProduct = () => {
           {/* 2️⃣ Ảnh sản phẩm */}
           <Card title="Hình ảnh sản phẩm" style={{ marginBottom: 24 }}>
             {/* Thumbnail */}
-            <Typography.Text strong>Thumbnail</Typography.Text>
+            <Typography.Text strong>Ảnh đại diện</Typography.Text>
             <div style={{ marginTop: 8, marginBottom: 16 }}>
               <Image
                 width={150}
@@ -351,95 +455,21 @@ const DetailProduct = () => {
             </Button>
             <Table
               dataSource={currentProduct.variants}
+              columns={variantColumns}
               rowKey="SKU"
+              bordered={true}
               pagination={false}
-            >
-              <Column title="SKU" dataIndex="SKU" key="SKU" />
+              scroll={{ x: '100%', y: 500 }}
+              className="admin-product-table"
+            />
 
-              <Column
-                title="Thuộc tính"
-                key="attributes"
-                render={(_, variant) =>
-                  variant.attributes.map((attr, idx) => (
-                    <Tag color="blue" key={idx}>
-                      {attr.code}: {attr.value}
-                    </Tag>
-                  ))
-                }
-              />
-
-              <Column
-                title="Giá bán"
-                dataIndex="price"
-                key="price"
-                render={(price) =>
-                  price.toLocaleString('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })
-                }
-              />
-              <Column
-                title="Giá gốc"
-                dataIndex="original_price"
-                key="original_price"
-                render={(price) =>
-                  price.toLocaleString('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
-                  })
-                }
-              />
-
-              <Column title="Kho" dataIndex="stock" key="stock" />
-
-              <Column
-                title="Trạng thái"
-                dataIndex="status"
-                key="status"
-                render={(_, record) => (
-                  <>
-                    <Switch
-                      checked={record.status === 'ACTIVE'}
-                      checkedChildren="ACTIVE"
-                      unCheckedChildren="INACTIVE"
-                      onChange={(isChecked) =>
-                        handleChangeVariantStatus(record, isChecked)
-                      }
-                    />
-                  </>
-                )}
-              />
-              <Column
-                title="Hành động"
-                key="action"
-                render={(_, record) => (
-                  <div className="flex-between">
-                    <Button
-                      type="link"
-                      onClick={() => openEditVariant(record)}
-                      icon={<EditOutlined type="small" />}
-                    ></Button>
-                    <Button
-                      type="link"
-                      danger
-                      onClick={() => handleDeleteVariant(record)}
-                      icon={<DeleteOutlined type="small" />}
-                    ></Button>
-                  </div>
-                )}
-              />
-            </Table>
             <Modal
-              title="Chỉnh sửa biến thể"
+              title={variantEditing ? 'Chỉnh sửa biến thể' : 'Thêm biến thể'}
               open={openVariantModal}
-              onCancel={() => {
-                setOpenVariantModal(false);
-                setVariantEditing(null);
-                setErrorMsg(null);
-                formVariant.resetFields();
-              }}
+              onCancel={handleCompleteSaveOrCloseModal}
               footer={null}
+              maskClosable={false} // ✅ Không cho đóng khi click vào overlay
+              keyboard={false}     // ✅ (Optional) Không cho đóng khi nhấn ESC
             >
               <Form
                 layout="vertical"

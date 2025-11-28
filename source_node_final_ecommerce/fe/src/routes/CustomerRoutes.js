@@ -14,6 +14,8 @@ import Category from '../pages/customer/Category';
 import Register from '../pages/auth/Register';
 import ProductDetail from '../pages/customer/Product/ProductDetail';
 import ProductList from '../pages/customer/Product';
+import AccountCustomer from '../pages/customer/Account/AccountCustomer';
+import Favorite from '../pages/customer/Favorite/Favorite';
 function CustomerRoutes() {
   const { user } = useAuth();
   return (
@@ -30,9 +32,15 @@ function CustomerRoutes() {
         </Route>
 
         <Route path="categories" element={<Category />} />
+
+        {/* cart cho cả guest */}
         <Route path="carts" element={<Cart />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="orders" element={<Order />} />
+        <Route path='account' element={user ? <AccountCustomer /> : <Login />}>
+          <Route path="profile" element={user ? <Profile /> : <Login />} />
+          <Route path="orders" element={user ? <Order /> : <Login />} />
+          <Route path="carts" element={user ? <Cart /> : <Login />} />
+          <Route path="favorites" element={user ? <Favorite /> : <Login />} />
+        </Route>
       </Route>
       <Route
         path="/admin/*"

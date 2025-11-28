@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Container, Typography } from '@mui/material';
-import { Card, Input, Select, Button, Row, Col, message, Form } from 'antd';
+import { Card, Input, Select, Button, Row, Col, message, Form, notification } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import TechnicalSpecs from '../../../components/admin/Product/TechnicalSpecs';
-import AddProductVariant from '../../../components/admin/Product/AddProductVariant';
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
 import { getAllBrands } from '../../../redux/reducers/brandSlice';
 import UploadImagesProduct from '../../../components/admin/Product/UploadImagesProduct';
 import UploadThumbnailProduct from '../../../components/admin/Product/UploadThumbnailProduct';
 import {
-  addProduct,
   editProduct,
   getProductById,
 } from '../../../redux/reducers/productSlice';
@@ -22,6 +20,7 @@ const { Option } = Select;
 
 const EditProduct = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [notiApi, notiContextHolder] = notification.useNotification();
   const [formEdit] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -52,39 +51,31 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (currentProduct) {
+      // set lai gia tri form khi currentProduct thay doi
       formEdit.setFieldsValue({
         name: currentProduct.name,
-        brand_id: currentProduct.brand_id,
-        category_id: currentProduct.category_id,
+        brand_id: currentProduct.brand_id?._id,
+        category_id: currentProduct.category_id?._id,
         description: currentProduct.description,
         status: currentProduct.status,
       });
-      /**
-       * image: currentCategory.image_url ? [
-          {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: currentCategory.image_url,
-          },
-        ] : [],
-       */
+      
 
+      // set anh
       const imagesWithoutThumbnail = currentProduct.images.filter(
         (img) => img.type !== 'THUMBNAIL'
       );
       const thumbnailImage = currentProduct.images.find(
         (img) => img.type === 'THUMBNAIL'
       );
-      console.log('Thumnail image:', thumbnailImage);
-      console.log('Images without thumbnail:', imagesWithoutThumbnail);
+      // console.log('Thumnail image:', thumbnailImage);
+      // console.log('Images without thumbnail:', imagesWithoutThumbnail);
       setThumbnail({
-          uid: '-1',
-          name: thumbnailImage?.img_url.split('/').pop(),
-          status: 'done',
-          url: thumbnailImage?.img_url,
-        },
-      );
+        uid: '-1',
+        name: thumbnailImage?.img_url.split('/').pop(),
+        status: 'done',
+        url: thumbnailImage?.img_url,
+      });
       setImages(
         imagesWithoutThumbnail.map((img, index) => ({
           uid: '-1' + index,
@@ -93,21 +84,22 @@ const EditProduct = () => {
           url: img.img_url,
         }))
       );
-      // setVariants(currentProduct.variants);
+
+      // set specs
       setSpecs(currentProduct.specifications);
     }
   }, [currentProduct, formEdit]);
 
-  const getAttributeByCategory = (categoryId) => {
-    if (!categoryId) return [];
-    const category = categories.find((cat) => cat._id === categoryId);
-    console.log('Category selected:', category);
-    return category ? category.attributes : [];
-  };
+  // const getAttributeByCategory = (categoryId) => {
+  //   if (!categoryId) return [];
+  //   const category = categories.find((cat) => cat._id === categoryId);
+  //   console.log('Category selected:', category);
+  //   return category ? category.attributes : [];
+  // };
 
   const [thumbnail, setThumbnail] = useState(null);
   const [images, setImages] = useState([]);
-  const [variants, setVariants] = useState([]);
+  // const [variants, setVariants] = useState([]);
   const [specs, setSpecs] = useState([]);
   const [errors, setErrors] = useState({
     specs: false,
@@ -171,9 +163,14 @@ const EditProduct = () => {
         editProduct({ productId: id, productData: formData })
       ).unwrap();
 
-      messageApi.success({
-        content: result.message || 'Cập nhật sản phẩm thành công',
-        duration: 2,
+      // messageApi.success({
+      //   content: result.message || 'Cập nhật sản phẩm thành công',
+      //   duration: 2,
+      // });
+
+      notiApi.success({
+        message: 'Cập nhật sản phẩm thành công',
+        description: result.message || 'Cập nhật sản phẩm thành công',
       });
 
       // formEdit.resetFields();
@@ -184,17 +181,23 @@ const EditProduct = () => {
 
       navigate('/admin/products');
     } catch (error) {
-      messageApi.error(error.message || 'Đã xảy ra lỗi khi lưu sản phẩm');
+      // messageApi.error(error.message || 'Đã xảy ra lỗi khi lưu sản phẩm');
+      notiApi.error({
+        message: 'Lỗi khi cập nhật sản phẩm',
+        description: error.message || 'Đã xảy ra lỗi khi lưu sản phẩm',
+      });
       console.error('Error saving product:', error);
     } finally {
       setIsEditing(false);
     }
     // await axios.post("/api/products", payload);
   };
+ 
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {contextHolder}
+      {notiContextHolder}
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate('/admin/products')}
@@ -223,17 +226,7 @@ const EditProduct = () => {
               }
             }}
             scrollToFirstError
-            initialValues={{
-              status: currentProduct
-                ? currentProduct.status
-                : PRODUCT_STATUS.ACTIVE.value,
-              name: currentProduct ? currentProduct.name : 'Test 1',
-              description: currentProduct
-                ? currentProduct.description
-                : 'Mô tả sản phẩm test 1',
-              brand_id: currentProduct ? currentProduct.brand_id : 1,
-              category_id: currentProduct ? currentProduct.category_id : 1,
-            }}
+             
           >
             {/* ================= Thông tin cơ bản ================= */}
             <Card title="Thông tin cơ bản" style={{ marginBottom: 20 }}>
@@ -261,11 +254,13 @@ const EditProduct = () => {
                       placeholder="Thương hiệu"
                       showSearch
                       style={{ width: '100%' }}
-                      options={brands.map((item, idx) => ({
-                        label: item.name,
-                        value: item._id,
-                      }))}
-                    />
+                    >
+                      {brands.map((item, idx) => (
+                        <Option key={idx} value={parseInt(item._id, 10)}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
@@ -280,12 +275,13 @@ const EditProduct = () => {
                       placeholder="Danh mục"
                       showSearch
                       style={{ width: '100%' }}
-                      options={categories.map((item, idx) => ({
-                        label: item.name,
-                        value: item._id,
-                      }))}
-                      //   onChange={(val) => setCategoryAttributes(getAttributeByCategory(val))}
-                    />
+                    >
+                      {categories.map((item, idx) => (
+                        <Option key={idx} value={parseInt(item._id, 10)}>
+                          {item.name}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
