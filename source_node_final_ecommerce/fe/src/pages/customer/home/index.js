@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import { Link as RouterLink } from "react-router-dom";
+import { Link, Link as RouterLink } from "react-router-dom";
 
 import NewProducts from "./NewProducts";
 import BestSellersProducts from "./BestSellersProducts";
@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <Box sx={{ pb: 8 }} className="p-2 md:p-4 lg:p-6">
       {/* Hero (banner) */}
-      <Box sx={{ bgcolor: "grey.100", py: 6, mb: 4 }}>
+      <Box sx={{ py: 6, mb: 4 }}>
         {/* <Container maxWidth="lg"> */}
           <Typography variant="h4" fontWeight={700} gutterBottom>
             Chào mừng đến E-Shop
@@ -52,18 +52,18 @@ export default function Home() {
 
         {/* Ít nhất 3 danh mục riêng biệt */}
         <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Laptops" to="/products?category=laptops" />
-          <ProductByCategory slug="laptops" category_id={1} limit={8} />
+          <SectionHeader title="Điện thoại" to="/products?category=phones" />
+          <ProductByCategory slug="phones" category_id={11} limit={8} />
         </Box>
 
         <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Monitors" to="/products?category=monitors" />
-          <ProductByCategory slug="monitors" category_id={1} limit={8} />
+          <SectionHeader title="Desktop" to="/products?category=laptop" />
+          <ProductByCategory slug="laptop" category_id={14} limit={8} />
         </Box>
 
         <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Hard Drives" to="/products?category=hard-drives" />
-          <ProductByCategory slug="hard-drives" category_id={1} limit={8} />
+          <SectionHeader title="Laptop" to="/products?category=hard-drives" />
+          <ProductByCategory slug="hard-drives" category_id={15} limit={8} />
         </Box>
       {/* </Container> */}
     </Box>
@@ -83,9 +83,8 @@ function SectionHeader({ title, to }) {
       <Typography variant="h6" fontWeight={700}>
         {title}
       </Typography>
-      <Button component={RouterLink} to={to} size="small">
-        Xem tất cả
-      </Button>
+      <Link to={to} style={{ color: 'var(--color-primary-dark)'}}>Xem tất cả</Link>
+
     </Box>
   );
 }

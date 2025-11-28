@@ -1,6 +1,4 @@
-import { Card, Select, Input, Button, Col, Row, Typography } from 'antd';
-
-const { Option } = Select;
+import { Card, AutoComplete, Input, Button, Col, Row, Typography } from 'antd';
 
 const TechnicalSpecs = ({ specs, setSpecs, showError }) => {
   const addSpec = () => {
@@ -28,23 +26,27 @@ const TechnicalSpecs = ({ specs, setSpecs, showError }) => {
     'Weight',
   ];
 
+  // AutoComplete cần dạng { value: string }
+  const autoCompleteOptions = specOptions.map((opt) => ({ value: opt }));
+
   return (
     <Card title="Thông số kỹ thuật" style={{ marginBottom: 20 }}>
       {specs.map((spec, i) => (
         <Row key={i} gutter={[8, 8]} align="middle" style={{ marginBottom: 8 }}>
           <Col xs={24} sm={12} md={8}>
-            <Select
-              placeholder="Chọn thông số"
+            <AutoComplete
+              placeholder="Chọn hoặc nhập thông số"
               value={spec.key}
-              onChange={(v) => updateSpec(i, 'key', v)}
+              options={autoCompleteOptions}
+              onChange={(v) => updateSpec(i, 'key', v)} // gõ tay hoặc chọn đều chạy vào đây
               style={{ width: '100%' }}
-            >
-              {specOptions.map((opt) => (
-                <Option key={opt} value={opt}>
-                  {opt}
-                </Option>
-              ))}
-            </Select>
+              allowClear
+              filterOption={(inputValue, option) =>
+                option.value
+                  .toUpperCase()
+                  .includes(inputValue.toUpperCase())
+              }
+            />
           </Col>
 
           <Col xs={24} sm={12} md={8}>
@@ -71,7 +73,6 @@ const TechnicalSpecs = ({ specs, setSpecs, showError }) => {
         + Thêm thông số
       </Button>
 
-      {/* ⚠️ Hiển thị lỗi tổng thể nếu không có thông số nào */}
       {showError && specs.length === 0 && (
         <Typography.Text
           type="danger"

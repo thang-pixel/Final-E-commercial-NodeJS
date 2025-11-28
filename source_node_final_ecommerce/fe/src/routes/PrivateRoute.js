@@ -1,14 +1,20 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+// src/routes/PrivateRoute.jsx
+import { Navigate, Outlet } from 'react-router-dom'; 
 
-function PrivateRoute({ role }) {
-  const { user } = useSelector((state) => state.auth);
-  console.log("PrivateRoute user:", user, "required role:", role);
-  if (!user) return <Navigate to="/login" />;
+function PrivateRoute({ role, user }) {
+  
 
-  // console.log("User role:", user.role);
-  if (role && user.role !== role) return <Navigate to="/" />;
+  // 3. Nếu có truyền prop role → check role
+  // role có thể là string ("ADMIN") hoặc array (["ADMIN", "STAFF"])
+  if (role) {
+    const allowedRoles = Array.isArray(role) ? role : [role];
+    if (!allowedRoles.includes(user?.role)) {
+      // có login nhưng không đúng role
+      return <Navigate to="/" replace />;
+    }
+  }
 
+  // 4. Hợp lệ → render children route
   return <Outlet />;
 }
 

@@ -63,6 +63,7 @@ function Login() {
 
   useEffect(() => {
     if (user) {
+      console.log('user', user)
       // Ưu tiên quay lại trang trước
       if (from && from !== '/login' && from !== '/register') {
         navigate(from, { replace: true });
@@ -70,7 +71,7 @@ function Login() {
       }
       
       if (user.role === 'admin') {
-        navigate('/admin/home');
+        navigate('/admin');
       } else {
         navigate('/');
       }

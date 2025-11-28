@@ -6,7 +6,7 @@ export const getAllCategory = createAsyncThunk('categories/getAll', async (query
     const res = await api.get(`/api/categories`, { params: queryParams });
     if (res.data.success) {
       return {
-        categories: res.data.data,
+        data: res.data.data,
         meta: res.data.meta,
         message: res.data.message,
       };
@@ -91,7 +91,7 @@ const categorySlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllCategory.fulfilled, (state, action) => {
-        state.categories = action.payload.categories;
+        state.categories = action.payload.data;
         state.meta = action.payload.meta;
         state.message = action.payload.message;
         state.loading = false;

@@ -12,6 +12,9 @@ router.get('/:slug', BrandController.show);
 // Protected routes - only for admin
 router.post('/', adminRequired, upload.single('image'), BrandController.store);
 router.put('/:id/edit', adminRequired, upload.single('image'), BrandController.update);
+router.delete('/:id', adminRequired, BrandController.softDelete);
+// router.delete('/:id/force', adminRequired, BrandController.);
+// router.patch('/:id/restore', adminRequired, BrandController.restore);
 router.get('/', BrandController.index);
 
 module.exports = router;

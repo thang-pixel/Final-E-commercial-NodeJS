@@ -12,14 +12,19 @@ const sortObj = (sort_whitelist, default_field = 'name', req) => {
 
     const sortObj = {};
     for (const token of sortParams) {
-        const [rawField, rawOrder] = String(token).split('_');
+        // token: min_price_asc, max_price_desc, name_asc
+        const raw = String(token).trim().split('_');
+
+        const rawOrder = raw.pop();
+        const rawField = raw.join('_');
+
         const field = sort_whitelist[rawField];
         if (!field) continue;
         const order = (rawOrder || 'asc').toLowerCase() === 'asc' ? 1 : -1;
         sortObj[field] = order;
     }
 
-    // console.log("Constructed sort object: ", sortObj);
+    console.log("Constructed sort object: ", sortObj);
 
     // Mặc định: mới nhất trước, rồi name để ổn định
     if (Object.keys(sortObj).length === 0) {
@@ -88,7 +93,7 @@ const paginationParam = (req, limitDefault = 5) => {
 const selectFieldByRole = (role) => {
   let fieldsToHide = '';
   if (role !== 'admin') {
-    fieldsToHide += '-variants.original_price ';
+    // fieldsToHide += '-variants.original_price ';
   }
   return fieldsToHide;
 }

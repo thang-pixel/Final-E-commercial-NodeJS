@@ -40,6 +40,7 @@ const cloudinary = require('../cloudinary/cloudinaryConfig');
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
+    console.log('Multer file upload: ', file);
     return {
       folder: 'ecommerce-nodejs-final',  // tên folder trên Cloudinary
       resource_type: 'image',

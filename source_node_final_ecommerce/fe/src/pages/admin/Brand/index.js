@@ -32,7 +32,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteBrand, getAllBrands } from '../../../redux/reducers/brandSlice';
 import BrandTable from '../../../components/admin/Brand/BrandTable';
-import BrandGrid from '../../../components/admin/Brand/BrandGrid'; 
+import BrandGrid from '../../../components/admin/Brand/BrandGrid';
 
 const { RangePicker } = DatePicker;
 
@@ -43,9 +43,7 @@ const STATUS = [
 
 const BrandList = () => {
   // View state
-  const { brands, loading, meta } = useSelector(
-    (state) => state.brands
-  );
+  const { brands, loading, meta } = useSelector((state) => state.brands);
   const dispatch = useDispatch();
   // message api
   const [messageApi, contextHolderMessage] = message.useMessage();
@@ -126,29 +124,47 @@ const BrandList = () => {
   // Table columns
   const columns = [
     {
+      title: 'ID',
+      dataIndex: '_id',
+      width: 40,
+      sorter: (a, b) => a._id.localeCompare(b._id),
+      render: (text) => <span style={{ fontFamily: 'monospace' }}>{text}</span>,
+    },
+    {
       title: 'Thương hiệu',
       dataIndex: 'name',
       width: 120,
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a?.name.localeCompare(b?.name),
       render: (text, r) => (
         <>
           {view === 'table' ? (
-            text
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+              {text}
+              <img
+                src={r?.image_url}
+                alt={r?.name}
+                style={{
+                  width: 32,
+                  height: 32,
+                  objectFit: 'contain',
+                  borderRadius: 6,
+                }}
+              />
+            </div>
           ) : (
             <Space>
               <img
-                src={r.cover}
-                alt={r.name}
+                src={r?.image_url}
+                alt={r?.name}
                 style={{
                   width: 44,
                   height: 32,
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                   borderRadius: 6,
                 }}
               />
               <div>
                 <div style={{ fontWeight: 600 }}>{text}</div>
-                <div style={{ fontSize: 12, color: '#64748b' }}>{r.sku}</div>
               </div>
             </Space>
           )}
@@ -160,7 +176,7 @@ const BrandList = () => {
       dataIndex: 'category_id',
       sorter: (a, b) => a.category_id - b.category_id,
       width: 160,
-      render: (cate_id) => <>{cate_id.name}</>,
+      render: (cate_id) => <>{cate_id?.name || '00'}</>,
     },
     {
       title: 'Trạng thái',
@@ -199,7 +215,12 @@ const BrandList = () => {
             </Link>
           </Tooltip>
           <Tooltip title="Xoá">
-            <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDeleteConfirm(r._id, r.name)} />
+            <Button
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDeleteConfirm(r._id, r.name)}
+            />
           </Tooltip>
         </Space>
       ),

@@ -1,6 +1,7 @@
 const { CATEGORY_STATUSES } = require('../../constants/dbEnum');
 const CategoryModel = require('../models/CategoryModel');
-
+const ProductModel = require('../models/ProductModel');
+const BrandModel = require('../models/BrandModel');
 class CategoryController {
   // [GET] | api/Categorys
   async index(req, res) {
@@ -128,22 +129,41 @@ class CategoryController {
 
   // [POST] | api/categories
   async store(req, res, next) {
-    let { name, description, parent_id, status } = req.body;
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'Vui lòng upload ảnh',
-        oldInput: req.body,
-      });
-    }
-    const imageUrl = `/uploads/products/${req.file.filename}`;
+    let { name, description, parent_id, status, attributes } = req.body;
+    // if (!req.file) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'Vui lòng upload ảnh',
+    //     oldInput: req.body,
+    //   });
+    // }
+    
+    console.log('Add cate - body: ', req.body);
+    
+    const imageReq = req.file; 
+    const imageUrl = `${imageReq.path}`;
+    console.log('Uploaded image URL:', imageUrl);
+
     if (!name) {
       return res.status(400).json({
         success: false,
         message: 'Tên danh mục không được để trống',
-        data: null,
       });
     }
+    if (!attributes) {
+      return res.status(400).json({
+        success: false,
+        message: 'Thuộc tính danh mục không được để trống',
+      });
+    }
+    if (!Array.isArray(attributes)) {
+      try {
+        attributes = JSON.parse(attributes);
+      } catch (error) {
+        attributes = [attributes];
+      } 
+    }
+
     try {
       const existingCategory = await CategoryModel.findOne({ name });
       if (existingCategory) {
@@ -156,9 +176,10 @@ class CategoryController {
       const newCategory = new CategoryModel({
         name,
         description,
-        image: imageUrl,
+        image_url: imageUrl,
         status: status ? status : CATEGORY_STATUSES.ACTIVE,
         parent_id,
+        attributes
       });
       await newCategory.save();
       return res.status(201).json({
@@ -167,6 +188,7 @@ class CategoryController {
         data: newCategory,
       });
     } catch (error) {
+      console.error('Error creating category:', error);
       return res.status(500).json({
         success: false,
         message: 'Lỗi server',
@@ -245,18 +267,43 @@ class CategoryController {
   // [DELETE] api/categories/:id
   async softDelete(req, res, next) {
     try {
-      const { id } = req.params;
-      const c = await CategoryModel.delete({ _id: parseInt(id) });
+      let { id } = req.params;
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'id không được để trống',
+          data: null,
+        });
+      }
+      id = parseInt(id);
+
+      // kiem tra danh muc co san pham, hay thuong hieu khong
+      const hasProducts = await ProductModel.findOne({ category_id: id }); // + index {categoryId:1}
+      if (hasProducts) {
+        return res.status(409).json({
+          success: false,
+          message: 'Không thể xoá: danh mục đang có sản phẩm.',
+        });
+      }
+      const hasBrands = await BrandModel.findOne({ category_id: id }); // + index {categoryId:1}
+      if (hasBrands) {
+        return res.status(409).json({
+          success: false,
+          message: 'Không thể xoá: danh mục đang có thương hiệu.',
+        });
+      }
+
+      const c = await CategoryModel.delete({ _id: id });
       if (c.deletedCount === 0) {
         return res.status(404).json({
           success: false,
           message: 'Không tìm thấy danh mục để xóa',
         });
       }
-      await CategoryModel.updateOne(
-        { _id: id },
-        { status: CATEGORY_STATUSES.INACTIVE }
-      );
+      // await CategoryModel.updateOne(
+      //   { _id: id },
+      //   { status: CATEGORY_STATUSES.INACTIVE }
+      // );
       return res.status(200).json({
         data: id,
         success: true,

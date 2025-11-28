@@ -26,21 +26,38 @@ import {
   AddShoppingCart,
   ChevronLeft,
   ChevronRight,
+  ShoppingCartCheckout,
 } from '@mui/icons-material';
 import { api } from '../../../api/axios';
-import { API_DOMAIN } from '../../../constants/apiDomain';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProductBySlug } from '../../../redux/reducers/productSlice';
+import { message } from 'antd';
+import { addToCart } from '../../../redux/reducers/cartSlice';
+import productUtil from '../../../utils/productUtil';
+import Gallery from '../../../components/common/Gallery';
+import stringUtils from '../../../utils/stringUtils';
+import SkeletonProductDetail from '../../../components/common/SketonProductDetail';
 
-export default function ProductDetail() {
+
+function ProductDetail() {
   const { slug } = useParams();
+  const [messageApi, contextHolder] = message.useMessage();
 
+  // store / redux
+  const dispatch = useDispatch();
+  const { currentProduct } = useSelector((state) => state.products);
+  const { carts } = useSelector((state) => state.carts);
+
+  // local state
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
 
   // selections
-  const [color, setColor] = useState('');
-  const [storage, setStorage] = useState('');
+  const [variants, setVariants] = useState([]);
   const [qty, setQty] = useState(1);
+  const [attributes, setAttributes] = useState([]); // [{ code, values: [] }, ...]
+  const [variantSelected, setVariantSelected] = useState(null);
 
   // reviews
   const [reviews, setReviews] = useState([]);
@@ -50,31 +67,30 @@ export default function ProductDetail() {
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState('');
 
+  // load bang redux
   useEffect(() => {
-    let mounted = true;
     (async () => {
-      try {
-        setLoading(true);
-        setErr('');
-        const res = await api.get(`/api/products/${encodeURIComponent(slug)}`);
-        if (!mounted) return;
-        const prod = res.data?.data || res.data;
-        setData(prod);
-        // preselect defaults
-        const c0 = prod?.variants?.[0]?.color || '';
-        const s0 = prod?.variants?.[0]?.storage || '';
-        setColor(c0);
-        setStorage(s0);
-      } catch (e) {
-        setErr(e?.response?.data?.message || 'Không tải được sản phẩm');
-      } finally {
+      setLoading(true);
+      const rs = await dispatch(getProductBySlug(slug));
+
+
+      const p = rs?.payload?.data || null;
+      if (!p) {
+        setErr('Không tìm thấy sản phẩm');
         setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      if (p) {
+        setData(p);
+        setVariants(p?.variants || []);
+        setVariantSelected(p?.variants?.[0] || null);
+        setAttributes(productUtil.getAttributesFromVariants(p?.variants || []));
+        
       }
     })();
-    return () => {
-      mounted = false;
-    };
-  }, [slug]);
+  }, [dispatch, slug]);
 
   const productId = data?._id;
 
@@ -106,52 +122,8 @@ export default function ProductDetail() {
 
   const images = useMemo(() => {
     if (!data?.images) return [];
-    return data.images.map((it) => normalizeUrl(it.img_url));
+    return data.images.map((it) => stringUtils.normalizeUrl(it.img_url));
   }, [data]);
-
-  const colors = useMemo(() => {
-    const set = new Set(
-      (data?.variants || []).map((v) => v.color).filter(Boolean)
-    );
-    return [...set];
-  }, [data]);
-
-  const storages = useMemo(() => {
-    const set = new Set(
-      (data?.variants || [])
-        .filter((v) => !color || v.color === color)
-        .map((v) => v.storage)
-        .filter(Boolean)
-    );
-    return [...set];
-  }, [data, color]);
-
-  const selectedVariant = useMemo(() => {
-    if (!data?.variants) return null;
-    return (
-      data.variants.find(
-        (v) =>
-          (!color || v.color === color) && (!storage || v.storage === storage)
-      ) || null
-    );
-  }, [data, color, storage]);
-
-  const priceText = useMemo(() => {
-    if (selectedVariant) return fmtVND(selectedVariant.price);
-    if (data?.min_price != null && data?.max_price != null) {
-      if (data.min_price === data.max_price) return fmtVND(data.min_price);
-      return `${fmtVND(data.min_price)} - ${fmtVND(data.max_price)}`;
-    }
-    return '—';
-  }, [selectedVariant, data]);
-
-  const handleAddToCart = () => {
-    if (!selectedVariant) return alert('Vui lòng chọn biến thể hợp lệ.');
-    if ((selectedVariant.stock_quantity ?? 0) <= 0)
-      return alert('Biến thể đã hết hàng.');
-    // TODO: dispatch(addToCart({ productId: data._id, variantId: selectedVariant.id, qty }))
-    alert('Đã thêm vào giỏ!');
-  };
 
   const handleSubmitReview = async () => {
     if (!productId) return;
@@ -174,23 +146,70 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading) return <DetailSkeleton />;
+  if (loading) return <SkeletonProductDetail />;
+
   if (err)
     return (
       <Box sx={{ p: 2 }}>
         <Alert severity="error">{err}</Alert>
       </Box>
     );
+
   if (!data) return null;
 
-  const brandLabel =
-    data.brand?.name || data.brand_name || data.brand_id || '—';
+  const brandLabel = data.brand_id?.name || data.brand_id || '—';
+
+  const handleAddToCart = async () => {
+    const login = false;
+    if (!variantSelected) {
+      messageApi.open({
+        type: 'warning',
+        content: 'Vui lòng chọn thuộc tính sản phẩm.',
+      });
+      return;
+    }
+
+    if (login){
+      // Thực hiện thêm vào giỏ hàng
+    } else {
+      const payload = {
+        product_id: data._id,
+        variant_id: variantSelected ? variantSelected._id : null,
+        SKU: variantSelected.SKU,
+        attributes: variantSelected.attributes,
+        quantity: qty,
+        image_url: data.images[0].img_url,
+        name: data.name,
+        price: variantSelected.price,
+      }
+      console.log('Add to cart payload', payload);
+
+      // kiem tra so luong trong kho
+      const cartItem = carts.find(item => item.product_id === data._id && item.variant_id === variantSelected._id);
+      const existingQty = cartItem ? cartItem.quantity : 0;
+      if (existingQty + qty > variantSelected.stock) {
+        messageApi.open({
+          type: 'warning',
+          content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+        });
+        return;
+      }
+
+      dispatch(addToCart(payload));
+
+      messageApi.open({
+        type: 'success',
+        content: 'Đã thêm sản phẩm vào giỏ hàng (chưa kết nối backend).',
+      });
+    }
+  }
 
   return (
     <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+      {contextHolder}
       <Grid container spacing={3} display="flex" wrap="wrap">
         {/* Gallery */}
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Gallery images={images} name={data.name} />
           {/* Yêu cầu: ít nhất 3 ảnh */}
           {images.length < 3 && (
@@ -201,7 +220,7 @@ export default function ProductDetail() {
         </Grid>
 
         {/* Info */}
-        <Grid item size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Stack spacing={1.25}>
             <Typography variant="h5" fontWeight={700}>
               {data.name}
@@ -225,149 +244,133 @@ export default function ProductDetail() {
               </Typography>
               <Chip
                 size="small"
-                label={data.status === 'ACTIVE' ? 'Còn hàng' : 'Tạm hết'}
+                label={data.status === 'ACTIVE' ? 'Còn hàng' : 'Ngừng bán'}
                 color={data.status === 'ACTIVE' ? 'success' : 'default'}
               />
             </Stack>
 
             <Typography variant="h6" color="error" fontWeight={800}>
-              {priceText}
+              {variantSelected
+                ? fmtVND(variantSelected.price)
+                : currentProduct?.min_price + ' - ' + currentProduct?.max_price
+                ? fmtVND(currentProduct?.max_price)
+                : ''}
+              {/* quantity */}
+              {variantSelected ? ` - Còn lại: ${variantSelected.stock}` : ''}
             </Typography>
-
-            {/* Variants quick table (độc lập tồn kho) */}
-            {!!data?.variants?.length && (
-              <Box sx={{
-                maxWidth: "100%",
-                overflowX: "auto",
-              }}>
-                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                  Biến thể (mỗi biến thể theo dõi tồn kho riêng)
-                </Typography>
-                <Table
-                  size="small"
-                  sx={{
-                    '& td, & th': { whiteSpace: 'nowrap', overflowX: 'auto' },
-                  }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Chọn</TableCell>
-                      <TableCell>Màu</TableCell>
-                      <TableCell>ROM</TableCell>
-                      <TableCell>SKU</TableCell>
-                      <TableCell>Giá</TableCell>
-                      <TableCell>Tồn</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data.variants.map((v) => {
-                      const active = v.color === color && v.storage === storage;
-                      return (
-                        <TableRow key={v.id ?? `${v.color}-${v.storage}`}>
-                          <TableCell>
-                            <Button
-                              size="small"
-                              variant={active ? 'contained' : 'outlined'}
-                              onClick={() => {
-                                setColor(v.color || '');
-                                setStorage(v.storage || '');
-                              }}
-                            >
-                              Chọn
-                            </Button>
-                          </TableCell>
-                          <TableCell>{v.color || '—'}</TableCell>
-                          <TableCell>{v.storage || '—'}</TableCell>
-                          <TableCell>{v.SKU || '—'}</TableCell>
-                          <TableCell>{fmtVND(v.price)}</TableCell>
-                          <TableCell>{v.stock_quantity ?? 0}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </Box>
-            )}
-
-            {/* Color */}
-            {!!colors.length && (
-              <Stack spacing={0.5}>
-                <Typography variant="body2" color="text.secondary">
-                  Màu sắc
-                </Typography>
-                <ToggleButtonGroup
-                  color="primary"
-                  exclusive
-                  value={color}
-                  onChange={(_, v) => v && setColor(v)}
-                >
-                  {colors.map((c) => (
-                    <ToggleButton key={c} value={c} size="small">
-                      {c}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
-              </Stack>
-            )}
-
-            {/* Storage */}
-            {!!storages.length && (
-              <Stack spacing={0.5}>
-                <Typography variant="body2" color="text.secondary">
-                  Dung lượng
-                </Typography>
-                <ToggleButtonGroup
-                  color="primary"
-                  exclusive
-                  value={storage}
-                  onChange={(_, v) => v && setStorage(v)}
-                >
-                  {storages.map((s) => (
-                    <ToggleButton key={s} value={s} size="small">
-                      {s}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
-              </Stack>
-            )}
-
-            {/* Qty + Add */}
-            <Stack direction="row" spacing={1.5} alignItems="center">
+            {/* Quantity */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography variant="body2">Số lượng:</Typography>
               <TextField
-                label="Số lượng"
                 type="number"
                 size="small"
-                inputProps={{
-                  min: 1,
-                  max: selectedVariant?.stock_quantity ?? 99,
-                }}
+                sx={{ width: 100 }}
+                inputProps={{ min: 1 }}
                 value={qty}
-                onChange={(e) =>
-                  setQty(Math.max(1, Number(e.target.value || 1)))
-                }
-                sx={{ width: 120 }}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value);
+                  if (isNaN(v) || v < 1) {
+                    setQty(1);
+                  } else {
+                    if (variantSelected && v > variantSelected.stock) {
+                      messageApi.open({
+                        type: 'warning',
+                        content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+                      });
+                      setQty(variantSelected.stock);
+                      return;
+                    } else {
+                      setQty(v);
+                    }
+                  }
+                }}
               />
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<AddShoppingCart />}
-                disabled={
-                  !selectedVariant ||
-                  (selectedVariant?.stock_quantity ?? 0) <= 0
-                }
-                onClick={handleAddToCart}
-              >
-                Thêm vào giỏ
-              </Button>
             </Stack>
 
+            {/* Danh sách thuộc tính */}
+            <Grid container spacing={2}>
+              {attributes.map((attr) => {
+                const { code, values } = attr;
+
+                return (
+                  <Grid key={code} size={12}>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                      {code.toUpperCase()}
+                    </Typography>
+
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={
+                        variantSelected?.attributes?.find(
+                          (item) => item.code === code
+                        )?.value || ''
+                      }
+                      exclusive
+                      onChange={(_, val) => {
+                        // ✅ Cho phép bỏ chọn - khi click vào button đang active
+                        if (val === null) {
+                          console.log('Deselected', code);
+                          // Reset về variant đầu tiên hoặc xử lý logic khác
+                          setVariantSelected(null);
+                          return;
+                        }
+
+                        if (
+                          val ===
+                          variantSelected?.attributes?.find(
+                            (item) => item.code === code
+                          )?.value
+                        ) {
+                          return; // same value selected
+                        }
+
+                        console.log('select attr', code, val);
+                        const variant = productUtil.findVariantByAttributes(
+                          variants,
+                          code,
+                          val
+                        );
+                        console.log('found variant', variant);
+                        if (variant) {
+                          setVariantSelected(variant);
+                        }
+                      }}
+                    >
+                      {values.map((val) => (
+                        <ToggleButton
+                          key={val}
+                          value={val}
+                          // disabled={
+                          //   !findVariantByAttributes(variants, code, val)
+                          // }
+                        >
+                          {val}
+                        </ToggleButton>
+                      ))}
+                    </ToggleButtonGroup>
+                  </Grid>
+                );
+              })}
+            </Grid>
+
+            {/* action */}
+            <div className="flex items-center justify-start gap-3 mt-4">
+              <Button 
+              onClick={handleAddToCart}
+              variant="contained" startIcon={<AddShoppingCart />}>
+                Thêm vào giỏ
+              </Button>
+              <Button variant="outlined" startIcon={<ShoppingCartCheckout />}>
+                Mua ngay
+              </Button>
+            </div>
           </Stack>
         </Grid>
 
         {/* description */}
         {/* Description: tối thiểu hiển thị 5 dòng (giữ xuống dòng) */}
-        <Grid item size={12}>
-          <Divider sx={{ my: 1 }} />  
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Divider sx={{ my: 1 }} />
           <Box>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Mô tả
@@ -386,8 +389,39 @@ export default function ProductDetail() {
           </Box>
         </Grid>
 
+        {/* Thong so ky thuat */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Divider sx={{ my: 1 }} />
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+              Thông số kỹ thuật
+            </Typography>
+            {/* mang {key, value} */}
+            {data.specifications ? (
+              <>
+                <Table size="small">
+                  <TableBody>
+                    {currentProduct.specifications.map((spec) => {
+                      return (
+                        <TableRow key={spec.key}>
+                          <TableCell>{spec.key}</TableCell>
+                          <TableCell>{spec.value}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                — Không có thông số kỹ thuật —
+              </Typography>
+            )}
+          </Box>
+        </Grid>
+
         {/* Reviews */}
-        <Grid item size={12}>
+        <Grid size={12}>
           <Divider sx={{ my: 3 }} />
           <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
             Đánh giá & Bình luận
@@ -517,133 +551,7 @@ export default function ProductDetail() {
   );
 }
 
-/* ------------ Gallery component ------------- */
-function Gallery({ images = [], name = '' }) {
-  const [active, setActive] = useState(0);
-  if (!images.length)
-    return (
-      <Skeleton
-        variant="rectangular"
-        sx={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 2 }}
-      />
-    );
 
-  const prev = () => setActive((a) => (a - 1 + images.length) % images.length);
-  const next = () => setActive((a) => (a + 1) % images.length);
-
-  return (
-    <Box sx={{ width: '100%' }}>
-      {/* Khung ảnh cố định (vuông), ảnh contain nên không méo/nhảy layout */}
-      <Box
-        sx={{
-          position: 'relative',
-          width: '100%',
-          borderRadius: 2,
-          overflow: 'hidden',
-          bgcolor: 'background.paper',
-          aspectRatio: '1 / 1', // cố định vuông
-        }}
-      >
-        <img
-          src={images[active]}
-          alt={`${name}-${active}`}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            display: 'block',
-          }}
-        />
-
-        {/* Nút điều hướng */}
-        <IconButton
-          onClick={prev}
-          size="small"
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 8,
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(0,0,0,.45)',
-            color: '#fff',
-            '&:hover': { bgcolor: 'rgba(0,0,0,.6)' },
-          }}
-          aria-label="Previous image"
-        >
-          <ChevronLeft />
-        </IconButton>
-        <IconButton
-          onClick={next}
-          size="small"
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            right: 8,
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(0,0,0,.45)',
-            color: '#fff',
-            '&:hover': { bgcolor: 'rgba(0,0,0,.6)' },
-          }}
-          aria-label="Next image"
-        >
-          <ChevronRight />
-        </IconButton>
-
-        {/* Chỉ số ảnh */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 6,
-            right: 8,
-            px: 0.75,
-            py: 0.25,
-            borderRadius: 1,
-            bgcolor: 'rgba(0,0,0,.45)',
-            color: '#fff',
-            fontSize: 12,
-          }}
-        >
-          {active + 1}/{images.length}
-        </Box>
-      </Box>
-
-      {/* Thumbnails */}
-      <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', mt: 1 }}>
-        {images.map((src, i) => (
-          <Box
-            key={i}
-            onClick={() => setActive(i)}
-            sx={{
-              borderRadius: 1,
-              border: i === active ? '2px solid' : '1px solid',
-              borderColor: i === active ? 'primary.main' : 'divider',
-              width: 72,
-              height: 72,
-              flex: '0 0 auto',
-              overflow: 'hidden',
-              display: 'grid',
-              placeItems: 'center',
-              cursor: 'pointer',
-              bgcolor: 'background.paper',
-            }}
-            title={`Ảnh ${i + 1}`}
-          >
-            <img
-              src={src}
-              alt={`${name}-thumb-${i}`}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                display: 'block',
-              }}
-            />
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  );
-}
 
 /* ------------ Helpers ------------- */
 function fmtVND(v) {
@@ -655,41 +563,7 @@ function fmtVND(v) {
   }
 }
 
-function normalizeUrl(path = '') {
-  // const base = (API_DOMAIN || '').replace(/\/+$/, '');
-  const p = String(path || '').replace(/^\/+/, '');
-  return `${p}`;
-}
 
-function DetailSkeleton() {
-  return (
-    <Box sx={{ p: 2 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Skeleton
-            variant="rectangular"
-            sx={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 2 }}
-          />
-          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                variant="rectangular"
-                width={72}
-                height={72}
-                sx={{ borderRadius: 1 }}
-              />
-            ))}
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Skeleton width="60%" height={36} />
-          <Skeleton width="40%" height={24} />
-          <Skeleton width="30%" height={32} />
-          <Skeleton width="100%" height={140} />
-          <Skeleton width="70%" height={28} />
-        </Grid>
-      </Grid>
-    </Box>
-  );
-}
+
+
+export default ProductDetail;

@@ -4,7 +4,7 @@ const router = express.Router();
 // controller
 const CategoryController = require('../app/controllers/CategoryController');
 const { adminRequired, authRequired } = require('../app/middlewares/AuthMiddleware');
-const upload = require('../config/multer/multerConfig');
+const upload = require('../config/multer/multerConfig.js');
 
 // Category router 
 router.get('/:id/show', authRequired, adminRequired, CategoryController.getDetailById);

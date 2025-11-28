@@ -14,6 +14,9 @@ import Category from '../pages/customer/Category';
 import Register from '../pages/auth/Register';
 import ProductDetail from '../pages/customer/Product/ProductDetail';
 import ProductList from '../pages/customer/Product';
+import AccountCustomer from '../pages/customer/Account/AccountCustomer';
+import Favorite from '../pages/customer/Favorite/Favorite';
+import CheckoutPage from '../pages/customer/Checkout/CheckoutPage';
 function CustomerRoutes() {
   const { user } = useAuth();
   return (
@@ -26,19 +29,29 @@ function CustomerRoutes() {
         {/* <Route path="product/:id" element={<ProductDetail />} /> */}
         <Route path="products" element={<Outlet />}>
           <Route index element={<ProductList />} /> {/* /products */}
-          <Route path=":slug" element={<ProductDetail />} /> 
+          <Route path=":slug" element={<ProductDetail />} />
         </Route>
 
         <Route path="categories" element={<Category />} />
+        <Route path="checkout" element={<CheckoutPage />} />
+
+        {/* cart cho cả guest */}
         <Route path="carts" element={<Cart />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="orders" element={<Order />} />
+        <Route path="account" element={user ? <AccountCustomer /> : <Login />}>
+          <Route path="profile" element={user ? <Profile /> : <Login />} />
+          <Route path="orders" element={user ? <Order /> : <Login />} />
+          <Route path="carts" element={user ? <Cart /> : <Login />} />
+          <Route path="favorites" element={user ? <Favorite /> : <Login />} />
+        </Route>
       </Route>
       <Route
         path="/admin/*"
         element={<ErrorPage status={401} message="Unauthorized Access" />}
-      /> 
-      <Route path="/forbidden" element={<ErrorPage status={403} message="Forbidden" />} />
+      />
+      <Route
+        path="/forbidden"
+        element={<ErrorPage status={403} message="Forbidden" />}
+      />
       <Route
         path="*"
         element={<ErrorPage status={404} message="Page Not Found" />}
