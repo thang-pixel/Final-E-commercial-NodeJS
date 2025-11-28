@@ -7,8 +7,16 @@ const getAllProductApi = async(params) => {
   return {
     responseApi: resp.data
   }
+} 
+
+const getProductBySlugApi = async(slug) => {
+  const resp = await api.get(`/api/products/${slug}`);
+
+  console.log('Resp product by slug: ', resp, ' | Slug', slug);
+  return resp.data;
 }
 
 export  {
-  getAllProductApi
+  getAllProductApi,
+  getProductBySlugApi
 }

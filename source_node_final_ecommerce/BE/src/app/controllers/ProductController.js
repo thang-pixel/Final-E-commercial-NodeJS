@@ -16,16 +16,18 @@ class ProductController {
     try {
       const { category_id } = req.query;
       const { brand_ids, range_prices, ratings, status } = req.query;
-      let { keyword = '' } = req.query;
+      let { keyword } = req.query;
       console.log('Query parameters:', req.query);
 
       // --- Filter ---
       let filter = { 
         deleted: false,
-        name: {
+      };
+      if (keyword && keyword.trim() !== '') {
+        filter.name = {
           $regex: keyword.trim(),
           $options: 'i', // không phân biệt hoa/thường
-        },
+        };
       };
 
       if (status && Object.values(PRODUCT_STATUSES).includes(status)) {
@@ -138,19 +140,29 @@ class ProductController {
           .status(400)
           .json({ success: false, message: 'Missing slug' });
       const slug = decodeURIComponent(req.params.slug).trim().toLowerCase();
-
-      // select fields to hide with role
-      let fieldsToHide = selectFieldByRole(req.user?.role);
+ 
       // console.log(req.user);
 
-      const doc = await ProductModel.findOne({ slug })
-        .select(fieldsToHide)
+      const doc = await ProductModel
+        .findOne({ slug })
+        .populate({ path: 'category_id', select: '_id name slug attributes' })
+        .populate({ path: 'brand_id', select: '_id name slug' })
         .lean();
 
       if (!doc)
         return res
           .status(404)
-          .json({ success: false, message: 'Product not found' });
+          .json({ success: false, message: `Không tìm thấy sản phẩm với slug này: ${slug}` });
+
+      // tim kiem variants 
+      const variants = await ProductVariant
+              .find({ product_id: doc._id })
+              .select('-original_price -__v')
+              .lean();
+      doc.variants = variants;
+
+      console.log('👉 Product found:', doc);
+      
       return res.json({ success: true, data: doc, message: 'OK' });
     } catch (error) {
       res.status(500).json({

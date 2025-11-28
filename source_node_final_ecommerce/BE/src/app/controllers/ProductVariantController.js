@@ -27,6 +27,38 @@ class ProductVariantController {
     }
   }
 
+  // [GET] /products/:productId/variants/:variantId
+  async getVariantById(req, res, next) {
+    const { productId, variantId } = req.params;
+    const parsedProductId = parseInt(productId, 10);
+    const parsedVariantId = parseInt(variantId, 10);
+    try {
+      const variant = await ProductVariant.findOne({
+        product_id: parsedProductId,
+        _id: parsedVariantId, 
+      });
+
+      if (!variant) {
+        return res.status(404).json({
+          success: false,
+          message: 'Biến thể sản phẩm không tồn tại',
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: 'Biến thể sản phẩm retrieved successfully',
+        data: variant,
+      });
+    } catch (error) {
+      console.error('Error retrieving product variant:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving product variant',
+        error: error.message,
+      });
+    }
+  }
+
   // [POST] /products/:productId/variants
   async createVariant(req, res, next) {
     const { productId } = req.params;

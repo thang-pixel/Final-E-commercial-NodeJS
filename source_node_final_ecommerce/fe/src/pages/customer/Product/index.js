@@ -9,7 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import ProductCard from "../home/ProductCard";
+import ProductCard from "../../../components/customer/ProductCard";
 import { api } from "../../../api/axios";
 
 const SORT_OPTIONS = [

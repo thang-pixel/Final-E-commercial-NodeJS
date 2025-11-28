@@ -19,6 +19,15 @@ router.get(
   '/products/:productId/variants',
   ProductVariantController.getVariantsByProductId
 );
+router.get(
+  '/products/:productId/variants',
+  ProductVariantController.getVariantsByProductId
+);
+
+router.get(
+  '/products/:productId/variants/:variantId',
+  ProductVariantController.getVariantById
+);
 
 router.patch(
   '/products/:productId/variants/:variantId/status',

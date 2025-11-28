@@ -156,7 +156,7 @@ export default function AdminLayout({ user }) {
                 </Badge>
               </div>
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
-                <Link to="profile" onClick={(e) => e.preventDefault()} className="user-chip">
+                <Link to="admin/profile" onClick={(e) => e.preventDefault()} className="user-chip">
                   <Space>
                     <Person />
                     <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>

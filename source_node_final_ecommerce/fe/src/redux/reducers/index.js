@@ -6,7 +6,7 @@ import userReducer from "./userReducer";
 const rootReducer = combineReducers({
   auth: authReducer,
 //   cart: cartReducer,
-  user: userReducer,
+  user: userReducer, 
 });
 
 export default rootReducer;

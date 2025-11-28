@@ -1,5 +1,5 @@
-import Box from '@mui/material/Box';
-import ProductCard from './ProductCard';
+import Box from '@mui/material/Box'; 
+import ProductCard from '../../../components/customer/ProductCard';
 
 export default function GridProductsHomePage({
   products = [],
