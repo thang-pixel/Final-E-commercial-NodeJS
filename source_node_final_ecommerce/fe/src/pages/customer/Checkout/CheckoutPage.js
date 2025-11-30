@@ -19,20 +19,27 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  FormLabel
 } from '@mui/material'; 
-import { ShoppingCart, Payment, LocalShipping } from '@mui/icons-material';
+import { 
+  ShoppingCart, 
+  Payment, 
+  LocalShipping,
+  CreditCard,
+  AccountBalance,
+  Wallet
+} from '@mui/icons-material';
 import { createOrder } from '../../../redux/reducers/orderSlice';
-import { getMyProfile } from '../../../redux/reducers/userSlice'; // Import từ userSlice
+import { getMyProfile } from '../../../redux/reducers/userSlice';
 
 function CheckoutPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  // Đọc từ localStorage thay vì Redux state
   const [checkoutItems, setCheckoutItems] = useState([]);
   const { user } = useSelector(state => state.auth);
-  const { profile, addresses, loading: userLoading } = useSelector(state => state.user); // Đọc từ userSlice
+  const { profile, addresses, loading: userLoading } = useSelector(state => state.user);
   const { loading, error } = useSelector(state => state.orders);
   
   // Load dữ liệu từ localStorage khi component mount
@@ -52,7 +59,6 @@ function CheckoutPage() {
     }
   }, [navigate]);
 
-  // Load thông tin user profile khi component mount
   useEffect(() => {
     if (user && !profile) {
       console.log('Loading user profile...');
@@ -69,7 +75,6 @@ function CheckoutPage() {
     province: ''
   });
 
-  // Tự động điền thông tin khi profile được load
   useEffect(() => {
     if (profile) {
       console.log('Profile loaded:', profile);
@@ -79,13 +84,6 @@ function CheckoutPage() {
         ...prev,
         full_name: profile.name || profile.full_name || '',
         phone: profile.phone || '',
-        // Nếu có địa chỉ mặc định, sử dụng địa chỉ đó
-        //...(addresses && addresses.length > 0 && {
-        //  address: addresses[0].address || '',
-        //  ward: addresses[0].ward || '',
-        //  district: addresses[0].district || '',
-        //  province: addresses[0].province || ''
-        // })
       }));
     }
   }, [profile, addresses]);
@@ -95,7 +93,7 @@ function CheckoutPage() {
   const [loyaltyPointsToUse, setLoyaltyPointsToUse] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState('');
   
-  // Tính toán giá từ checkoutItems thay vì carts
+  // Tính toán giá từ checkoutItems
   const subtotal = checkoutItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingFee = subtotal >= 500000 ? 0 : 30000;
   const discountAmount = loyaltyPointsToUse;
@@ -108,7 +106,6 @@ function CheckoutPage() {
     }));
   };
 
-  // Xử lý khi chọn địa chỉ có sẵn
   const handleSelectAddress = (addressId) => {
     setSelectedAddressId(addressId);
     if (addressId && addresses) {
@@ -123,7 +120,6 @@ function CheckoutPage() {
         }));
       }
     } else {
-      // Reset to empty if "new address" is selected
       setShippingInfo(prev => ({
         ...prev,
         address: '',
@@ -134,7 +130,6 @@ function CheckoutPage() {
     }
   };
 
-  // Xử lý khi chọn "Sử dụng thông tin tài khoản"
   const handleUseAccountInfo = () => {
     if (profile) {
       setShippingInfo(prev => ({
@@ -169,29 +164,119 @@ function CheckoutPage() {
       loyalty_points_used: loyaltyPointsToUse
     };
     
-    console.log('Order data:', orderData);
-    
     try {
       const result = await dispatch(createOrder(orderData));
       
       if (createOrder.fulfilled.match(result)) {
-        // Xóa checkout items khỏi localStorage
         localStorage.removeItem('checkout_items');
         
-        // Chuyển đến trang thành công
-        navigate('/order-success', { 
-          state: { 
-            order: result.payload.data.order,
-            loyaltyPointsEarned: result.payload.data.loyalty_points_earned
-          }
-        });
+        // Kiểm tra phương thức thanh toán
+        if (paymentMethod === 'VNPAY' && result.payload.data.payment?.payment_url) {
+          // Hiển thị loading trước khi chuyển đến VNPay
+          alert('Đang chuyển đến VNPay để thanh toán...');
+          window.location.href = result.payload.data.payment.payment_url;
+        } else {
+          // COD hoặc các phương thức khác - chuyển đến trang thành công
+          navigate('/order-success', { 
+            state: { 
+              order: result.payload.data.order,
+              loyaltyPointsEarned: result.payload.data.loyalty_points_earned
+            }
+          });
+        }
       }
     } catch (error) {
       console.error('Order error:', error);
     }
   };
   
-  // Loading state
+  // Render payment method options with icons
+  const renderPaymentMethods = () => {
+    const methods = [
+      {
+        value: 'COD',
+        label: 'Thanh toán khi nhận hàng (COD)',
+        icon: <Payment />,
+        description: 'Thanh toán bằng tiền mặt khi nhận hàng'
+      },
+      {
+        value: 'VNPAY',
+        label: 'Thanh toán qua VNPay',
+        icon: <CreditCard />,
+        description: 'Thanh toán qua QR Code VNPay, ATM, Internet Banking'
+      },
+      {
+        value: 'BANK_TRANSFER',
+        label: 'Chuyển khoản ngân hàng',
+        icon: <AccountBalance />,
+        description: 'Chuyển khoản trực tiếp vào tài khoản ngân hàng'
+      },
+      {
+        value: 'E_WALLET',
+        label: 'Ví điện tử',
+        icon: <Wallet />,
+        description: 'Thanh toán qua các ví điện tử'
+      }
+    ];
+
+    return (
+      <FormControl component="fieldset" fullWidth>
+        <FormLabel component="legend" sx={{ mb: 2, fontWeight: 600 }}>
+          Chọn phương thức thanh toán
+        </FormLabel>
+        <RadioGroup
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+        >
+          {methods.map((method) => (
+            <Box key={method.value} sx={{ mb: 1 }}>
+              <FormControlLabel
+                value={method.value}
+                control={<Radio />}
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {method.icon}
+                    <Box>
+                      <Typography variant="body1" fontWeight={600}>
+                        {method.label}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {method.description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                }
+                sx={{ 
+                  alignItems: 'flex-start',
+                  p: 1,
+                  border: '1px solid',
+                  borderColor: paymentMethod === method.value ? 'primary.main' : 'grey.300',
+                  borderRadius: 1,
+                  bgcolor: paymentMethod === method.value ? 'primary.50' : 'transparent',
+                  '&:hover': {
+                    bgcolor: 'grey.50'
+                  }
+                }}
+              />
+              
+              {/* VNPay specific info */}
+              {method.value === 'VNPAY' && paymentMethod === 'VNPAY' && (
+                <Alert severity="info" sx={{ mt: 1, ml: 4 }}>
+                  <Typography variant="body2">
+                    • Hỗ trợ thanh toán qua QR Code<br/>
+                    • Thẻ ATM các ngân hàng<br/>
+                    • Internet Banking<br/>
+                    • Ví điện tử VNPay
+                  </Typography>
+                </Alert>
+              )}
+            </Box>
+          ))}
+        </RadioGroup>
+      </FormControl>
+    );
+  };
+  
   if (userLoading && !profile) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
@@ -240,7 +325,6 @@ function CheckoutPage() {
               Thông tin giao hàng
             </Typography>
 
-            {/* Nút sử dụng thông tin tài khoản */}
             {profile && (
               <Box sx={{ mb: 2 }}>
                 <Button 
@@ -251,7 +335,6 @@ function CheckoutPage() {
                   Sử dụng thông tin tài khoản
                 </Button>
                 
-                {/* Dropdown chọn địa chỉ có sẵn */}
                 {addresses && addresses.length > 0 && (
                   <FormControl variant="outlined" sx={{ minWidth: 300 }}>
                     <InputLabel>Chọn địa chỉ có sẵn</InputLabel>
@@ -340,15 +423,7 @@ function CheckoutPage() {
               Phương thức thanh toán
             </Typography>
             
-            <RadioGroup
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            >
-              <FormControlLabel value="COD" control={<Radio />} label="Thanh toán khi nhận hàng (COD)" />
-              <FormControlLabel value="BANK_TRANSFER" control={<Radio />} label="Chuyển khoản ngân hàng" />
-              <FormControlLabel value="CREDIT_CARD" control={<Radio />} label="Thẻ tín dụng" />
-              <FormControlLabel value="E_WALLET" control={<Radio />} label="Ví điện tử" />
-            </RadioGroup>
+            {renderPaymentMethods()}
           </Paper>
           
           {/* Ghi chú */}
@@ -375,7 +450,7 @@ function CheckoutPage() {
                 Tóm tắt đơn hàng
               </Typography>
               
-              {/* Danh sách sản phẩm từ checkoutItems */}
+              {/* Danh sách sản phẩm */}
               {checkoutItems.map((item, index) => (
                 <Box key={index} sx={{ mb: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -450,14 +525,28 @@ function CheckoutPage() {
                 </Typography>
               </Box>
               
+              {/* VNPay Notice */}
+              {paymentMethod === 'VNPAY' && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <Typography variant="body2">
+                    Bạn sẽ được chuyển đến VNPay để hoàn tất thanh toán.
+                  </Typography>
+                </Alert>
+              )}
+              
               <Button
                 fullWidth
                 variant="contained"
                 size="large"
                 onClick={handleSubmitOrder}
                 disabled={loading}
+                startIcon={paymentMethod === 'VNPAY' ? <CreditCard /> : <Payment />}
               >
-                {loading ? <CircularProgress size={24} /> : 'Đặt hàng'}
+                {loading ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  paymentMethod === 'VNPAY' ? 'Thanh toán VNPay' : 'Đặt hàng'
+                )}
               </Button>
             </CardContent>
           </Card>

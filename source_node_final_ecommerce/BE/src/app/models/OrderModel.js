@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
+// Giữ nguyên orderItemSchema...
 const orderItemSchema = new mongoose.Schema({
   product_id: { type: Number, ref: "Product", required: true },
   variant_id: { type: Number, ref: "ProductVariant", required: true },
   SKU: { type: String, required: true },
-  name: { type: String, required: true }, // snapshot tên sản phẩm
+  name: { type: String, required: true },
   attributes: [
     {
       code: { type: String, required: true },
@@ -14,26 +15,26 @@ const orderItemSchema = new mongoose.Schema({
     }
   ],
   image_url: { type: String },
-  price: { type: Number, required: true }, // giá tại thời điểm mua
+  price: { type: Number, required: true },
   quantity: { type: Number, required: true, min: 1 },
-  total_price: { type: Number, required: true }, // price * quantity
+  total_price: { type: Number, required: true },
 }, { _id: false });
 
 const orderSchema = new mongoose.Schema({
   _id: Number,
-  order_number: { type: String, unique: true, index: true }, // Mã đơn hàng duy nhất
+  order_number: { type: String, unique: true, index: true },
   customer_id: { type: Number, ref: "User", required: true, index: true },
   
   // Thông tin sản phẩm
   items: [orderItemSchema],
   
   // Thông tin giá cả
-  subtotal: { type: Number, required: true }, // tổng tiền hàng
+  subtotal: { type: Number, required: true },
   shipping_fee: { type: Number, default: 0 },
   tax_amount: { type: Number, default: 0 },
   discount_amount: { type: Number, default: 0 },
-  loyalty_points_used: { type: Number, default: 0 }, // điểm tích lũy đã dùng
-  total_amount: { type: Number, required: true }, // tổng cuối cùng
+  loyalty_points_used: { type: Number, default: 0 },
+  total_amount: { type: Number, required: true },
   
   // Thông tin giao hàng
   shipping_address: {
@@ -59,24 +60,18 @@ const orderSchema = new mongoose.Schema({
     status: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
     note: String,
-    updated_by: { type: Number, ref: "User" } // admin hoặc hệ thống
+    updated_by: { type: Number, ref: "User" }
   }],
   
-  // Thông tin thanh toán
+  // Chỉ lưu phương thức thanh toán, chi tiết ở PaymentModel
   payment_method: {
     type: String,
-    enum: ["COD", "BANK_TRANSFER", "CREDIT_CARD", "E_WALLET"],
+    enum: ["COD", "VNPAY", "BANK_TRANSFER", "CREDIT_CARD", "E_WALLET"],
     required: true
   },
-  payment_status: {
-    type: String,
-    enum: ["PENDING", "PAID", "FAILED", "REFUNDED"],
-    default: "PENDING"
-  },
-  payment_id: String, // ID từ payment gateway
   
   // Điểm tích lũy
-  loyalty_points_earned: { type: Number, default: 0 }, // 10% total_amount
+  loyalty_points_earned: { type: Number, default: 0 },
   
   // Ghi chú
   customer_note: String,
@@ -87,29 +82,23 @@ const orderSchema = new mongoose.Schema({
   collection: "orders"
 });
 
-// Plugin tự tăng ID
+// Plugin và middleware giữ nguyên...
 orderSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id" });
-
-// Plugin xóa mềm
 orderSchema.plugin(mongooseDelete, {
   deletedAt: true,
   overrideMethods: "all",
 });
 
-// Middleware tạo order_number và tính loyalty points
 orderSchema.pre("save", function(next) {
-  // Tạo mã đơn hàng duy nhất
   if (!this.order_number) {
     const timestamp = Date.now().toString(36).toUpperCase();
     this.order_number = `ORD${timestamp}${this._id || ''}`;
   }
   
-  // Tính điểm tích lũy (10% tổng tiền)
   if (this.total_amount && !this.loyalty_points_earned) {
     this.loyalty_points_earned = Math.floor(this.total_amount * 0.1);
   }
   
-  // Thêm vào lịch sử trạng thái nếu trạng thái thay đổi
   if (this.isModified('status')) {
     this.status_history.push({
       status: this.status,

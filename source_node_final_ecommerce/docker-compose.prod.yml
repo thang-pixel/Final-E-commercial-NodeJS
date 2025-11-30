@@ -1,17 +1,14 @@
+version: '3.8'
+
 services:
-  mongo:
-    image: mongo:6
-    container_name: mongo_prod
-    restart: unless-stopped
-    volumes:
-      - mongo_data:/data/db
-    
   backend_prod: 
     image: ${BE_IMAGE}
     build:
       context: ./BE
       dockerfile: Dockerfile
       target: prod
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     environment: 
       - NODE_ENV=production
       - PORT=${BACKEND_PORT}
@@ -21,10 +18,16 @@ services:
       - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASS=${EMAIL_PASS}
-      - DB_HOST=mongo_prod
-      - DB_PORT=27017
-      - MONGO_URI=mongodb://mongo_prod:27017/e_commerce_final_prod
-    depends_on: [mongo]
+      - MONGO_URI=mongodb+srv://phannguyenquocthang:123@cluster0.nggdgrm.mongodb.net/e_commerce_final_dev
+      - CLIENT_URL=${FRONTEND_URL}
+      # VNPay configs
+      - VNPAY_TMN_CODE=${VNPAY_TMN_CODE}
+      - VNPAY_HASH_SECRET=${VNPAY_HASH_SECRET}
+      - VNPAY_RETURN_URL=${VNPAY_RETURN_URL}
+      - VNPAY_API_URL=${VNPAY_API_URL}
+      - VNPAY_API_QUERY_URL=${VNPAY_API_QUERY_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+    restart: unless-stopped
 
   frontend_prod:
     image: ${FE_IMAGE}
@@ -34,7 +37,7 @@ services:
       target: prod
     restart: unless-stopped
     ports:
-      - "80:80"  
+      - "3000:80"  
     environment:
       - NODE_ENV=production
       - FRONTEND_PORT=${FRONTEND_PORT}
@@ -44,4 +47,3 @@ services:
  
 volumes:
   mongo_data:
-  

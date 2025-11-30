@@ -19,7 +19,15 @@ RUN npm run build
 # Stage 3: production (serve bằng Nginx)
 FROM nginx:alpine AS prod
 WORKDIR /usr/share/nginx/html
-# copy build React sang Nginx
+
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/
+
+# Copy built React app từ stage build
 COPY --from=build /app/build .   
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -74,7 +74,7 @@ class OrderController {
       
       const total_amount = subtotal + shipping_fee + tax_amount - discount_amount;
       
-      // Tạo đơn hàng
+      // Tạo đơn hàng (giữ nguyên logic cũ)
       const newOrder = new OrderModel({
         customer_id,
         items: orderItems,
@@ -92,34 +92,70 @@ class OrderController {
       
       await newOrder.save();
       
-      // Cập nhật điểm tích lũy cho user
+      // Cập nhật điểm tích lũy (chỉ trừ điểm đã dùng, chưa cộng điểm mới)
       const user = await UserModel.findById(customer_id);
-      user.loyalty_points = (user.loyalty_points || 0) - loyalty_points_used + newOrder.loyalty_points_earned;
+      user.loyalty_points = (user.loyalty_points || 0) - loyalty_points_used;
       await user.save();
       
-      // Gửi email xác nhận (async, không chờ, không làm crash app)
-      if (user.email) {
-        sendOrderConfirmationEmail(user.email, newOrder)
-          .then(result => {
-            if (result.success) {
-              console.log(`✅ Email confirmation sent successfully to ${user.email}`);
-            } else {
-              console.log(`⚠️ Email confirmation failed: ${result.error}`);
-            }
-          })
-          .catch(error => {
-            console.error(`❌ Email confirmation error: ${error.message}`);
-          });
+      let responseData = {
+        order: newOrder,
+        loyalty_points_earned: newOrder.loyalty_points_earned,
+        new_loyalty_balance: user.loyalty_points
+      };
+      
+      // Nếu thanh toán VNPay, tạo payment URL
+      if (payment_method === 'VNPAY') {
+        const PaymentModel = require('../models/PaymentModel');
+        
+        // Tạo payment record
+        const payment = new PaymentModel({
+          order_id: newOrder._id,
+          customer_id,
+          payment_method: 'VNPAY',
+          amount: newOrder.total_amount,
+          status: 'PENDING',
+          expired_at: new Date(Date.now() + 15 * 60 * 1000),
+          vnpay_transaction_id: `${newOrder._id}_${Date.now()}`
+        });
+        
+        await payment.save();
+        
+        // Tạo VNPay URL
+        const VNPayService = require('../../services/VNPayService');
+        const orderInfo = `Thanh toan don hang ${newOrder.order_number}`;
+        const paymentUrl = VNPayService.createPaymentUrl(
+          req,
+          payment.vnpay_transaction_id,
+          newOrder.total_amount,
+          orderInfo
+        );
+        
+        responseData.payment = {
+          payment_id: payment._id,
+          payment_url: paymentUrl,
+          expired_at: payment.expired_at
+        };
+      } else {
+        // COD - gửi email ngay
+        if (user.email) {
+          sendOrderConfirmationEmail(user.email, newOrder)
+            .then(result => {
+              if (result.success) {
+                console.log(`✅ Email confirmation sent successfully to ${user.email}`);
+              } else {
+                console.log(`⚠️ Email confirmation failed: ${result.error}`);
+              }
+            })
+            .catch(error => {
+              console.error(`❌ Email confirmation error: ${error.message}`);
+            });
+        }
       }
       
       res.status(201).json({
         success: true,
         message: 'Đặt hàng thành công',
-        data: {
-          order: newOrder,
-          loyalty_points_earned: newOrder.loyalty_points_earned,
-          new_loyalty_balance: user.loyalty_points
-        }
+        data: responseData
       });
       
     } catch (error) {
