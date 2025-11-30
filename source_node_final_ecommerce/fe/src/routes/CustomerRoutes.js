@@ -17,24 +17,22 @@ import ProductList from '../pages/customer/Product';
 import AccountCustomer from '../pages/customer/Account/AccountCustomer';
 import Favorite from '../pages/customer/Favorite/Favorite';
 import CheckoutPage from '../pages/customer/Checkout/CheckoutPage';
+import useCart from '../hooks/cartHook';
 function CustomerRoutes() {
   const { user } = useAuth();
+  
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
-      <Route path="/" element={<CustomerLayout user={user} />}>
-        <Route path="" element={<Home />} />
-        {/* <Route path="product/:id" element={<ProductDetail />} /> */}
+      <Route path="/" element={<CustomerLayout user={user} />}> 
         <Route path="products" element={<Outlet />}>
-          <Route index element={<ProductList />} /> {/* /products */}
           <Route path=":slug" element={<ProductDetail />} />
+          <Route path="" element={<ProductList />} /> {/* /products */}
         </Route>
-
         <Route path="categories" element={<Category />} />
         <Route path="checkout" element={<CheckoutPage />} />
-
         {/* cart cho cả guest */}
         <Route path="carts" element={<Cart />} />
         <Route path="account" element={user ? <AccountCustomer /> : <Login />}>
@@ -43,6 +41,12 @@ function CustomerRoutes() {
           <Route path="carts" element={user ? <Cart /> : <Login />} />
           <Route path="favorites" element={user ? <Favorite /> : <Login />} />
         </Route>
+
+        {/* Pages */}
+        <Route path="home" element={<Home />} />
+        <Route path="contact" element={<>Contact</>} />
+        <Route path="about" element={<>About</>} />
+        <Route path="" element={<Home />} />
       </Route>
       <Route
         path="/admin/*"

@@ -21,11 +21,14 @@ import {
   Login,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllCategory } from '../../redux/reducers/categorySlice';
+import { getAllCategory, getAllRootCategory } from '../../redux/reducers/categorySlice';
 import { Badge, Typography } from '@mui/material';
 import useCart from '../../hooks/cartHook';
 import CartDrawer from '../../components/customer/CartDrawer';
 import CategoryDrawer from '../../components/customer/CategoryDrawer';
+import CategoryDropdown from '../../components/customer/CategoryDropdown';
+import useAuth from '../../hooks/authHook';
+import { fetchCartUser } from '../../redux/reducers/cartSlice';
 
 const menuPages = [
   { name: 'Home', path: '/' },
@@ -41,16 +44,23 @@ const menuBottom = [
   // { name: 'Giỏ hàng', path: '/account/carts', icon: <ShoppingCart /> },
   { name: 'Đơn hàng', path: '/account/orders', icon: <ListAlt /> },
 ];
-function CustomerLayout(props) {
-  const { user } = props;
-  const { carts, length, totalItems } = useCart();
+function CustomerLayout() {
+  const { user } = useAuth();
+  const { length } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(true);
-  const { categories, loading: cateLoading } = useSelector(
+  const { categories, rootCategories, treeCategories } = useSelector(
     (state) => state.categories
   );
   const dispatch = useDispatch();
   // const [categories, setCategories] = useState(null)
+
+  // load cart neu da login
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchCartUser(user._id));
+    }
+  }, [dispatch, user]);
 
   // load cate
   useEffect(() => {
@@ -61,8 +71,11 @@ function CustomerLayout(props) {
   }, [dispatch, categories]);
 
   useEffect(() => {
-    console.log('Categories in Layout:', categories);
-  }, [categories]);
+    if (!rootCategories || rootCategories.length === 0) {
+      dispatch(getAllRootCategory());
+      // setIsOpen();
+    }
+  }, [dispatch, rootCategories]);
 
   // ESC để đóng + khóa scroll khi mở
   useEffect(() => {
@@ -125,9 +138,9 @@ function CustomerLayout(props) {
     }
   };
 
+  // Đóng menu danh mục khi click ra ngoài
   const cateMenuRef = useRef();
   const [isOpenCateMenu, setIsOpenCateMenu] = useState(false);
-
   useEffect(() => {
     function handleClickOutside(event) {
       if (cateMenuRef.current && !cateMenuRef.current.contains(event.target)) {
@@ -142,6 +155,7 @@ function CustomerLayout(props) {
     };
   }, [isOpenCateMenu]);
 
+  // Drawer categories for mobile
   const [isOpenDrawerCate, setIsOpenDrawerCate] = useState(false);
   const drawerCateRef = useRef();
   useEffect(() => {
@@ -161,6 +175,8 @@ function CustomerLayout(props) {
     };
   }, [isOpenDrawerCate]);
 
+
+  // Drawer cart khi click cart icon
   const [isOpenDrawerCart, setIsOpenDrawerCart] = useState(false);
   const drawerCartRef = useRef();
   useEffect(() => {
@@ -326,36 +342,7 @@ function CustomerLayout(props) {
               </div>
             </div>
             <div className="menuCategoryContainer absolute left-0 top-full rounded-lg z-20">
-              <ul
-                className={`menuCategoryList  bg-white mt-1 transition-all duration-300 rounded-md ease-in-out ${
-                  isOpenCateMenu ? 'opacity-100 visible' : 'opacity-0 invisible'
-                }`}
-              >
-                {cateLoading && <p>Loading...</p>}
-                {!cateLoading && categories && categories.length > 0 ? (
-                  categories.map((cate) => (
-                    <li
-                      key={cate._id}
-                      className="menuCategoryItem hover:bg-cyan-100  rounded-e-md p-2"
-                    >
-                      <Link to={`/products/category_id=${cate._id}`}>
-                        <div className="flex items-center px-1 gap-2">
-                          <img
-                            src={cate.image_url || '/category-default.png'}
-                            alt={cate.name}
-                            className="h-6 w-6 flex-shrink-0 mr-2 object-contain"
-                          />
-                          <Typography className="whitespace-nowrap">
-                            {cate.name}
-                          </Typography>
-                        </div>
-                      </Link>
-                    </li>
-                  ))
-                ) : (
-                  <Typography>Không có danh mục nào</Typography>
-                )}
-              </ul>
+              <CategoryDropdown categories={rootCategories} isOpenCateMenu={isOpenCateMenu}/>
             </div>
           </div>
 
@@ -405,7 +392,7 @@ function CustomerLayout(props) {
             </Link>
           </div>
 
-          <div className="cart" onClick={() => setIsOpenDrawerCart(true)}>
+          <div className="cart-btn-mobile cursor-pointer"  onClick={() => setIsOpenDrawerCart(true)}>
             <Badge color="error" badgeContent={length}>
               <CartIcon />
             </Badge>
@@ -415,7 +402,7 @@ function CustomerLayout(props) {
         {/* Drawer categories */}
         <div className="category-drawer">
           <CategoryDrawer
-            categories={categories}
+            categories={rootCategories}
             isOpen={isOpenDrawerCate}
             setIsOpen={setIsOpenDrawerCate}
             ref={drawerCateRef}
@@ -456,7 +443,7 @@ function CustomerLayout(props) {
       </header>
 
       <main className="layout-customer__main container mx-auto h-auto  relative">
-        <Outlet context={{ props }} />
+        <Outlet context={{  }} />
       </main>
 
       <footer className="layout-customer__footer  bg-gray-200">

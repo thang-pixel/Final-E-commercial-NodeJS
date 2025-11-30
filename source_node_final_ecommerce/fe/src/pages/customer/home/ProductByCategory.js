@@ -4,27 +4,11 @@ import { getAllProducts } from '../../../redux/reducers/productSlice';
 import GridProductsHomePage from './GridProductsHomePage';
 import ProductsSkeleton from './ProductsSketon';
 import { getAllProductApi } from '../../../api/productApi';
+import { data } from 'react-router-dom';
 
-export default function ProductByCategory({ category_id, limit = 8 }) {
-  const sort = useMemo(() => ['name_asc', 'createdAt_desc'], []);
-  const [items, setItems] = useState(null);
+export default function ProductByCategory({ data, limit = 8 }) { 
 
-  useEffect( () => {
-    const fetchProductByCate = async (params) => {
-      try {
-        const { responseApi } = await getAllProductApi(params);
-        console.log(responseApi);
-        setItems(responseApi.data)
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
-
-    fetchProductByCate({ limit, sort, category_id });
-
-  }, [category_id, limit, sort]);
-
-  if (!items) return <ProductsSkeleton count={limit} />;
-  return <GridProductsHomePage products={items} />;
+  if (!data) return <ProductsSkeleton count={limit} />;
+  return <GridProductsHomePage products={data} />;
 }
  

@@ -2,18 +2,18 @@ import { api } from "./axios"
 
 
 const loadCartApi = async (userId) => {
-  const resp = await api.get(`/api/cart/${userId}`);
+  const resp = await api.get(`/api/carts/${userId}`);
   return resp.data;
 }
 
 // body: { product_id, variant_id, quantity, price, image_url, name, sku, attributes }
 const addToCartApi = async (userId, body) => {
-  const resp = await api.post(`/api/cart/add/${userId}`, body); 
+  const resp = await api.post(`/api/carts/${userId}/add`, body); 
   return resp.data;
 }
 
 const updateCartItemApi = async (userId, variantId, quantity) => {
-  const resp = await api.put(`/api/cart/${userId}/update/`, {
+  const resp = await api.put(`/api/carts/${userId}/update/`, {
     variantId,
     quantity
   });

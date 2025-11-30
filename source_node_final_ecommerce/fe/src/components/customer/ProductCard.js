@@ -39,29 +39,7 @@ export default function ProductCard({ product }) {
 
   const raw = images?.[0]?.img_url || '';
   const thumbnail = raw; // url ảnh trên cloudinary đã là url đầy đủ
-
-  const handleAddToCart = (product) => {
-    const {
-      _id: variant_id,
-      product_id,
-      min_price: price,
-      name,
-      sku,
-      attributes,
-    } = product;
-    // dispatch add to cart action
-    console.log('Add to cart:', product);
-    dispatch(
-      addToCart({
-        ...product,
-        variant_id: 1,
-        product_id: product._id,
-        quantity: 1,
-        price,
-        image_url: thumbnail,
-      })
-    );
-  };
+ 
 
   return (
     <>

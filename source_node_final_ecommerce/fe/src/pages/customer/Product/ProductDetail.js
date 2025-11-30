@@ -32,12 +32,12 @@ import { api } from '../../../api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductBySlug } from '../../../redux/reducers/productSlice';
 import { message } from 'antd';
-import { addToCart } from '../../../redux/reducers/cartSlice';
+import { addToCart, addToCartUser } from '../../../redux/reducers/cartSlice';
 import productUtil from '../../../utils/productUtil';
 import Gallery from '../../../components/common/Gallery';
 import stringUtils from '../../../utils/stringUtils';
 import SkeletonProductDetail from '../../../components/common/SketonProductDetail';
-
+import useAuth from '../../../hooks/authHook';
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -47,6 +47,7 @@ function ProductDetail() {
   const dispatch = useDispatch();
   const { currentProduct } = useSelector((state) => state.products);
   const { carts } = useSelector((state) => state.carts);
+  const { user, isLoggedIn } = useAuth();
 
   // local state
   const [data, setData] = useState(null);
@@ -73,7 +74,6 @@ function ProductDetail() {
       setLoading(true);
       const rs = await dispatch(getProductBySlug(slug));
 
-
       const p = rs?.payload?.data || null;
       if (!p) {
         setErr('Không tìm thấy sản phẩm');
@@ -87,7 +87,6 @@ function ProductDetail() {
         setVariants(p?.variants || []);
         setVariantSelected(p?.variants?.[0] || null);
         setAttributes(productUtil.getAttributesFromVariants(p?.variants || []));
-        
       }
     })();
   }, [dispatch, slug]);
@@ -160,7 +159,7 @@ function ProductDetail() {
   const brandLabel = data.brand_id?.name || data.brand_id || '—';
 
   const handleAddToCart = async () => {
-    const login = false;
+    const login = isLoggedIn && user;
     if (!variantSelected) {
       messageApi.open({
         type: 'warning',
@@ -169,32 +168,44 @@ function ProductDetail() {
       return;
     }
 
-    if (login){
+    // check stock
+    // kiem tra so luong trong kho
+    const cartItem = carts.find(
+      (item) =>
+        item.product_id === data._id &&
+        item.variant_id === variantSelected._id
+    );
+    const existingQty = cartItem ? cartItem.quantity : 0;
+    if (existingQty + qty > variantSelected.stock) {
+      messageApi.open({
+        type: 'warning',
+        content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+      });
+      return;
+    }
+
+    const payload = {
+      product_id: data._id,
+      variant_id: variantSelected ? variantSelected._id : null,
+      SKU: variantSelected.SKU,
+      attributes: variantSelected.attributes,
+      quantity: qty,
+      image_url: data.images[0].img_url,
+      name: data.name,
+      price: variantSelected.price,
+    };
+    console.log('Add to cart payload', payload);
+
+    // check login
+    if (login) {
       // Thực hiện thêm vào giỏ hàng
+      dispatch(addToCartUser({ userId: user._id, body: payload }));
+
+      messageApi.open({
+        type: 'success',
+        content: 'Đã thêm sản phẩm vào giỏ hàng.',
+      });
     } else {
-      const payload = {
-        product_id: data._id,
-        variant_id: variantSelected ? variantSelected._id : null,
-        SKU: variantSelected.SKU,
-        attributes: variantSelected.attributes,
-        quantity: qty,
-        image_url: data.images[0].img_url,
-        name: data.name,
-        price: variantSelected.price,
-      }
-      console.log('Add to cart payload', payload);
-
-      // kiem tra so luong trong kho
-      const cartItem = carts.find(item => item.product_id === data._id && item.variant_id === variantSelected._id);
-      const existingQty = cartItem ? cartItem.quantity : 0;
-      if (existingQty + qty > variantSelected.stock) {
-        messageApi.open({
-          type: 'warning',
-          content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
-        });
-        return;
-      }
-
       dispatch(addToCart(payload));
 
       messageApi.open({
@@ -202,7 +213,7 @@ function ProductDetail() {
         content: 'Đã thêm sản phẩm vào giỏ hàng (chưa kết nối backend).',
       });
     }
-  }
+  };
 
   return (
     <Box sx={{ p: { xs: 1.5, md: 2 } }}>
@@ -355,9 +366,11 @@ function ProductDetail() {
 
             {/* action */}
             <div className="flex items-center justify-start gap-3 mt-4">
-              <Button 
-              onClick={handleAddToCart}
-              variant="contained" startIcon={<AddShoppingCart />}>
+              <Button
+                onClick={handleAddToCart}
+                variant="contained"
+                startIcon={<AddShoppingCart />}
+              >
                 Thêm vào giỏ
               </Button>
               <Button variant="outlined" startIcon={<ShoppingCartCheckout />}>
@@ -551,8 +564,6 @@ function ProductDetail() {
   );
 }
 
-
-
 /* ------------ Helpers ------------- */
 function fmtVND(v) {
   if (v == null) return '—';
@@ -562,8 +573,5 @@ function fmtVND(v) {
     return `${v}₫`;
   }
 }
-
-
-
 
 export default ProductDetail;

@@ -20,7 +20,7 @@ function route(app) {
     // app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/users', authRequired, userRoute);
-    app.use('/api/cart', cartRoute);
+    app.use('/api/carts', authRequired, cartRoute);
     app.use('/api/products', productRoute);
     app.use('/api/product-variants', require('./productVariantRoute.js'));
     app.use('/api/brands', brandRoute);
