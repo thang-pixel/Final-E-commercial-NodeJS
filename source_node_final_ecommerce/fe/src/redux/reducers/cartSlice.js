@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'; 
 import { api } from '../../api/axios';
 
-
 /**
  * carts = [
  * {
@@ -21,14 +20,14 @@ const loadCartLocal = () => {
     }
   }
   return [];
-}
+};
+
 const initState = {
   carts: loadCartLocal() || [],
   loading: false,
   message: '',
   errors: null,
-}
-
+};
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -40,18 +39,19 @@ const cartSlice = createSlice({
       state.loading = false;
       state.message = '';
       state.errors = null;
-    }, 
-    addToCart: (state, action) => { 
+    },
+    clearCart: (state) => {
+      localStorage.removeItem('carts');
+      state.carts = [];
+    },
+    addToCart: (state, action) => {
       const { product_id, variant_id } = action.payload;
-      
       const existingItemIndex = state.carts.findIndex(
         (item) => item.product_id === product_id && item.variant_id === variant_id
       );
       if (existingItemIndex !== -1) {
-        // If item exists, update quantity
         state.carts[existingItemIndex].quantity += action.payload.quantity;
       } else {
-        // If item does not exist, add new item
         state.carts.push(action.payload);
       }
       localStorage.setItem('carts', JSON.stringify(state.carts));
@@ -68,8 +68,8 @@ const cartSlice = createSlice({
         localStorage.setItem('carts', JSON.stringify(state.carts));
       } else if (itemIndex !== -1) {
         state.carts[itemIndex].quantity = quantity;
+        localStorage.setItem('carts', JSON.stringify(state.carts));
       }
-      localStorage.setItem('carts', JSON.stringify(state.carts));
     },
     removeFromCart: (state, action) => {
       const { product_id, variant_id } = action.payload;
@@ -77,13 +77,13 @@ const cartSlice = createSlice({
         (item) => !(item.product_id === product_id && item.variant_id === variant_id)
       );
       localStorage.setItem('carts', JSON.stringify(state.carts));
-    }
+    },
   },
   extraReducers: (builder) => {
-  }
+    // Nếu có async thunk thì thêm vào đây
+  },
+});
 
-})
-
-export const { clearCartState, addToCart, updateQuantity, removeFromCart } = cartSlice.actions;
+export const { clearCartState, clearCart, addToCart, updateQuantity, removeFromCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

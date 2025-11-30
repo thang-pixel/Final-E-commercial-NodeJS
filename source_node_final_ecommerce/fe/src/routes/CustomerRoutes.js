@@ -17,6 +17,8 @@ import ProductList from '../pages/customer/Product';
 import AccountCustomer from '../pages/customer/Account/AccountCustomer';
 import Favorite from '../pages/customer/Favorite/Favorite';
 import CheckoutPage from '../pages/customer/Checkout/CheckoutPage';
+import OrderSuccess from '../pages/customer/Order/OrderSuccess';
+import OrderDetail from '../pages/customer/Order/OrderDetail';
 function CustomerRoutes() {
   const { user } = useAuth();
   return (
@@ -34,15 +36,17 @@ function CustomerRoutes() {
 
         <Route path="categories" element={<Category />} />
         <Route path="checkout" element={<CheckoutPage />} />
-
+        <Route path="order-success" element={<OrderSuccess />} />
         {/* cart cho cả guest */}
         <Route path="carts" element={<Cart />} />
         <Route path="account" element={user ? <AccountCustomer /> : <Login />}>
           <Route path="profile" element={user ? <Profile /> : <Login />} />
           <Route path="orders" element={user ? <Order /> : <Login />} />
+          <Route path="orders/:orderId" element={user ? <OrderDetail /> : <Login />} />
           <Route path="carts" element={user ? <Cart /> : <Login />} />
           <Route path="favorites" element={user ? <Favorite /> : <Login />} />
         </Route>
+        
       </Route>
       <Route
         path="/admin/*"

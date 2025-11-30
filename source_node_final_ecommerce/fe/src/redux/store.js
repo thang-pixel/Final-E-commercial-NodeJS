@@ -4,8 +4,8 @@ import categoryReducer from './reducers/categorySlice.js';
 import brandReducer from './reducers/brandSlice.js';
 import productReducer from './reducers/productSlice.js';
 import cartReducer from './reducers/cartSlice.js';
-
- 
+import orderReducer from './reducers/orderSlice.js';
+import userReducer from './reducers/userSlice.js';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -13,6 +13,8 @@ const store = configureStore({
     brands: brandReducer,
     products: productReducer,
     carts: cartReducer,
+    orders: orderReducer,
+    user: userReducer,
   },
 });
 
