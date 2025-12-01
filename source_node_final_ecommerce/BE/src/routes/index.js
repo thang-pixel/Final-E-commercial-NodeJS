@@ -1,16 +1,22 @@
-const { globalLimiter, authLimiter } = require('../security/rateLimit');
+var createError = require('http-errors');
+
+const productRoute = require('./productRoute'); 
+const brandRoute = require('./brandRoute'); 
+const categoryRoute = require('./categoryRoute'); 
+
+const authRoute = require('./authRoute');
 const userRoute = require('./userRoute');
 const cartRoute = require('./cartRoute'); 
-const productRoute = require('./productRoute'); 
-const categoryRoute = require('./categoryRoute'); 
-const brandRoute = require('./brandRoute'); 
 const orderRoute = require('./orderRoute'); 
-const reviewRoute = require('./reviewRoute'); 
 const paymentRoute = require('./paymentRoute'); 
 const promotionRoute = require('./promotionRoute'); 
+const commentRoute = require('./commentRoute');
+const ratingRoute = require('./ratingRoute');
 const homeRoute = require('./homeRoute');
-var createError = require('http-errors');
-const authRoute = require('./authRoute');
+const adminHomeRoute = require('./adminHomeRoute.js');
+
+
+const { globalLimiter, authLimiter } = require('../security/rateLimit');
 const { adminRequired, authRequired, tryAuth } = require('../app/middlewares/AuthMiddleware');
 
 function route(app) {
@@ -20,24 +26,25 @@ function route(app) {
     // app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/auth', authLimiter, authRoute);
     app.use('/api/users', authRequired, userRoute);
-    app.use('/api/cart', cartRoute);
+    app.use('/api/carts', authRequired, cartRoute);
     app.use('/api/products', productRoute);
     app.use('/api/product-variants', require('./productVariantRoute.js'));
     app.use('/api/brands', brandRoute);
     app.use('/api/categories', categoryRoute);
     app.use('/api/orders', orderRoute);
-    // app.use('/api/checkout', checkoutRoute);
-    app.use('/api/reviews', reviewRoute);
     // app.use('/api/addresses', addressRoute);
     app.use('/api/payments', paymentRoute);
     app.use('/api/promotions', promotionRoute);
     // app.use('/api/wishlist', authLimiter, wishlistRoute);
     // app.use('/api/notifications', authLimiter, notificationRoute); 
+    app.use('/api/ratings', ratingRoute); 
+    app.use('/api/comments', commentRoute);
 
     app.use('/api/admin', adminRequired, (req, res) => {
         res.status(200).json({ message: 'Admin route is working' });
     });
-    app.use('/api', homeRoute);
+    app.use('/api/admin-home', adminHomeRoute);
+    app.use('/api/home', homeRoute);
     
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {

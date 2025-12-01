@@ -2,6 +2,7 @@ const { CATEGORY_STATUSES } = require('../../constants/dbEnum');
 const CategoryModel = require('../models/CategoryModel');
 const ProductModel = require('../models/ProductModel');
 const BrandModel = require('../models/BrandModel');
+const categoryUtil = require('../../utils/categoryUtil');
 class CategoryController {
   // [GET] | api/Categorys
   async index(req, res) {
@@ -61,6 +62,55 @@ class CategoryController {
       res.status(500).json({
         success: false,
         message: 'Lỗi server',
+        data: null,
+        error,
+      });
+    }
+  }
+
+  // [GET] | api/categories/tree
+  async getCategoryTree(req, res) {
+    try {
+      const tree = await categoryUtil.buildCategoryTree();
+
+      res.status(200).json({
+        success: true,
+        message: 'Cây danh mục',
+        data: tree,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server' + error.message,
+        data: null,
+        error,
+      });
+    }
+  }
+
+  // [GET] | api/categories/root
+  async getAllCategoryRoots(req, res) {
+    try {
+      const roots = await CategoryModel.find({ parent_id: null }).lean();
+
+      const results = await Promise.all(
+        roots.map(async (root) => {
+          const children = await CategoryModel.find({
+            parent_id: root._id,
+          }).lean();
+          return { ...root, children };
+        })
+      );
+
+      res.status(200).json({
+        success: true,
+        message: 'Danh mục gốc',
+        data: results,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server' + error.message,
         data: null,
         error,
       });
@@ -137,10 +187,10 @@ class CategoryController {
     //     oldInput: req.body,
     //   });
     // }
-    
+
     console.log('Add cate - body: ', req.body);
-    
-    const imageReq = req.file; 
+
+    const imageReq = req.file;
     const imageUrl = `${imageReq.path}`;
     console.log('Uploaded image URL:', imageUrl);
 
@@ -161,7 +211,7 @@ class CategoryController {
         attributes = JSON.parse(attributes);
       } catch (error) {
         attributes = [attributes];
-      } 
+      }
     }
 
     try {
@@ -179,7 +229,7 @@ class CategoryController {
         image_url: imageUrl,
         status: status ? status : CATEGORY_STATUSES.ACTIVE,
         parent_id,
-        attributes
+        attributes,
       });
       await newCategory.save();
       return res.status(201).json({
@@ -201,7 +251,7 @@ class CategoryController {
   // [PUT] api/categories/edit/:id
   async update(req, res, next) {
     let { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({
         success: false,

@@ -1,26 +1,8 @@
 import IconButton from '@mui/material/IconButton';
 import { AddShoppingCart } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../redux/reducers/cartSlice';
-import {
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  Rating,
-  Stack,
-  TextField,
-} from '@mui/material';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { getProductBySlug } from '../../redux/reducers/productSlice';
-import Gallery from '../common/Gallery';
-import { useMemo } from 'react';
-import stringUtils from '../../utils/stringUtils';
+import { Link } from 'react-router-dom'; 
+import { useDispatch } from 'react-redux'; 
+import { useState } from 'react'; 
 import ProductQuickView from '../common/ProductQuickView';
 
 export default function ProductCard({ product }) {
@@ -39,29 +21,7 @@ export default function ProductCard({ product }) {
 
   const raw = images?.[0]?.img_url || '';
   const thumbnail = raw; // url ảnh trên cloudinary đã là url đầy đủ
-
-  const handleAddToCart = (product) => {
-    const {
-      _id: variant_id,
-      product_id,
-      min_price: price,
-      name,
-      sku,
-      attributes,
-    } = product;
-    // dispatch add to cart action
-    console.log('Add to cart:', product);
-    dispatch(
-      addToCart({
-        ...product,
-        variant_id: 1,
-        product_id: product._id,
-        quantity: 1,
-        price,
-        image_url: thumbnail,
-      })
-    );
-  };
+ 
 
   return (
     <>

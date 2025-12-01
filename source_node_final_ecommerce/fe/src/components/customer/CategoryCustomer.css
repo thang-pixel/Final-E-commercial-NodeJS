@@ -1,0 +1,29 @@
+
+/* cate list */
+.menuCategoryItem{
+    position: relative;
+    transition: background-color 0.5s ease;
+}
+
+.menuCategoryItem:hover > a {
+    background-color: #e0f7fa;
+    cursor: pointer;
+} 
+
+/* ✅ Sửa selector: bỏ .menuCategoryItem thứ 2 */
+.menuCategoryItem:hover > a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px; /* ✅ Giảm width để đẹp hơn */
+    height: 100%;
+    background: #0288d1; /* ✅ Chỉ cần background */
+    border-radius: 0 4px 4px 0; /* ✅ Bo góc phải */
+}
+
+/* ✅ Thêm padding-left để text không bị che bởi ::before */
+.menuCategoryItem:hover {
+    padding-left: 8px;
+}

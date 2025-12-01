@@ -1,21 +1,18 @@
-import mongoose, { Schema } from "mongoose";
-import mongooseDelete from "mongoose-delete";
-import AutoIncrement from "mongoose-sequence";
-
-// Nếu bạn không có slugUpdater thì bỏ dòng này (để nguyên sẽ lỗi)
- // cartSchema.plugin(slugUpdater);  // ⛔ remove if not defined
+const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete"); 
+const { Schema } = mongoose;
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 // Nếu các collection khác dùng ObjectId, hãy đổi Number -> Schema.Types.ObjectId
 const cartItemSchema = new Schema({
   product_id: { type: Number, ref: "Product", required: true },   // hoặc ObjectId
   variant_id: { type: Number, ref: "ProductVariant", required: true }, // nên có ref rõ ràng
-  sku: { type: String },
+  SKU: { type: String },
   name: { type: String, required: true },       // snapshot tên tại thời điểm thêm
-  thumbnail: { type: String },                  // snapshot ảnh
-  attributes: {
-    color: String,
-    storage: String,
-  },
+  image_url: { type: String },                  // snapshot ảnh
+  attributes: [
+    { code: String, value: String }
+  ],               // snapshot thuộc tính (color, size, ...)
   price: { type: Number, required: true, min: 0 },    // đơn giá (snapshot)
   quantity: { type: Number, required: true, min: 1, default: 1 },
 }, { _id: false });
@@ -47,13 +44,14 @@ cartSchema.pre("save", function (next) { this.recalc(); next(); });
 cartSchema.index({ customer_id: 1 });
 cartSchema.index({ customer_id: 1, "items.variant_id": 1 });
 
-// Plugins
-cartSchema.plugin(AutoIncrement(mongoose), { id: "cart_seq", inc_field: "_id" });
+// Plugins tu tang ID & xoa mem
+cartSchema.plugin(AutoIncrement, { id: "cart_seq", inc_field: "_id" });
 cartSchema.plugin(mongooseDelete, {
   deletedAt: true,
-  overrideMethods: "all",
-  validateBeforeDelete: false,
-  validateBeforeRestore: false,
+  overrideMethods: "all", 
 });
 
-export default mongoose.model("Cart", cartSchema);
+
+
+const CartModel = mongoose.model("Cart", cartSchema);
+module.exports = CartModel;

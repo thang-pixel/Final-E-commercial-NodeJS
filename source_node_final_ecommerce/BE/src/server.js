@@ -1,61 +1,27 @@
-const path = require('path');
-const morgan = require('morgan');
-const express = require('express');
-const methodOverride = require('method-override');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+const app = require('./app');
+const registerProductSocket = require('./sockets/productSocket');
+const PORT = process.env.PORT || 8000;
 
-const { PORT } = require('./constants'); 
-const route = require('./routes');
-const db = require('./config/database');
+// Toj http server tu express app
+const server = http.createServer(app);
 
-const app = express();
-// setup cors
-app.use(cors({ origin: true, credentials: true })); // development
-// production
-// const allowOrigins = ['http://localhost:3000'];
-// app.use(
-//     cors({
-//         origin: (origin, callback) => {
-//             // Cho phép request không có origin (Postman, server-to-server)
-//             if (!origin) return callback(null, true);
+// khoi tao Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: true,           // hoặc set cụ thể: 'http://localhost:3000'
+    credentials: true,
+  }
+})
 
-//             if (allowOrigins.includes(origin)) {
-//                 callback(null, true); // cho phép
-//             } else {
-//                 callback(new Error('Not allowed by CORS'), false); // chặn
-//             }
-//         },
-//         credentials: true, // nếu cần gửi cookie/session
-//     })
-// );
-// HTTP Logger
-app.use(morgan('combined'));
-// static files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Cho phep truy cap io tu req.app.get('io')
+app.set('io', io);
 
-// Cookie parser
-app.use(cookieParser());
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); 
-// method override
-app.use(methodOverride('_method')); 
+// Danh ky cac event websocket cho product
+registerProductSocket(io);
 
-// connect to db
-db.connect();
-// test api
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'OK', message: 'Server is healthy' });
+// listen server
+server.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
 });
-// route init
-route(app);
-
-// elastic search init
-// const initProductIndex = require('./lib/initProductIndex');
-// initProductIndex().catch(console.error);
-
-
-app.listen(PORT, () =>
-    console.log(`Example app listening on PORT http://localhost:${PORT}`)
-);

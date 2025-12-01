@@ -1,14 +1,30 @@
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography"; 
 import Button from "@mui/material/Button";
 import { Link, Link as RouterLink } from "react-router-dom";
 
 import NewProducts from "./NewProducts";
 import BestSellersProducts from "./BestSellersProducts";
 import ProductByCategory from "./ProductByCategory";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchHomeData } from "../../../redux/reducers/homeSlice";
+import HomePageSkeleton from "../Skeleton/HomePageSkeleton";
 
 export default function Home() {
+  const dispatch = useDispatch();
+
+  const { loaded, newProducts, bestSellers, categories, loading } = useSelector(
+    (state) => state.home
+  );
+
+  useEffect(() => {
+    if (!loaded) {
+      dispatch(fetchHomeData());
+    }
+  }, [loaded, dispatch]);
+
+  if (loading && !loaded) return <HomePageSkeleton />;
   return (
     <Box sx={{ pb: 8 }} className="p-2 md:p-4 lg:p-6">
       {/* Hero (banner) */}
@@ -32,39 +48,25 @@ export default function Home() {
       </Box>
 
       {/* <Container maxWidth="lg"> */}
-        {/* New + Best Sellers */}
-        <Grid container spacing={4} >
-          <Grid item size={12}>
-            <SectionHeader
-              title="New Products"
-              to="/products?sort=createdAt_desc"
-            />
-            <NewProducts limit={8} />
-          </Grid>
-          <Grid item size={12}>
-            <SectionHeader
-              title="Best Sellers"
-              to="/products?sort=best_sellers"
-            />
-            <BestSellersProducts limit={8} />
-          </Grid>
-        </Grid>
+        {/* New Products */}
+      <SectionHeader title="New Products" to="/products?sort=createdAt_desc&limit=12" />
+      <NewProducts data={newProducts} />
 
-        {/* Ít nhất 3 danh mục riêng biệt */}
-        <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Điện thoại" to="/products?category=phones" />
-          <ProductByCategory slug="phones" category_id={11} limit={8} />
-        </Box>
+      {/* Best Sellers */}
+      <SectionHeader title="Best Sellers" to="/products?sort=best_sellers&limit=12" />
+      <BestSellersProducts data={bestSellers} />
 
-        <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Desktop" to="/products?category=laptop" />
-          <ProductByCategory slug="laptop" category_id={14} limit={8} />
-        </Box>
+      {/* Phones */}
+      <SectionHeader title="Điện thoại" to="/products?category_slug=dien-thoai&limit=12" />
+      <ProductByCategory data={categories[11]} />
 
-        <Box sx={{ mt: 6 }}>
-          <SectionHeader title="Laptop" to="/products?category=hard-drives" />
-          <ProductByCategory slug="hard-drives" category_id={15} limit={8} />
-        </Box>
+      {/* Desktop */}
+      <SectionHeader title="Desktop" to="/products?category_slug=desktop&limit=12" />
+      <ProductByCategory data={categories[14]} />
+
+      {/* Laptop */}
+      <SectionHeader title="Laptop" to="/products?category_slug=laptop&limit=12" />
+      <ProductByCategory data={categories[15]} />
       {/* </Container> */}
     </Box>
   );

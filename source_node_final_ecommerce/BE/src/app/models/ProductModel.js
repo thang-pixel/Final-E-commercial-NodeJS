@@ -65,6 +65,10 @@ productSchema.plugin(mongooseDelete, {
   overrideMethods: "all",
 });
 
+// index
+productSchema.index({ name: "text", description: "text" });
+
+
 // --- Middleware: chỉ còn xử lý images (gán id nội bộ) ---
 productSchema.pre("save", function (next) {
   if (this.images && this.images.length > 0) {

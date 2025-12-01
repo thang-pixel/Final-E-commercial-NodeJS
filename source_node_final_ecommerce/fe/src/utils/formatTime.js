@@ -135,6 +135,7 @@ const formatDateTimeVn = (isoString) => {
 }
 
 export {
+  parseAsUTC,
   formatVN,
   formatVNDate,
   formatVNDateRange,

@@ -7,20 +7,21 @@ import useCart from '../../hooks/cartHook';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import { useDispatch } from 'react-redux';
-import { removeFromCart, updateQuantity } from '../../redux/reducers/cartSlice';
+import { removeFromCart, removeItemCartUser, updateCartItemUser, updateQuantity } from '../../redux/reducers/cartSlice';
 import { message } from 'antd';
 import { getVariantByIdApi } from '../../api/productVariantApi';
 import { useMemo, useState } from 'react';
 import currencyUtils from '../../utils/currencyUtils';
 import { Checkbox } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/authHook';
 
 const CartDrawer = ({ ref, isOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const [messageAntd, contextHolder] = message.useMessage();
   const { carts, length, totalPrice: totalPriceStored } = useCart();
   const dispatch = useDispatch();
-  const isLoggedIn = false; // replace with actual auth state
+  const { user, isLoggedIn } = useAuth(); // replace with actual auth state
 
   // checked item
   const [selectedItems, setSelectedItems] = useState({});
@@ -72,6 +73,12 @@ const CartDrawer = ({ ref, isOpen, setIsOpen }) => {
     // ...
     if (isLoggedIn) {
       // update on server
+      const res = await  dispatch(updateCartItemUser({ user_id: user._id, product_id, variant_id, quantity })); 
+      if (res.error) {
+        messageAntd.error(res.error.message || 'Lỗi khi cập nhật số lượng trên server');
+        return;
+      }
+      messageAntd.success('Cập nhật cart số lượng thành công');
     } else {
       // update in local storage
       dispatch(updateQuantity({ product_id, variant_id, quantity }));
@@ -92,11 +99,17 @@ const CartDrawer = ({ ref, isOpen, setIsOpen }) => {
       return prev;
     });
   };
-  const handleDeleteItem = (product_id, variant_id) => {
+  const handleDeleteItem = async (product_id, variant_id) => {
     // dispatch remove from cart action
     // ...
     if (isLoggedIn) {
       // remove on server
+      const res = await dispatch(removeItemCartUser({ user_id: user._id, product_id, variant_id }));
+      if (res.error) {
+        messageAntd.error(res.error.message || 'Lỗi khi xoá sản phẩm khỏi giỏ hàng trên server');
+        return;
+      }
+      messageAntd.success('Xoá sản phẩm khỏi giỏ hàng thành công');
     } else {
       // remove in local storage
       dispatch(removeFromCart({ product_id, variant_id }));

@@ -47,7 +47,8 @@ categorySchema.plugin(mongooseDelete, {
   validateBeforeRestore: false,
 });
 
-module.exports = mongoose.model("Category", categorySchema);
+const CategoryModel = mongoose.model("Category", categorySchema);
+module.exports = CategoryModel;
 
 
 // const mongoose = require("mongoose");

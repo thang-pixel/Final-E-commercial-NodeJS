@@ -20,6 +20,20 @@ export const getAllCategory = createAsyncThunk('categories/getAll', async (query
   }
 });
 
+// cate root
+export const getAllRootCategory = createAsyncThunk('categories/getAllRoot', async (_, { rejectWithValue }) => {
+  try {
+    const res = await api.get(`/api/categories/root`);
+    if (res.data.success) return res.data.data;
+    return rejectWithValue({ message: res.data.message });
+  } catch (error) {
+    return rejectWithValue({
+      message: error.response?.data?.message || 'Get Root Categories Failed',
+      errors: error.response?.data?.errors || null,
+    });
+  }
+});
+
 export const getCategoryById = createAsyncThunk('categories/getById', async (id, { rejectWithValue }) => {
   try {
     const res = await api.get(`/api/categories/${id}/show`);
@@ -80,6 +94,8 @@ export const deleteCategory = createAsyncThunk('categories/delete', async (id, {
 const categorySlice = createSlice({
   name: 'categories',
   initialState: {
+    rootCategories: [],
+    treeCategories: [],
     categories: [],
     currentCategory: null,
     meta: null,
@@ -94,6 +110,10 @@ const categorySlice = createSlice({
         state.categories = action.payload.data;
         state.meta = action.payload.meta;
         state.message = action.payload.message;
+        state.loading = false;
+      })
+      .addCase(getAllRootCategory.fulfilled, (state, action) => {
+        state.rootCategories = action.payload;
         state.loading = false;
       })
       .addCase(getCategoryById.fulfilled, (state, action) => {
