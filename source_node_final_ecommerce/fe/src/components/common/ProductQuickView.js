@@ -1,7 +1,7 @@
 import { AddShoppingCart, ShoppingCartCheckout } from '@mui/icons-material';
 import Typography from '@mui/material/Typography';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../../redux/reducers/cartSlice';
+import { addToCart, addToCartUser } from '../../redux/reducers/cartSlice';
 import {
   Box,
   Button,
@@ -28,6 +28,7 @@ import currencyUtils from '../../utils/currencyUtils';
 import { message } from 'antd';
 import { getProductBySlugApi } from '../../api/productApi';
 import SkeletonProductDetail from './SketonProductDetail';
+import useAuth from '../../hooks/authHook';
 
 const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
   const dispatch = useDispatch();
@@ -35,6 +36,8 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
 
   // cart from redux
   const { carts } = useSelector((state) => state.carts);
+  // user from reducer
+  const { user, isLoggedIn } = useAuth();
 
   // selections
   const [loading, setLoading] = useState(false);
@@ -76,7 +79,10 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
   }, [product.slug, isOpen]);
 
   const handleAddToCart = async () => {
-    const login = false;
+    const login = isLoggedIn && user;
+
+    console.log('Add to cart clicked, login=', isLoggedIn, user);
+
     if (!variantSelected) {
       messageApi.open({
         type: 'warning',
@@ -85,41 +91,55 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
       return;
     }
 
+    const payload = {
+      product_id: product._id,
+      variant_id: variantSelected ? variantSelected._id : null,
+      SKU: variantSelected.SKU,
+      attributes: variantSelected.attributes,
+      quantity: qty,
+      image_url: product.images[0].img_url,
+      name: product.name,
+      price: variantSelected.price,
+    };
+    console.log('Add to cart payload', payload);
+
+    // check stock
+    // kiem tra so luong trong kho
+    const cartItem = carts.find(
+      (item) =>
+        item.product_id === product._id &&
+        item.variant_id === variantSelected._id
+    );
+    const existingQty = cartItem ? cartItem.quantity : 0;
+    if (existingQty + qty > variantSelected.stock) {
+      messageApi.open({
+        type: 'warning',
+        content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+      });
+      return;
+    }
+
+    // check login
     if (login) {
       // Thực hiện thêm vào giỏ hàng
-    } else {
-      const payload = {
-        product_id: product._id,
-        variant_id: variantSelected ? variantSelected._id : null,
-        SKU: variantSelected.SKU,
-        attributes: variantSelected.attributes,
-        quantity: qty,
-        image_url: product.images[0].img_url,
-        name: product.name,
-        price: variantSelected.price,
-      };
-      console.log('Add to cart payload', payload);
+      const res = await dispatch(addToCartUser({ userId: user._id, body: payload }));
 
-      // kiem tra so luong trong kho
-      const cartItem = carts.find(
-        (item) =>
-          item.product_id === product._id &&
-          item.variant_id === variantSelected._id
-      );
-      const existingQty = cartItem ? cartItem.quantity : 0;
-      if (existingQty + qty > variantSelected.stock) {
+      if (res.error) {
         messageApi.open({
-          type: 'warning',
-          content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+          type: 'error',
+          content: 'Lỗi khi thêm sản phẩm vào giỏ hàng.',
         });
-        return;
+      } else {
+        messageApi.open({
+          type: 'success',
+          content: 'Đã thêm sản phẩm vào giỏ hàng.',
+        });
       }
-
+    } else {
       dispatch(addToCart(payload));
-
       messageApi.open({
         type: 'success',
-        content: 'Đã thêm sản phẩm vào giỏ hàng (chưa kết nối backend).',
+        content: 'Đã thêm sản phẩm vào giỏ hàng.',
       });
     }
   };
@@ -195,7 +215,9 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
                   </Typography>
 
                   {/* sô biên thể */}
-                  <Typography variant="body2">{variants.length} biến thể</Typography>
+                  <Typography variant="body2">
+                    {variants.length} biến thể
+                  </Typography>
                   {/* Quantity */}
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography variant="body2">Số lượng:</Typography>
@@ -301,7 +323,10 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
                     >
                       Thêm vào giỏ
                     </Button>
-                    <Button variant="outlined" startIcon={<ShoppingCartCheckout />}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<ShoppingCartCheckout />}
+                    >
                       Mua ngay
                     </Button>
                   </div>

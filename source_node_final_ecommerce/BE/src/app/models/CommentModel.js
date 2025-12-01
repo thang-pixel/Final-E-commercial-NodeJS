@@ -8,8 +8,10 @@ const commentSchema = new mongoose.Schema(
     _id: Number,
     product_id: { type: Number, ref: "Product", index: true },
     parent_id: { type: Number, ref: "Comment" },
-    user_ref: { type: Number, default: 'GUEST' },
+    user_ref: { type: Number, default: null, ref: "User" },
+    display_name: { type: String, required: true },
     content: { type: String },
+    level: { type: Number, default: 1 },
     status: { type: String, enum: ["ACTIVE", "HIDDEN"], default: "ACTIVE" }, 
   },
   { _id: false, timestamps: true, collection: "comments" }
@@ -25,4 +27,5 @@ commentSchema.plugin(mongooseDelete, {
   validateBeforeRestore: false,
 });
 
-module.exports = mongoose.model("comment", commentSchema);
+const CommentModel = mongoose.model("comment", commentSchema);
+module.exports = CommentModel;

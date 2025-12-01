@@ -1,11 +1,8 @@
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout/AdminLayout";
 import Dashboard from "../pages/admin/Dashboard"; 
-import PrivateRoute from "./PrivateRoute";
-import useAuth from "../hooks/authHook";
-import ErrorPage from "../pages/ErrorPage";
-import Logout from "../pages/auth/Logout";
-import Login from "../pages/auth/Login";
+import PrivateRoute from "./PrivateRoute"; 
+import ErrorPage from "../pages/ErrorPage"; 
 import ProductList from "../pages/admin/Product";
 import CategoryList from "../pages/admin/Category";
 import PromotionList from "../pages/admin/Promotion";

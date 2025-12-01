@@ -56,7 +56,7 @@ export default function AdminLayout({ user }) {
   }, [location.pathname]);
 
   const userMenuItems = [
-    { key: "profile", label: <Link to="profile">Hồ sơ của tôi</Link> },
+    { key: "admin/profile", label: <Link to="/admin/profile">Hồ sơ của tôi</Link> },
     { type: "divider" },
     { key: "logout", label: <Link to="/logout">Đăng xuất</Link>, danger: true },
   ];
@@ -156,7 +156,7 @@ export default function AdminLayout({ user }) {
                 </Badge>
               </div>
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
-                <Link to="admin/profile" onClick={(e) => e.preventDefault()} className="user-chip">
+                <Link to="/admin/profile" onClick={(e) => e.preventDefault()} className="user-chip">
                   <Space>
                     <Person />
                     <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>

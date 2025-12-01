@@ -48,7 +48,7 @@ const getAttributesFromVariants = (variants) => {
 // chon mot value, tim duoc variant tuong ung theo code + value
 const findVariantByAttributes = (variants, code, value) => {
   let foundVariant = null;
-  let foundIdx = -1;
+  // let foundIdx = -1;
 
   variants.forEach((item, idx) => {
     const attrs = item.attributes || {};
@@ -63,7 +63,7 @@ const findVariantByAttributes = (variants, code, value) => {
     });
     if (match) {
       foundVariant = item;
-      foundIdx = idx;
+      // foundIdx = idx;
     }
   });
 

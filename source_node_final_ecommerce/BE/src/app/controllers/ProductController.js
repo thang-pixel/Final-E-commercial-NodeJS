@@ -1,4 +1,5 @@
-const { PRODUCT_STATUSES, USER_ROLES } = require('../../constants/dbEnum');
+const { PRODUCT_STATUSES, USER_ROLES } = require('../../constants/dbEnum'); 
+const categoryUtil = require('../../utils/categoryUtil');
 const {
   sortObj,
   filterProduct,
@@ -6,35 +7,59 @@ const {
   selectFieldByRole,
 } = require('../../utils/searchUtil');
 const { buildSku } = require('../../utils/variantUtil');
+const CategoryModel = require('../models/CategoryModel');
 const ProductModel = require('../models/ProductModel');
 const ProductVariant = require('../models/ProductVariant');
 
 class ProductController {
   // [GET] | /api/products
-  // Hỗ trợ: ?category_id=1&brand_ids=1,2,3&range_prices=100-500&ratings=4&sort=price_asc&sort=createdAt_desc
+  // Hỗ trợ: ?category_slug=electronics&category_id=1&brand_ids=1,2,3&range_prices=100-500&ratings=4&sort=price_asc&sort=createdAt_desc
   async index(req, res) {
     try {
-      const { category_id } = req.query;
+      const { category_id, category_slug } = req.query;
       const { brand_ids, range_prices, ratings, status } = req.query;
       let { keyword } = req.query;
       console.log('Query parameters:', req.query);
 
       // --- Filter ---
-      let filter = { 
+      let filter = {
         deleted: false,
       };
-      if (keyword && keyword.trim() !== '') {
-        filter.name = {
-          $regex: keyword.trim(),
-          $options: 'i', // không phân biệt hoa/thường
-        };
-      };
+
+      // if (keyword && keyword.trim() !== '') {
+      //   filter.name = {
+      //     $regex: keyword.trim(),
+      //     $options: 'i', // không phân biệt hoa/thường
+      //   };
+      // }
+      if (keyword && keyword.trim()) {
+        filter.$text = { $search: keyword.trim() };
+      }
 
       if (status && Object.values(PRODUCT_STATUSES).includes(status)) {
         filter.status = status;
       }
 
-      if (category_id) {
+      // Trường hợp vừa có slug vừa có id
+      if (category_slug) {
+        // ƯU TIÊN SLUG
+        const category = await CategoryModel.findOne({
+          slug: category_slug,
+        }).select('_id'); 
+
+        if (category) {
+          const childIds = await categoryUtil.getChildCategoryIds(category._id);
+          filter.category_id = { $in: [category._id, ...childIds] };
+        } else {
+          // Slug sai → fallback qua id nếu FE gửi category_id
+          if (category_id) {
+            filter.category_id = Number(category_id);
+          } else {
+            filter.category_id = -99999; // đảm bảo không trả kết quả
+          }
+        }
+      } else if (category_id) {
+        // Không có slug → xử lý category_id
         filter.category_id = Number(category_id);
       }
 
@@ -69,7 +94,7 @@ class ProductController {
           .sort(sort)
           .skip(skip)
           .limit(limit)
-          .select(fieldsToHide)
+          .select(fieldsToHide + ' -__v')
           .lean(),
         ProductModel.countDocuments(filter),
       ]);
@@ -140,29 +165,28 @@ class ProductController {
           .status(400)
           .json({ success: false, message: 'Missing slug' });
       const slug = decodeURIComponent(req.params.slug).trim().toLowerCase();
- 
+
       // console.log(req.user);
 
-      const doc = await ProductModel
-        .findOne({ slug })
+      const doc = await ProductModel.findOne({ slug })
         .populate({ path: 'category_id', select: '_id name slug attributes' })
         .populate({ path: 'brand_id', select: '_id name slug' })
         .lean();
 
       if (!doc)
-        return res
-          .status(404)
-          .json({ success: false, message: `Không tìm thấy sản phẩm với slug này: ${slug}` });
+        return res.status(404).json({
+          success: false,
+          message: `Không tìm thấy sản phẩm với slug này: ${slug}`,
+        });
 
-      // tim kiem variants 
-      const variants = await ProductVariant
-              .find({ product_id: doc._id })
-              .select('-original_price -__v')
-              .lean();
+      // tim kiem variants
+      const variants = await ProductVariant.find({ product_id: doc._id })
+        .select('-original_price -__v')
+        .lean();
       doc.variants = variants;
 
       console.log('👉 Product found:', doc);
-      
+
       return res.json({ success: true, data: doc, message: 'OK' });
     } catch (error) {
       res.status(500).json({
@@ -195,11 +219,11 @@ class ProductController {
         .populate({ path: 'brand_id', select: '_id name slug' })
         .lean();
       // console.log('👉 Product found:', data );
-      
+
       if (data) {
         const variants = await ProductVariant.find({ product_id: id });
         console.log('👉 Variants found:', variants.length);
-        
+
         data.variants = variants;
         const resp = { ...data, variants };
         console.log('👉 Response data:', resp);
@@ -276,7 +300,7 @@ class ProductController {
       if (existingProduct) {
         return res.status(400).json({
           success: false,
-          message: 'Tên sản phẩm đã tồn tại', 
+          message: 'Tên sản phẩm đã tồn tại',
         });
       }
 

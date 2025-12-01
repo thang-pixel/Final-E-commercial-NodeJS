@@ -17,8 +17,8 @@ const ProductsSkeleton = ({ count }) => {
                   borderRadius: 2,
                 }}
               />
-              <Skeleton sx={{ width: '100%', height: '100px', mt: 1 }} />
-              <Skeleton sx={{ width: '100%', height: '50px' }} />
+              <Skeleton sx={{ width: '100%', height: '200px', mt: 1 }} />
+              <Skeleton sx={{ width: '100%', height: '100px' }} />
             </Grid>
           ))}
         </Grid>

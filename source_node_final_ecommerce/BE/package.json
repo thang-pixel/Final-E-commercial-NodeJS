@@ -2,7 +2,7 @@
   "name": "be",
   "version": "1.0.0",
   "description": "BE E-commerce",
-  "main": "/src/server.js",
+  "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon --inspect src/server.js",
@@ -34,6 +34,7 @@
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "node-fetch": "^2.6.7",
+    "socket.io": "^4.8.1",
     "validator": "^13.15.15"
   },
   "devDependencies": {
