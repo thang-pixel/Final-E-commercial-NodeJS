@@ -4,7 +4,61 @@ const UserModel = require('../models/UserModel');
 const PromotionModel = require('../models/PromotionModel');
 const { sendOrderConfirmationEmail } = require('../../utils/emailUtil');
 
+// SHIPPING METHODS CONFIGURATION
+const SHIPPING_METHODS = {
+  ECONOMY: {
+    name: 'Giao hàng tiết kiệm',
+    code: 'ECONOMY',
+    estimated_days: '5-7 ngày',
+    base_fee: 15000,
+    description: 'Giao hàng chậm nhưng tiết kiệm chi phí'
+  },
+  STANDARD: {
+    name: 'Giao hàng tiêu chuẩn',
+    code: 'STANDARD', 
+    estimated_days: '3-5 ngày',
+    base_fee: 30000,
+    description: 'Giao hàng với thời gian vừa phải'
+  },
+  FAST: {
+    name: 'Giao hàng nhanh',
+    code: 'FAST',
+    estimated_days: '1-2 ngày',
+    base_fee: 50000,
+    description: 'Giao hàng nhanh trong 1-2 ngày'
+  },
+  EXPRESS: {
+    name: 'Giao hàng hỏa tốc',
+    code: 'EXPRESS',
+    estimated_days: 'Trong ngày',
+    base_fee: 80000,
+    description: 'Giao hàng trong ngày (chỉ áp dụng nội thành)'
+  }
+};
+
+// HELPER FUNCTION - Moved outside class để có thể dùng độc lập
+const calculateShippingFee = (subtotal, shippingMethod = 'STANDARD') => {
+  const method = SHIPPING_METHODS[shippingMethod];
+  if (!method) {
+    return SHIPPING_METHODS.STANDARD.base_fee;
+  }
+  
+  let fee = method.base_fee;
+  
+  // Miễn phí shipping cho đơn hàng trên 500k với method ECONOMY và STANDARD
+  if (subtotal >= 500000 && ['ECONOMY', 'STANDARD'].includes(shippingMethod)) {
+    fee = 0;
+  }
+  // Giảm 50% cho FAST và EXPRESS nếu đơn hàng trên 1 triệu
+  else if (subtotal >= 1000000 && ['FAST', 'EXPRESS'].includes(shippingMethod)) {
+    fee = Math.floor(fee * 0.5);
+  }
+  
+  return fee;
+};
+
 class OrderController {
+  
   // [POST] /api/orders - Tạo đơn hàng mới
   async createOrder(req, res) {
     try {
@@ -14,7 +68,8 @@ class OrderController {
         payment_method,
         customer_note,
         loyalty_points_used = 0,
-        promotion_code
+        promotion_code,
+        shipping_method = 'STANDARD'
       } = req.body;
       
       const customer_id = req.user.id;
@@ -42,6 +97,14 @@ class OrderController {
         return res.status(400).json({
           success: false,
           message: 'Phương thức thanh toán không hợp lệ'
+        });
+      }
+      
+      // Validate shipping method
+      if (!SHIPPING_METHODS[shipping_method]) {
+        return res.status(400).json({
+          success: false,
+          message: 'Phương thức vận chuyển không hợp lệ'
         });
       }
       
@@ -119,7 +182,14 @@ class OrderController {
       }
       
       // ========== TÍNH PHÍ VẬN CHUYỂN ==========
-      const shipping_fee = subtotal >= 500000 ? 0 : 30000;
+      const shipping_fee = calculateShippingFee(subtotal, shipping_method);
+      const shipping_method_details = {
+        ...SHIPPING_METHODS[shipping_method],
+        fee: shipping_fee
+      };
+      
+      console.log(`🚚 Shipping method: ${shipping_method_details.name}, Fee: ${shipping_fee.toLocaleString()}đ`);
+      
       const tax_amount = 0;
       
       // ========== XỬ LÝ PROMOTION CODE ==========
@@ -315,18 +385,20 @@ class OrderController {
         promotion_used,
         total_amount,
         shipping_address,
+        shipping_method,
+        shipping_method_details,
         payment_method,
         customer_note: customer_note || '',
         status: "PENDING",
         status_history: [{
           status: "PENDING",
           timestamp: new Date(),
-          note: "Đơn hàng được tạo"
+          note: `Đơn hàng được tạo - Vận chuyển: ${shipping_method_details.name}`
         }]
       });
       
       await newOrder.save();
-      console.log(`✅ Order created: ${newOrder.order_number}`);
+      console.log(`✅ Order created: ${newOrder.order_number} with ${shipping_method_details.name}`);
       
       // ========== PREPARE RESPONSE DATA ==========
       let responseData = {
@@ -464,7 +536,47 @@ class OrderController {
       });
     }
   }
-  
+
+  // [GET] /api/orders/shipping-methods - Lấy danh sách phương thức vận chuyển
+  async getShippingMethods(req, res) {
+    try {
+      const { subtotal } = req.query;
+      const orderSubtotal = parseFloat(subtotal) || 0;
+      
+      console.log(`🚚 Getting shipping methods for subtotal: ${orderSubtotal.toLocaleString()}đ`);
+      
+      const methods = Object.keys(SHIPPING_METHODS).map(key => {
+        const method = SHIPPING_METHODS[key];
+        const fee = calculateShippingFee(orderSubtotal, key); // SỬA: Gọi function độc lập thay vì this.calculateShippingFee
+        
+        return {
+          code: key,
+          name: method.name,
+          estimated_days: method.estimated_days,
+          fee: fee,
+          original_fee: method.base_fee,
+          description: method.description,
+          is_free: fee === 0
+        };
+      });
+      
+      console.log(`✅ Shipping methods calculated:`, methods);
+      
+      res.json({
+        success: true,
+        data: methods
+      });
+      
+    } catch (error) {
+      console.error('❌ Error fetching shipping methods:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server khi tải phương thức vận chuyển',
+        error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      });
+    }
+  }
+
   // [GET] /api/orders - Lấy danh sách đơn hàng của user
   async getMyOrders(req, res) {
     try {
@@ -587,7 +699,7 @@ class OrderController {
         );
       }
       
-      // Hoàn lại lượt sử dụng promotion - THÊM MỚI
+      // Hoàn lại lượt sử dụng promotion
       if (order.promotion_used && order.promotion_used.promotion_id) {
         await PromotionModel.findByIdAndUpdate(
           order.promotion_used.promotion_id,
@@ -674,7 +786,7 @@ class OrderController {
       
       // Xử lý khi đơn hàng DELIVERED - tặng điểm tích lũy
       if (status === 'DELIVERED' && order.status !== 'DELIVERED') {
-        const pointsToEarn = Math.floor(order.total_amount / 10); // 1 điểm per 1000 VND
+        const pointsToEarn = Math.floor(order.total_amount / 10000); // 1 điểm per 10000 VND
         
         await UserModel.findByIdAndUpdate(
           order.customer_id,
@@ -684,11 +796,21 @@ class OrderController {
         order.loyalty_points_earned = pointsToEarn;
       }
       
+      const STATUS_LABELS = {
+        PENDING: 'Chờ xử lý',
+        CONFIRMED: 'Đã xác nhận',
+        PROCESSING: 'Đang xử lý',
+        SHIPPING: 'Đang giao',
+        DELIVERED: 'Đã giao',
+        CANCELLED: 'Đã hủy',
+        REFUNDED: 'Đã hoàn tiền'
+      };
+      
       order.status = status;
       order.status_history.push({
         status,
         timestamp: new Date(),
-        note: note || `Cập nhật trạng thái thành ${status}`,
+        note: note || `Cập nhật trạng thái thành ${STATUS_LABELS[status]}`,
         updated_by
       });
       
@@ -820,6 +942,8 @@ class OrderController {
               promotion_used: 1,
               status: 1,
               payment_method: 1,
+              shipping_method: 1,
+              shipping_method_details: 1,
               createdAt: 1,
               'items.name': 1,
               'items.quantity': 1,

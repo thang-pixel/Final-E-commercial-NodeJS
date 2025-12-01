@@ -21,13 +21,29 @@ export const loginUser = (email, password) => async (dispatch) => {
 export const registerUser = (data) => async (dispatch) => {
   try {
     const res = await axios.post(`${API_DOMAIN}/api/auth/register`, data);
-    const { user, token } = res.data;
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user)); // Thêm dòng này
-    dispatch(login({ user, token }));
-    return { success: true };
+    
+    // Kiểm tra response structure
+    if (res.data.success) {
+      const { user, token } = res.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(login({ user, token }));
+      return { 
+        success: true, 
+        message: res.data.message 
+      };
+    } else {
+      return { 
+        success: false, 
+        message: res.data.message || "Register failed" 
+      };
+    }
   } catch (err) {
-    return { success: false, message: err.response?.data?.message || "Register failed" };
+    console.error('Register error:', err);
+    return { 
+      success: false, 
+      message: err.response?.data?.message || "Register failed" 
+    };
   }
 };
 

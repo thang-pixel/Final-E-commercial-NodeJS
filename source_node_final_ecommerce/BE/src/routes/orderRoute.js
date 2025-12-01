@@ -3,6 +3,9 @@ const router = express.Router();
 const OrderController = require('../app/controllers/OrderController');
 const { authRequired, adminRequired } = require('../app/middlewares/AuthMiddleware');
 
+// THÊM MỚI: Route để lấy shipping methods
+router.get('/shipping-methods', authRequired, OrderController.getShippingMethods);
+
 // Routes cho khách hàng
 router.post('/', authRequired, OrderController.createOrder);
 router.get('/', authRequired, OrderController.getMyOrders);

@@ -307,7 +307,292 @@ const sendPasswordResetEmail = async (userEmail, resetToken) => {
   }
 };
 
+
+// THÊM MỚI: Function gửi email chào mừng với mật khẩu
+const sendWelcomeEmail = async (userEmail, userData) => {
+  try {
+    // Validate required env variables
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      throw new Error('Email configuration missing: EMAIL_USER or EMAIL_PASSWORD not set');
+    }
+
+    if (!userEmail || !userData) {
+      throw new Error('Missing required parameters: userEmail or userData');
+    }
+
+    console.log(`📧 Preparing to send welcome email to: ${userEmail}`);
+
+    const transporter = createTransporter();
+    
+    // Test connection trước khi gửi
+    try {
+      await transporter.verify();
+      console.log('✅ SMTP connection verified');
+    } catch (verifyError) {
+      console.error('❌ SMTP verification failed:', verifyError.message);
+      throw new Error(`SMTP connection failed: ${verifyError.message}`);
+    }
+    
+    // Tạo nội dung email chào mừng
+    const emailContent = generateWelcomeEmailContent(userData);
+    
+    const mailOptions = {
+      from: {
+        name: process.env.EMAIL_FROM_NAME || 'E-Shop Vietnam',
+        address: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER
+      },
+      to: userEmail,
+      subject: '🎉 Chào mừng bạn đến với E-Shop - Thông tin tài khoản',
+      html: emailContent,
+      priority: 'high',
+      headers: {
+        'X-Mailer': 'E-Shop NodeJS Application',
+        'X-Priority': '1'
+      }
+    };
+    
+    console.log('📤 Sending welcome email...');
+    const result = await transporter.sendMail(mailOptions);
+    
+    console.log('✅ Welcome email sent successfully:', {
+      messageId: result.messageId,
+      to: userEmail
+    });
+    
+    return {
+      success: true,
+      messageId: result.messageId,
+      message: 'Welcome email sent successfully'
+    };
+    
+  } catch (error) {
+    console.error('❌ Welcome email sending error:', {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      response: error.response
+    });
+    
+    return {
+      success: false,
+      error: error.message,
+      code: error.code
+    };
+  }
+};
+
+// Function tạo nội dung HTML email chào mừng
+const generateWelcomeEmailContent = (userData) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chào mừng đến với E-Shop</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'Segoe UI', Arial, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                background-color: #f5f5f5;
+            }
+            .container { 
+                max-width: 600px; 
+                margin: 20px auto; 
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .header { 
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white; 
+                padding: 40px 20px; 
+                text-align: center; 
+            }
+            .header h1 { font-size: 28px; margin-bottom: 10px; }
+            .header p { font-size: 16px; opacity: 0.9; }
+            .content { padding: 40px 30px; }
+            .welcome-section { 
+                background: linear-gradient(135deg, #e8f5e8, #d4edda);
+                padding: 25px; 
+                border-radius: 10px; 
+                margin: 25px 0;
+                border-left: 5px solid #28a745;
+            }
+            .credentials-box { 
+                background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+                padding: 25px; 
+                border-radius: 10px; 
+                margin: 25px 0;
+                border: 2px solid #ffc107;
+                text-align: center;
+            }
+            .password { 
+                font-size: 24px; 
+                font-weight: bold; 
+                color: #dc3545;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                border: 2px dashed #dc3545;
+                margin: 15px 0;
+                letter-spacing: 2px;
+                font-family: 'Courier New', monospace;
+            }
+            .login-btn { 
+                display: inline-block; 
+                padding: 15px 30px; 
+                background: blue;
+                color: white; 
+                text-decoration: none; 
+                border-radius: 25px; 
+                font-weight: bold; 
+                font-size: 16px;
+                margin: 20px 0;
+                transition: transform 0.3s ease;
+            }
+            .login-btn:hover { transform: translateY(-2px); }
+            .features-grid { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                gap: 20px; 
+                margin: 25px 0; 
+            }
+            .feature-item { 
+                background: #f8f9fa; 
+                padding: 20px; 
+                border-radius: 8px; 
+                text-align: center;
+                border: 1px solid #dee2e6;
+            }
+            .feature-item h4 { color: #007bff; margin-bottom: 10px; }
+            .security-notice { 
+                background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+                padding: 20px; 
+                border-radius: 8px; 
+                margin: 25px 0;
+                border-left: 4px solid #e91e63;
+            }
+            .footer { 
+                background: linear-gradient(135deg, #343a40, #495057);
+                color: white;
+                padding: 30px 20px; 
+                text-align: center; 
+            }
+            .footer h3 { margin-bottom: 15px; }
+            .footer p { margin-bottom: 5px; }
+            @media (max-width: 600px) {
+                .container { margin: 10px; }
+                .content { padding: 20px; }
+                .features-grid { grid-template-columns: 1fr; }
+                .header h1 { font-size: 24px; }
+                .password { font-size: 20px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Chào mừng đến với E-Shop!</h1>
+                <p>Cảm ơn bạn đã đăng ký tài khoản</p>
+            </div>
+            
+            <div class="content">
+                <div class="welcome-section">
+                    <h2>Xin chào ${userData.full_name}! 👋</h2>
+                    <p>Chúc mừng bạn đã trở thành thành viên của <strong>E-Shop Vietnam</strong>!</p>
+                    <p>Tài khoản của bạn đã được tạo thành công và sẵn sàng để bắt đầu mua sắm.</p>
+                </div>
+
+                <h3>📧 Thông tin tài khoản</h3>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                    <p><strong>📧 Email đăng nhập:</strong> ${userData.email}</p>
+                    <p><strong>👤 Họ tên:</strong> ${userData.full_name}</p>
+                    <p><strong>📅 Ngày tạo:</strong> ${new Date().toLocaleString('vi-VN')}</p>
+                </div>
+
+                <div class="credentials-box">
+                    <h3>🔑 Thông tin đăng nhập</h3>
+                    <p>Mật khẩu tạm thời của bạn là:</p>
+                    <div class="password">${userData.password}</div>
+                    <p><strong>⚠️ Quan trọng:</strong> Đây là mật khẩu tạm thời được tạo tự động.</p>
+                    <p>Vui lòng đổi mật khẩu ngay sau khi đăng nhập lần đầu!</p>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${userData.login_url}" class="login-btn">
+                        🚀 Đăng nhập ngay
+                    </a>
+                </div>
+
+                <div class="security-notice">
+                    <h3>🛡️ Bảo mật tài khoản</h3>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Đổi mật khẩu ngay:</strong> Vào Hồ sơ → Đổi mật khẩu</li>
+                        <li><strong>Sử dụng mật khẩu mạnh:</strong> Tối thiểu 8 ký tự, có chữ hoa, số và ký tự đặc biệt</li>
+                        <li><strong>Không chia sẻ:</strong> Giữ thông tin đăng nhập cho riêng bạn</li>
+                        <li><strong>Đăng xuất:</strong> Luôn đăng xuất khi sử dụng máy công cộng</li>
+                    </ul>
+                </div>
+
+                <h3>🌟 Tính năng nổi bật</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>🛒 Mua sắm dễ dàng</h4>
+                        <p>Hàng nghìn sản phẩm chất lượng với giá tốt nhất</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>🎁 Điểm tích lũy</h4>
+                        <p>Tích điểm mỗi đơn hàng và đổi quà hấp dẫn</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>🚚 Giao hàng nhanh</h4>
+                        <p>Giao hàng toàn quốc trong 24-48h</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>💳 Thanh toán đa dạng</h4>
+                        <p>COD, VNPay, thẻ tín dụng và nhiều hình thức khác</p>
+                    </div>
+                </div>
+
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;">
+                    <h3>🎯 Bước tiếp theo</h3>
+                    <ol style="text-align: left; max-width: 400px; margin: 15px auto;">
+                        <li>Đăng nhập bằng email và mật khẩu trên</li>
+                        <li>Đổi mật khẩu trong phần Hồ sơ cá nhân</li>
+                        <li>Cập nhật thông tin cá nhân nếu cần</li>
+                        <li>Bắt đầu mua sắm và tích điểm!</li>
+                    </ol>
+                </div>
+
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <p><strong>💬 Cần hỗ trợ?</strong></p>
+                    <p>📞 Hotline: <strong>1900-xxxx</strong></p>
+                    <p>📧 Email: <strong>${process.env.EMAIL_USER || 'support@eshop.com'}</strong></p>
+                    <p>🕐 Hỗ trợ 24/7</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <h3>🛒 E-Shop Vietnam</h3>
+                <p>Hệ thống thương mại điện tử hàng đầu Việt Nam</p>
+                <p><strong>Website:</strong> ${process.env.FRONTEND_URL || 'http://localhost:3000'}</p>
+                <p><strong>Email:</strong> ${process.env.EMAIL_USER || 'support@eshop.com'}</p>
+                <hr style="margin: 15px 0; border-color: #666;">
+                <p><small>📧 Đây là email tự động, vui lòng không reply trực tiếp</small></p>
+                <p><small>💌 Cảm ơn bạn đã tin tưởng và lựa chọn E-Shop</small></p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+};
+
 module.exports = {
   sendOrderConfirmationEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendWelcomeEmail
 };

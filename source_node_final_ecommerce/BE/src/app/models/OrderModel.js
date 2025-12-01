@@ -57,6 +57,21 @@ const orderSchema = new mongoose.Schema({
     postal_code: String,
   },
   
+  // THÊM MỚI: Thông tin vận chuyển chi tiết
+  shipping_method: {
+    type: String,
+    enum: ["ECONOMY", "STANDARD", "FAST", "EXPRESS"],
+    default: "STANDARD"
+  },
+  
+  shipping_method_details: {
+    name: { type: String, required: true },
+    code: { type: String, required: true },
+    estimated_days: { type: String, required: true },
+    fee: { type: Number, required: true },
+    description: String
+  },
+
   // Trạng thái đơn hàng
   status: {
     type: String,
@@ -109,13 +124,13 @@ orderSchema.pre("save", function(next) {
     this.loyalty_points_earned = Math.floor(this.total_amount * 0.1);
   }
   
-  if (this.isModified('status')) {
-    this.status_history.push({
-      status: this.status,
-      timestamp: new Date(),
-      note: `Trạng thái chuyển thành ${this.status}`
-    });
-  }
+  // if (this.isModified('status')) {
+  //   this.status_history.push({
+  //     status: this.status,
+  //     timestamp: new Date(),
+  //     note: `Trạng thái chuyển thành ${this.status}`
+  //   });
+  // }
   
   next();
 });

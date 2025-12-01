@@ -40,7 +40,10 @@ import {
   LocationOn,
   Payment,
   Note,
-  Star
+  Star,
+  Speed,
+  AccessTime,
+  FlightTakeoff
 } from '@mui/icons-material';
 import { getOrderDetail, cancelOrder } from '../../../redux/reducers/orderSlice';
 
@@ -90,8 +93,37 @@ const ORDER_STATUS = {
   }
 };
 
+// THÊM MỚI: Shipping method mapping
+const SHIPPING_METHOD_CONFIG = {
+  'ECONOMY': { 
+    label: 'Giao hàng tiết kiệm', 
+    color: 'info', 
+    icon: <AccessTime />,
+    timelineColor: 'info'
+  },
+  'STANDARD': { 
+    label: 'Giao hàng tiêu chuẩn', 
+    color: 'primary', 
+    icon: <LocalShipping />,
+    timelineColor: 'primary'
+  },
+  'FAST': { 
+    label: 'Giao hàng nhanh', 
+    color: 'warning', 
+    icon: <Speed />,
+    timelineColor: 'warning'
+  },
+  'EXPRESS': { 
+    label: 'Giao hàng hỏa tốc', 
+    color: 'error', 
+    icon: <FlightTakeoff />,
+    timelineColor: 'error'
+  }
+};
+
 const PAYMENT_METHOD = {
   'COD': 'Thanh toán khi nhận hàng',
+  'VNPAY': 'Thanh toán qua VNPay',
   'BANK_TRANSFER': 'Chuyển khoản ngân hàng',
   'CREDIT_CARD': 'Thẻ tín dụng',
   'E_WALLET': 'Ví điện tử'
@@ -219,7 +251,7 @@ function OrderDetail() {
               
               <Timeline>
                 {currentOrder.status_history
-                  .slice()
+                  ?.slice()
                   .reverse() // Hiển thị mới nhất trên cùng
                   .map((history, index) => (
                     <TimelineItem key={index}>
@@ -262,7 +294,7 @@ function OrderDetail() {
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>
-                Sản phẩm ({currentOrder.items.length} sản phẩm)
+                Sản phẩm ({currentOrder.items?.length || 0} sản phẩm)
               </Typography>
               
               <TableContainer>
@@ -276,7 +308,7 @@ function OrderDetail() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {currentOrder.items.map((item, index) => (
+                    {currentOrder.items?.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -405,6 +437,46 @@ function OrderDetail() {
 
         {/* Thông tin bên phải */}
         <Grid item xs={12} md={4}>
+          {/* THÊM MỚI: Thông tin vận chuyển */}
+          {currentOrder.shipping_method_details && (
+            <Card sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                  <LocalShipping sx={{ mr: 1 }} />
+                  Phương thức vận chuyển
+                </Typography>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  {SHIPPING_METHOD_CONFIG[currentOrder.shipping_method]?.icon}
+                  <Box sx={{ ml: 1 }}>
+                    <Typography variant="body1" fontWeight={600}>
+                      {currentOrder.shipping_method_details.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Thời gian dự kiến: {currentOrder.shipping_method_details.estimated_days}
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2">Phí vận chuyển:</Typography>
+                  <Typography variant="body1" fontWeight={600}>
+                    {currentOrder.shipping_method_details.fee === 0 ? 
+                      <Chip label="Miễn phí" color="success" size="small" /> :
+                      formatPrice(currentOrder.shipping_method_details.fee)
+                    }
+                  </Typography>
+                </Box>
+                
+                {currentOrder.shipping_method_details.description && (
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    {currentOrder.shipping_method_details.description}
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Thông tin giao hàng */}
           <Card sx={{ mb: 3 }}>
             <CardContent>
@@ -414,20 +486,20 @@ function OrderDetail() {
               </Typography>
               
               <Typography variant="body1" fontWeight={600}>
-                {currentOrder.shipping_address.full_name}
+                {currentOrder.shipping_address?.full_name}
               </Typography>
               <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                 <Phone sx={{ mr: 1, fontSize: 16 }} />
-                {currentOrder.shipping_address.phone}
+                {currentOrder.shipping_address?.phone}
               </Typography>
               <Typography variant="body2" sx={{ mt: 1 }}>
-                {currentOrder.shipping_address.address}
+                {currentOrder.shipping_address?.address}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {[
-                  currentOrder.shipping_address.ward,
-                  currentOrder.shipping_address.district,
-                  currentOrder.shipping_address.province
+                  currentOrder.shipping_address?.ward,
+                  currentOrder.shipping_address?.district,
+                  currentOrder.shipping_address?.province
                 ].filter(Boolean).join(', ')}
               </Typography>
             </CardContent>
@@ -497,6 +569,14 @@ function OrderDetail() {
                     Đánh giá sản phẩm
                   </Button>
                 )}
+
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={() => window.print()}
+                >
+                  In đơn hàng
+                </Button>
               </Box>
             </CardContent>
           </Card>
