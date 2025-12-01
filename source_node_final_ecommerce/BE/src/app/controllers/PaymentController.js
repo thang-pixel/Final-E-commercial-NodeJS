@@ -2,6 +2,8 @@ const PaymentModel = require('../models/PaymentModel');
 const OrderModel = require('../models/OrderModel');
 const UserModel = require('../models/UserModel');
 const VNPayService = require('../../services/VNPayService');
+const { sendOrderConfirmationEmail } = require('../../utils/emailUtil');
+
 
 class PaymentController {
   
@@ -105,15 +107,12 @@ class PaymentController {
     }
   }
   
-    // [GET] /api/payment/vnpay/return - VNPay callback - FIXED
+    // [GET] /api/payment/vnpay/return - VNPay callback 
   async handleVNPayReturn(req, res) {
     try {
       console.log('📥 VNPay return params:', req.query);
       
-      // Clone params để không modify original
       const vnpParams = { ...req.query };
-      
-      // Xác thực và xử lý response từ VNPay
       const result = VNPayService.handleVNPayResponse(vnpParams);
       
       console.log('🔍 VNPay verification result:', result);
@@ -125,8 +124,6 @@ class PaymentController {
       
       const { orderId, amount, transactionId, payDate, responseCode } = result.data;
       
-      console.log('🔍 Looking for payment with transaction ID:', orderId);
-      
       // Tìm payment record
       const payment = await PaymentModel.findOne({
         vnpay_transaction_id: orderId
@@ -137,17 +134,12 @@ class PaymentController {
         return res.redirect(`${process.env.FRONTEND_URL}/payment/failed?error=Payment+not+found`);
       }
       
-      console.log('✅ Payment found:', payment._id);
-      
       // Tìm order
       const order = await OrderModel.findById(payment.order_id);
-      
       if (!order) {
         console.error('❌ Order not found for payment:', payment.order_id);
         return res.redirect(`${process.env.FRONTEND_URL}/payment/failed?error=Order+not+found`);
       }
-      
-      console.log('✅ Order found:', order._id);
       
       // Cập nhật payment
       payment.status = result.success ? 'SUCCESS' : 'FAILED';
@@ -163,7 +155,7 @@ class PaymentController {
       });
       
       if (result.success) {
-        console.log('✅ Payment successful, updating order status');
+        console.log('✅ VNPay payment successful, updating order status');
         
         // Cập nhật trạng thái order
         order.status = 'CONFIRMED';
@@ -176,20 +168,40 @@ class PaymentController {
         // Cập nhật điểm tích lũy cho user
         const user = await UserModel.findById(order.customer_id);
         if (user) {
-          user.loyalty_points = (user.loyalty_points || 0) + order.loyalty_points_earned;
+          user.loyalty_points = (user.loyalty_points || 0) + (order.loyalty_points_earned || 0);
           await user.save();
           console.log('✅ Updated user loyalty points');
+          
+          // GỬI EMAIL XÁC NHẬN THANH TOÁN THÀNH CÔNG - THÊM MỚI
+          if (user.email) {
+            console.log(`📧 Sending payment success email to ${user.email}...`);
+            
+            sendOrderConfirmationEmail(user.email, {
+              ...order.toObject(),
+              customer: user,
+              paymentPending: false,
+              paymentSuccess: true, // Flag để biết thanh toán đã thành công
+              vnpayTransactionId: transactionId
+            })
+            .then(emailResult => {
+              if (emailResult.success) {
+                console.log(`✅ Payment success email sent to ${user.email}`);
+              } else {
+                console.log(`⚠️ Payment success email failed: ${emailResult.error}`);
+              }
+            })
+            .catch(emailError => {
+              console.error(`❌ Payment success email error: ${emailError.message}`);
+            });
+          }
         }
         
         await order.save();
         
-        console.log('✅ Redirecting to success page');
         // Redirect về trang thành công
         return res.redirect(`${process.env.FRONTEND_URL}/payment/success?order_id=${order._id}`);
       } else {
-        console.log('❌ Payment failed, updating payment record');
-        
-        // Thanh toán thất bại
+        console.log('❌ VNPay payment failed');
         payment.failure_reason = result.message;
         
         // Redirect về trang thất bại
