@@ -8,6 +8,7 @@ function PrivateRoute({ role, user }) {
   // role có thể là string ("ADMIN") hoặc array (["ADMIN", "STAFF"])
   if (role) {
     const allowedRoles = Array.isArray(role) ? role : [role];
+    console.log('Allowed Roles:', allowedRoles, 'User Role:', user?.role);
     if (!allowedRoles.includes(user?.role)) {
       // có login nhưng không đúng role
       return <Navigate to="/" replace />;

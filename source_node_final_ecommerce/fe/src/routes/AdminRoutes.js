@@ -27,7 +27,7 @@ import { useGlobalLoading } from "../context/LoadingContext";
 import { api } from "../api/axios";
 import Profile from "../pages/customer/Profile";
 
-
+import AdminOrderDetail from '../pages/admin/Order/OrderDetail';
 function AdminRoutes() {
   // const { user } = useAuth(); 
   const location = useLocation();
@@ -53,7 +53,7 @@ function AdminRoutes() {
       try {
         const resp = await api.get(`/api/users/me`);
         // tuỳ backend: resp.data có thể là { user: {...} } hoặc {...}
-        const user = resp.data;
+        const user = resp.data.data || resp.data;
         console.log('User Admin: ', resp.data)
 
         setCurrentUser(user);
@@ -113,6 +113,7 @@ function AdminRoutes() {
           </Route>
           <Route path="customers" element={<CustomerList />} />
           <Route path="orders" element={<OrderList />} />
+          <Route path="orders/:orderId" element={<AdminOrderDetail />} />
           <Route path="notifications" element={<Notification />} />
           <Route path="promotions" element={<PromotionList />} />
           <Route path="reports" element={<ReportList />} />

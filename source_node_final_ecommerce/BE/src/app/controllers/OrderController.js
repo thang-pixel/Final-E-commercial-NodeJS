@@ -364,6 +364,185 @@ class OrderController {
       });
     }
   }
+
+
+
+  // [GET] /api/orders/admin/all - Lấy tất cả đơn hàng (Admin only)
+  async getAllOrdersForAdmin(req, res) {
+    try {
+      const { 
+        page = 1, 
+        limit = 20, 
+        status,
+        date_range, // today, yesterday, this_week, this_month, custom
+        start_date,
+        end_date,
+        search // tìm theo order_number, customer name, phone
+      } = req.query;
+      
+      let filter = {};
+      
+      // Filter theo status
+      if (status) {
+        filter.status = status;
+      }
+      
+      // Filter theo thời gian
+      if (date_range) {
+        const now = new Date();
+        let startDate, endDate;
+        
+        switch (date_range) {
+          case 'today':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            break;
+          case 'yesterday':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case 'this_week':
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+            startDate = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+            endDate = new Date();
+            break;
+          case 'this_month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            break;
+          case 'custom':
+            if (start_date) startDate = new Date(start_date);
+            if (end_date) endDate = new Date(end_date);
+            break;
+        }
+        
+        if (startDate || endDate) {
+          filter.createdAt = {};
+          if (startDate) filter.createdAt.$gte = startDate;
+          if (endDate) filter.createdAt.$lt = endDate;
+        }
+      }
+      
+      const skip = (page - 1) * limit;
+      
+      // Pipeline cho aggregation (để search customer info)
+      const pipeline = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'customer_id',
+            foreignField: '_id',
+            as: 'customer'
+          }
+        },
+        { $unwind: '$customer' }
+      ];
+      
+      // Thêm search nếu có
+      if (search) {
+        pipeline.push({
+          $match: {
+            $or: [
+              { order_number: { $regex: search, $options: 'i' } },
+              { 'customer.full_name': { $regex: search, $options: 'i' } },
+              { 'customer.phone': { $regex: search, $options: 'i' } },
+              { 'customer.email': { $regex: search, $options: 'i' } }
+            ]
+          }
+        });
+      }
+      
+      // Sort by newest first
+      pipeline.push({ $sort: { createdAt: -1 } });
+      
+      // Pagination
+      const [orders, totalPipeline] = await Promise.all([
+        OrderModel.aggregate([
+          ...pipeline,
+          { $skip: skip },
+          { $limit: parseInt(limit) },
+          {
+            $project: {
+              _id: 1,
+              order_number: 1,
+              customer_id: 1,
+              'customer.full_name': 1,
+              'customer.phone': 1,
+              'customer.email': 1,
+              subtotal: 1,
+              total_amount: 1,
+              status: 1,
+              payment_method: 1,
+              createdAt: 1,
+              'items.name': 1,
+              'items.quantity': 1,
+              'items.image_url': 1,
+              'items.total_price': 1
+            }
+          }
+        ]),
+        OrderModel.aggregate([
+          ...pipeline,
+          { $count: "total" }
+        ])
+      ]);
+      
+      const total = totalPipeline[0]?.total || 0;
+      
+      res.json({
+        success: true,
+        data: orders,
+        meta: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          limit: parseInt(limit)
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error fetching admin orders:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
+  // [GET] /api/orders/admin/:id - Chi tiết đơn hàng (Admin)
+  async getOrderDetailForAdmin(req, res) {
+    try {
+      const orderId = parseInt(req.params.id);
+      
+      const order = await OrderModel.findById(orderId)
+        .populate('customer_id', 'full_name phone email')
+        .populate('items.product_id', 'name slug images')
+        .lean();
+      
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy đơn hàng'
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: order
+      });
+      
+    } catch (error) {
+      console.error('Error fetching admin order detail:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
 }
 
 module.exports = new OrderController();

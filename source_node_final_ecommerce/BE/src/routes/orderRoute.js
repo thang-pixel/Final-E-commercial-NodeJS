@@ -10,6 +10,8 @@ router.get('/:id', authRequired, OrderController.getOrderDetail);
 router.patch('/:id/cancel', authRequired, OrderController.cancelOrder);
 
 // Routes cho admin
+router.get('/admin/all', adminRequired, OrderController.getAllOrdersForAdmin);
+router.get('/admin/:id', adminRequired, OrderController.getOrderDetailForAdmin);
 router.patch('/:id/status', adminRequired, OrderController.updateOrderStatus);
 
 module.exports = router;

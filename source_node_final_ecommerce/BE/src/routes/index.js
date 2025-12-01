@@ -29,7 +29,7 @@ function route(app) {
     // app.use('/api/checkout', checkoutRoute);
     app.use('/api/reviews', reviewRoute);
     // app.use('/api/addresses', addressRoute);
-    app.use('/api/payments', paymentRoute);
+    app.use('/api/payment', paymentRoute);
     app.use('/api/promotions', promotionRoute);
     // app.use('/api/wishlist', authLimiter, wishlistRoute);
     // app.use('/api/notifications', authLimiter, notificationRoute); 

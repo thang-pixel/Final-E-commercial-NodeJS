@@ -270,6 +270,136 @@ class UserController {
       });
     }
   }
+
+
+
+  // Admin: Lấy danh sách tất cả users
+  async getAllUsers(req, res) {
+    try {
+      const users = await UserModel.find({})
+        .select('full_name email phone role status createdAt')
+        .sort({ createdAt: -1 });
+      
+      res.json({
+        success: true,
+        data: users
+      });
+    } catch (error) {
+      console.error('Error getting all users:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
+  // Admin: Cập nhật user
+  async updateUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const { full_name, phone, role, status } = req.body;
+      
+      const updateData = {};
+      if (full_name) updateData.full_name = full_name;
+      if (phone) updateData.phone = phone;
+      if (role) updateData.role = role;
+      if (status) updateData.status = status;
+      
+      const user = await UserModel.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true, runValidators: true }
+      );
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy người dùng'
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: 'Cập nhật thông tin thành công',
+        data: user
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
+  // Admin: Ban user
+  async banUser(req, res) {
+    try {
+      const userId = req.params.id;
+      
+      const user = await UserModel.findByIdAndUpdate(
+        userId,
+        { status: 'inactive' },
+        { new: true }
+      );
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy người dùng'
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: 'Đã khóa tài khoản người dùng',
+        data: user
+      });
+    } catch (error) {
+      console.error('Error banning user:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
+  // Admin: Unban user
+  async unbanUser(req, res) {
+    try {
+      const userId = req.params.id;
+      
+      const user = await UserModel.findByIdAndUpdate(
+        userId,
+        { status: 'active' },
+        { new: true }
+      );
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy người dùng'
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: 'Đã mở khóa tài khoản người dùng',
+        data: user
+      });
+    } catch (error) {
+      console.error('Error unbanning user:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
+
 }
 
 module.exports = new UserController();

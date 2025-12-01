@@ -13,4 +13,11 @@ router.post('/me/address', authRequired, UserController.addAddress);
 router.put('/me/address/:addressId', authRequired, UserController.updateAddress);
 router.delete('/me/address/:addressId', authRequired, UserController.deleteAddress);
 
+
+// Admin routes
+router.get('/', adminRequired, UserController.getAllUsers);
+router.put('/:id', adminRequired, UserController.updateUser);
+router.patch('/:id/ban', adminRequired, UserController.banUser);
+router.patch('/:id/unban', adminRequired, UserController.unbanUser);
+
 module.exports = router;
