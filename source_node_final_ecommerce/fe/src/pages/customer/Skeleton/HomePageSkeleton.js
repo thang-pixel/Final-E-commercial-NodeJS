@@ -1,5 +1,4 @@
-import { Grid, Skeleton } from '@mui/material';
-import ProductsSkeleton from '../home/ProductsSketon';
+import { Grid, Skeleton } from '@mui/material'; 
 
 const HomePageSkeleton = (title) => {
   const renderSkeletons = (count = 6) => {

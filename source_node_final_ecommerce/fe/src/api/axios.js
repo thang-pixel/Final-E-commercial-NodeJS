@@ -1,6 +1,5 @@
 import axios from "axios";
-import qs from "qs";
-import { message } from "antd";   
+import qs from "qs"; 
 import { API_DOMAIN } from "../constants/apiDomain";
 
 const api = axios.create({

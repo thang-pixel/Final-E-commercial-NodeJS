@@ -1,5 +1,5 @@
 // src/pages/customer/ProductList.jsx
-import { use, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Grid,
@@ -30,7 +30,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import ProductCard from '../../../components/customer/ProductCard';
 import { api } from '../../../api/axios';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FilterAltOutlined } from '@mui/icons-material';
 
 const SORT_OPTIONS = [

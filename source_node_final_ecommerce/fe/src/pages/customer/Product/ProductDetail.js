@@ -38,6 +38,8 @@ import Gallery from '../../../components/common/Gallery';
 import stringUtils from '../../../utils/stringUtils';
 import SkeletonProductDetail from '../../../components/common/SketonProductDetail';
 import useAuth from '../../../hooks/authHook';
+import CommentList from '../../../components/common/product/CommentList';
+import styleMuiUtils from '../../../utils/styleMuiUtils';
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -172,8 +174,7 @@ function ProductDetail() {
     // kiem tra so luong trong kho
     const cartItem = carts.find(
       (item) =>
-        item.product_id === data._id &&
-        item.variant_id === variantSelected._id
+        item.product_id === data._id && item.variant_id === variantSelected._id
     );
     const existingQty = cartItem ? cartItem.quantity : 0;
     if (existingQty + qty > variantSelected.stock) {
@@ -216,9 +217,18 @@ function ProductDetail() {
   };
 
   return (
-    <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+    <Box sx={{ p: { xs: 1.5, md: 0 }, my: 2 }}>
       {contextHolder}
-      <Grid container spacing={3} display="flex" wrap="wrap">
+      <Grid
+        container
+        spacing={3} 
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
         {/* Gallery */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Gallery images={images} name={data.name} />
@@ -231,8 +241,11 @@ function ProductDetail() {
         </Grid>
 
         {/* Info */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Stack spacing={1.25}>
+        <Grid
+          size={{ xs: 12, md: 6 }}
+          
+        >
+          <Stack spacing={1.25} sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="h5" fontWeight={700}>
               {data.name}
             </Typography>
@@ -382,9 +395,10 @@ function ProductDetail() {
 
         {/* description */}
         {/* Description: tối thiểu hiển thị 5 dòng (giữ xuống dòng) */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Divider sx={{ my: 1 }} />
-          <Box>
+        <Grid
+          size={{ xs: 12, md: 6 }} 
+        >
+          <Box sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Mô tả
             </Typography>
@@ -403,21 +417,22 @@ function ProductDetail() {
         </Grid>
 
         {/* Thong so ky thuat */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Divider sx={{ my: 1 }} />
-          <Box>
+        <Grid
+          size={{ xs: 12, md: 6 }} 
+        >
+          <Box sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Thông số kỹ thuật
             </Typography>
             {/* mang {key, value} */}
             {data.specifications ? (
               <>
-                <Table size="small">
+                <Table size="small" bordered>
                   <TableBody>
                     {currentProduct.specifications.map((spec) => {
                       return (
                         <TableRow key={spec.key}>
-                          <TableCell>{spec.key}</TableCell>
+                          <TableCell variant="head">{spec.key}</TableCell>
                           <TableCell>{spec.value}</TableCell>
                         </TableRow>
                       );
@@ -433,131 +448,9 @@ function ProductDetail() {
           </Box>
         </Grid>
 
-        {/* Reviews */}
-        <Grid size={12}>
-          <Divider sx={{ my: 3 }} />
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
-            Đánh giá & Bình luận
-          </Typography>
-
-          {/* Form gửi mới */}
-          <Stack spacing={1.5} sx={{ mb: 2 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography variant="body2">Đánh giá của bạn:</Typography>
-              <Rating value={myRating} onChange={(_, v) => setMyRating(v)} />
-            </Stack>
-            <TextField
-              multiline
-              minRows={3}
-              placeholder="Chia sẻ cảm nhận về sản phẩm…"
-              value={myComment}
-              onChange={(e) => setMyComment(e.target.value)}
-            />
-            <Stack direction="row" spacing={1}>
-              <Button variant="contained" onClick={handleSubmitReview}>
-                Gửi đánh giá
-              </Button>
-              <Button
-                variant="text"
-                onClick={() => {
-                  setMyRating(0);
-                  setMyComment('');
-                }}
-              >
-                Xoá
-              </Button>
-            </Stack>
-          </Stack>
-
-          {/* Danh sách bình luận */}
-          {rvLoading ? (
-            <Stack spacing={1}>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Box key={i}>
-                  <Skeleton width="30%" />
-                  <Skeleton height={18} />
-                  <Skeleton height={18} width="70%" />
-                </Box>
-              ))}
-            </Stack>
-          ) : reviews.length === 0 ? (
-            <Alert severity="info">
-              Chưa có bình luận nào. Hãy là người đầu tiên!
-            </Alert>
-          ) : (
-            <Stack spacing={2}>
-              {reviews.map((r) => (
-                <Box
-                  key={r._id ?? r.id}
-                  sx={{
-                    p: 1.5,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                    justifyContent="space-between"
-                  >
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography fontWeight={600}>
-                        {r.user?.name || 'Ẩn danh'}
-                      </Typography>
-                      <Rating
-                        value={Number(r.rating || 0)}
-                        size="small"
-                        readOnly
-                      />
-                    </Stack>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(r.createdAt || Date.now()).toLocaleString(
-                        'vi-VN'
-                      )}
-                    </Typography>
-                  </Stack>
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 0.5, whiteSpace: 'pre-line' }}
-                  >
-                    {r.comment}
-                  </Typography>
-                </Box>
-              ))}
-              {/* Phân trang review đơn giản */}
-              {rvTotalPages > 1 && (
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  justifyContent="center"
-                  sx={{ mt: 1 }}
-                >
-                  <IconButton
-                    size="small"
-                    onClick={() => setRvPage((p) => Math.max(1, p - 1))}
-                    disabled={rvPage <= 1}
-                  >
-                    <ChevronLeft />
-                  </IconButton>
-                  <Typography variant="body2">
-                    Trang {rvPage}/{rvTotalPages}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() =>
-                      setRvPage((p) => Math.min(rvTotalPages, p + 1))
-                    }
-                    disabled={rvPage >= rvTotalPages}
-                  >
-                    <ChevronRight />
-                  </IconButton>
-                </Stack>
-              )}
-            </Stack>
-          )}
+        {/* Reviews & Comments */}
+        <Grid size={12} sx={styleMuiUtils.createBoxRoundedShadow()}>
+          <CommentList productId={productId} product={data}/>
         </Grid>
       </Grid>
     </Box>

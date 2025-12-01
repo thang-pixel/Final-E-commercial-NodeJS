@@ -3,14 +3,12 @@ const router = express.Router();
 
 // controller
 const CommentController = require('../app/controllers/CommentController');
+const { adminRequired, authRequired } = require('../app/middlewares/AuthMiddleware');
 
 // Comment router
-
 router.get('/:product_id/comments-by-product', CommentController.getCommentsByProductId);
-router.get('/:user_id/comments-by-user', CommentController.getCommentsByUserId);
+router.post('/:product_id/add-comment', CommentController.createComment);
 
-router.get('/', (req, res) => {
-    res.status(200).json({ message: 'Comment route is working' });
-});
-
+// admin
+router.delete('/:comment_id', authRequired, adminRequired, CommentController.deleteCommentById);
 module.exports = router;

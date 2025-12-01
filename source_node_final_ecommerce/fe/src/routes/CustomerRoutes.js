@@ -17,7 +17,7 @@ import ProductList from '../pages/customer/Product';
 import AccountCustomer from '../pages/customer/Account/AccountCustomer';
 import Favorite from '../pages/customer/Favorite/Favorite';
 import CheckoutPage from '../pages/customer/Checkout/CheckoutPage';
-import useCart from '../hooks/cartHook';
+
 function CustomerRoutes() {
   const { user } = useAuth();
   

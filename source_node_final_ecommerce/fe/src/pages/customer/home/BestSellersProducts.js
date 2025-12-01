@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"; 
-import { api } from "../../../api/axios";
 import GridProductsHomePage from "./GridProductsHomePage";
 import ProductsSkeleton from "./ProductsSketon";
 
