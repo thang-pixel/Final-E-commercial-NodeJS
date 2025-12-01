@@ -1,6 +1,7 @@
 const OrderModel = require('../models/OrderModel');
 const ProductVariant = require('../models/ProductVariant');
 const UserModel = require('../models/UserModel');
+const PromotionModel = require('../models/PromotionModel');
 const { sendOrderConfirmationEmail } = require('../../utils/emailUtil');
 
 class OrderController {
@@ -12,7 +13,8 @@ class OrderController {
         shipping_address,
         payment_method,
         customer_note,
-        loyalty_points_used = 0
+        loyalty_points_used = 0,
+        promotion_code // THÊM MỚI
       } = req.body;
       
       const customer_id = req.user.id;
@@ -22,6 +24,14 @@ class OrderController {
         return res.status(400).json({
           success: false,
           message: 'Giỏ hàng trống'
+        });
+      }
+      
+      // Validate shipping address
+      if (!shipping_address || !shipping_address.full_name || !shipping_address.phone || !shipping_address.address) {
+        return res.status(400).json({
+          success: false,
+          message: 'Thiếu thông tin địa chỉ giao hàng'
         });
       }
       
@@ -67,43 +77,160 @@ class OrderController {
         await variant.save();
       }
       
-      // Tính phí và tổng tiền
+      // Tính phí vận chuyển
       const shipping_fee = subtotal >= 500000 ? 0 : 30000;
       const tax_amount = 0;
-      const discount_amount = loyalty_points_used;
       
-      const total_amount = subtotal + shipping_fee + tax_amount - discount_amount;
+      // Xử lý promotion code - THÊM MỚI
+      let promotion_discount = 0;
+      let promotion_used = null;
       
-      // Tạo đơn hàng (giữ nguyên logic cũ)
+      if (promotion_code) {
+        const promotion = await PromotionModel.findOne({
+          code: promotion_code.toUpperCase(),
+          status: 'ACTIVE'
+        });
+        
+        if (promotion) {
+          // Validate promotion
+          const now = new Date();
+          const isValidTime = promotion.start_date <= now && promotion.end_date >= now;
+          const hasUsageLeft = !promotion.usage_limit || promotion.used_count < promotion.usage_limit;
+          const meetsMinOrder = subtotal >= promotion.min_order_amount;
+          
+          if (isValidTime && hasUsageLeft && meetsMinOrder) {
+            // Tính discount amount
+            promotion_discount = promotion.calculateDiscount(subtotal);
+            
+            if (promotion_discount > 0) {
+              promotion_used = {
+                promotion_id: promotion._id,
+                code: promotion.code,
+                name: promotion.name,
+                discount_type: promotion.discount_type,
+                discount_value: promotion.discount_value,
+                discount_amount: promotion_discount
+              };
+              
+              // Tăng used_count
+              promotion.used_count += 1;
+              await promotion.save();
+            }
+          } else {
+            // Rollback stock nếu promotion không hợp lệ
+            for (let item of orderItems) {
+              await ProductVariant.findByIdAndUpdate(
+                item.variant_id,
+                { $inc: { stock: item.quantity } }
+              );
+            }
+            
+            let errorMessage = 'Mã giảm giá không hợp lệ';
+            if (!isValidTime) {
+              errorMessage = promotion.start_date > now ? 'Mã giảm giá chưa có hiệu lực' : 'Mã giảm giá đã hết hạn';
+            } else if (!hasUsageLeft) {
+              errorMessage = 'Mã giảm giá đã hết lượt sử dụng';
+            } else if (!meetsMinOrder) {
+              errorMessage = `Đơn hàng tối thiểu ${promotion.min_order_amount.toLocaleString()}đ để sử dụng mã này`;
+            }
+            
+            return res.status(400).json({
+              success: false,
+              message: errorMessage
+            });
+          }
+        } else {
+          // Rollback stock nếu promotion không tồn tại
+          for (let item of orderItems) {
+            await ProductVariant.findByIdAndUpdate(
+              item.variant_id,
+              { $inc: { stock: item.quantity } }
+            );
+          }
+          
+          return res.status(400).json({
+            success: false,
+            message: 'Mã giảm giá không tồn tại'
+          });
+        }
+      }
+      
+      // Validate loyalty points
+      const user = await UserModel.findById(customer_id);
+      if (loyalty_points_used > (user.loyalty_points || 0)) {
+        // Rollback nếu không đủ điểm
+        for (let item of orderItems) {
+          await ProductVariant.findByIdAndUpdate(
+            item.variant_id,
+            { $inc: { stock: item.quantity } }
+          );
+        }
+        
+        // Rollback promotion usage
+        if (promotion_used) {
+          await PromotionModel.findByIdAndUpdate(
+            promotion_used.promotion_id,
+            { $inc: { used_count: -1 } }
+          );
+        }
+        
+        return res.status(400).json({
+          success: false,
+          message: `Bạn chỉ có ${user.loyalty_points || 0} điểm tích lũy`
+        });
+      }
+      
+      // Tính tổng giảm giá và số tiền cuối cùng
+      const loyalty_discount = loyalty_points_used;
+      const total_discount = promotion_discount + loyalty_discount;
+      const total_amount = Math.max(0, subtotal + shipping_fee + tax_amount - total_discount);
+      
+      // Validate final amount
+      if (total_amount < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Tổng số tiền không hợp lệ'
+        });
+      }
+      
+      // Tạo đơn hàng
       const newOrder = new OrderModel({
         customer_id,
         items: orderItems,
         subtotal,
         shipping_fee,
         tax_amount,
-        discount_amount,
+        discount_amount: total_discount,
         loyalty_points_used,
+        promotion_used, // THÊM MỚI
         total_amount,
         shipping_address,
         payment_method,
         customer_note,
-        status: "PENDING"
+        status: "PENDING",
+        status_history: [{
+          status: "PENDING",
+          timestamp: new Date(),
+          note: "Đơn hàng được tạo"
+        }]
       });
       
       await newOrder.save();
       
-      // Cập nhật điểm tích lũy (chỉ trừ điểm đã dùng, chưa cộng điểm mới)
-      const user = await UserModel.findById(customer_id);
-      user.loyalty_points = (user.loyalty_points || 0) - loyalty_points_used;
-      await user.save();
+      // Cập nhật điểm tích lũy của user (trừ điểm đã sử dụng)
+      if (loyalty_points_used > 0) {
+        user.loyalty_points = (user.loyalty_points || 0) - loyalty_points_used;
+        await user.save();
+      }
       
       let responseData = {
         order: newOrder,
-        loyalty_points_earned: newOrder.loyalty_points_earned,
+        loyalty_points_used: loyalty_points_used,
+        promotion_discount: promotion_discount,
         new_loyalty_balance: user.loyalty_points
       };
       
-      // Nếu thanh toán VNPay, tạo payment URL
+      // Xử lý thanh toán
       if (payment_method === 'VNPAY') {
         const PaymentModel = require('../models/PaymentModel');
         
@@ -136,7 +263,7 @@ class OrderController {
           expired_at: payment.expired_at
         };
       } else {
-        // COD - gửi email ngay
+        // COD - gửi email xác nhận ngay
         if (user.email) {
           sendOrderConfirmationEmail(user.email, newOrder)
             .then(result => {
@@ -222,6 +349,7 @@ class OrderController {
         customer_id
       })
       .populate('items.product_id', 'name slug images')
+      .populate('promotion_used.promotion_id', 'code name description')
       .lean();
       
       if (!order) {
@@ -289,6 +417,14 @@ class OrderController {
         );
       }
       
+      // Hoàn lại lượt sử dụng promotion - THÊM MỚI
+      if (order.promotion_used && order.promotion_used.promotion_id) {
+        await PromotionModel.findByIdAndUpdate(
+          order.promotion_used.promotion_id,
+          { $inc: { used_count: -1 } }
+        );
+      }
+      
       // Cập nhật trạng thái
       order.status = 'CANCELLED';
       order.status_history.push({
@@ -339,6 +475,45 @@ class OrderController {
         });
       }
       
+      // Xử lý logic đặc biệt khi chuyển sang CANCELLED hoặc REFUNDED
+      if (['CANCELLED', 'REFUNDED'].includes(status) && !['CANCELLED', 'REFUNDED'].includes(order.status)) {
+        // Hoàn lại tồn kho
+        for (let item of order.items) {
+          await ProductVariant.findByIdAndUpdate(
+            item.variant_id,
+            { $inc: { stock: item.quantity } }
+          );
+        }
+        
+        // Hoàn lại điểm tích lũy đã sử dụng
+        if (order.loyalty_points_used > 0) {
+          await UserModel.findByIdAndUpdate(
+            order.customer_id,
+            { $inc: { loyalty_points: order.loyalty_points_used } }
+          );
+        }
+        
+        // Hoàn lại lượt sử dụng promotion
+        if (order.promotion_used && order.promotion_used.promotion_id) {
+          await PromotionModel.findByIdAndUpdate(
+            order.promotion_used.promotion_id,
+            { $inc: { used_count: -1 } }
+          );
+        }
+      }
+      
+      // Xử lý khi đơn hàng DELIVERED - tặng điểm tích lũy
+      if (status === 'DELIVERED' && order.status !== 'DELIVERED') {
+        const pointsToEarn = Math.floor(order.total_amount / 1000); // 1 điểm per 1000 VND
+        
+        await UserModel.findByIdAndUpdate(
+          order.customer_id,
+          { $inc: { loyalty_points: pointsToEarn } }
+        );
+        
+        order.loyalty_points_earned = pointsToEarn;
+      }
+      
       order.status = status;
       order.status_history.push({
         status,
@@ -364,8 +539,6 @@ class OrderController {
       });
     }
   }
-
-
 
   // [GET] /api/orders/admin/all - Lấy tất cả đơn hàng (Admin only)
   async getAllOrdersForAdmin(req, res) {
@@ -472,6 +645,9 @@ class OrderController {
               'customer.email': 1,
               subtotal: 1,
               total_amount: 1,
+              discount_amount: 1,
+              loyalty_points_used: 1,
+              promotion_used: 1,
               status: 1,
               payment_method: 1,
               createdAt: 1,
@@ -519,6 +695,7 @@ class OrderController {
       const order = await OrderModel.findById(orderId)
         .populate('customer_id', 'full_name phone email')
         .populate('items.product_id', 'name slug images')
+        .populate('promotion_used.promotion_id', 'code name description')
         .lean();
       
       if (!order) {
@@ -543,6 +720,85 @@ class OrderController {
     }
   }
 
+  // [GET] /api/orders/stats/summary - Thống kê tổng quan (Admin)
+  async getOrderStatistics(req, res) {
+    try {
+      const { period = 'month' } = req.query; // day, week, month, year
+      
+      const now = new Date();
+      let startDate;
+      
+      switch (period) {
+        case 'day':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          break;
+        case 'week':
+          startDate = new Date(now.setDate(now.getDate() - 7));
+          break;
+        case 'month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'year':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+        default:
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      }
+      
+      const [stats] = await OrderModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startDate }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalOrders: { $sum: 1 },
+            totalRevenue: { $sum: '$total_amount' },
+            totalDiscount: { $sum: '$discount_amount' },
+            promotionUsage: { 
+              $sum: { 
+                $cond: [{ $ne: ['$promotion_used', null] }, 1, 0] 
+              } 
+            },
+            loyaltyPointsUsed: { $sum: '$loyalty_points_used' },
+            avgOrderValue: { $avg: '$total_amount' },
+            statusBreakdown: {
+              $push: '$status'
+            }
+          }
+        }
+      ]);
+      
+      // Status breakdown
+      const statusCounts = {};
+      if (stats && stats.statusBreakdown) {
+        stats.statusBreakdown.forEach(status => {
+          statusCounts[status] = (statusCounts[status] || 0) + 1;
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: {
+          ...stats,
+          statusBreakdown: statusCounts,
+          period,
+          startDate,
+          endDate: now
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error fetching order statistics:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  }
 }
 
 module.exports = new OrderController();

@@ -288,7 +288,7 @@ const OrderList = () => {
 
             {/* Status Filter */}
             <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: '150px' }}>
                 <InputLabel>Trạng thái</InputLabel>
                 <Select
                   value={filters.status}
@@ -307,7 +307,7 @@ const OrderList = () => {
 
             {/* Date Range */}
             <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="small" sx={{ minWidth: '150px' }}>
                 <InputLabel>Thời gian</InputLabel>
                 <Select
                   value={filters.date_range}

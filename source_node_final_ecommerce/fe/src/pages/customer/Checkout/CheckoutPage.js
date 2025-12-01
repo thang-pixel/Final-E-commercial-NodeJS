@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Paper,
@@ -28,10 +29,12 @@ import {
   LocalShipping,
   CreditCard,
   AccountBalance,
-  Wallet
+  Wallet,
+  LocalOffer
 } from '@mui/icons-material';
 import { createOrder } from '../../../redux/reducers/orderSlice';
 import { getMyProfile } from '../../../redux/reducers/userSlice';
+import { API_DOMAIN } from '../../../constants/apiDomain';
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -41,6 +44,11 @@ function CheckoutPage() {
   const { user } = useSelector(state => state.auth);
   const { profile, addresses, loading: userLoading } = useSelector(state => state.user);
   const { loading, error } = useSelector(state => state.orders);
+  
+  // Promotion state
+  const [promotionCode, setPromotionCode] = useState('');
+  const [appliedPromotion, setAppliedPromotion] = useState(null);
+  const [promotionLoading, setPromotionLoading] = useState(false);
   
   // Load dữ liệu từ localStorage khi component mount
   useEffect(() => {
@@ -93,11 +101,52 @@ function CheckoutPage() {
   const [loyaltyPointsToUse, setLoyaltyPointsToUse] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState('');
   
-  // Tính toán giá từ checkoutItems
+  // Tính toán giá với promotion
   const subtotal = checkoutItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingFee = subtotal >= 500000 ? 0 : 30000;
-  const discountAmount = loyaltyPointsToUse;
-  const totalAmount = subtotal + shippingFee - discountAmount;
+  const loyaltyDiscount = loyaltyPointsToUse;
+  const promotionDiscount = appliedPromotion?.discount_amount || 0;
+  const totalDiscount = loyaltyDiscount + promotionDiscount;
+  const totalAmount = subtotal + shippingFee - totalDiscount;
+  
+  // Validate promotion code
+  const handleApplyPromotion = async () => {
+    if (!promotionCode.trim()) {
+      alert('Vui lòng nhập mã giảm giá');
+      return;
+    }
+
+    setPromotionLoading(true);
+    
+    try {
+      const response = await axios.post(
+        `${API_DOMAIN}/api/promotions/validate`,
+        {
+          code: promotionCode,
+          order_amount: subtotal
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }
+      );
+
+      if (response.data.success) {
+        setAppliedPromotion(response.data.data);
+        alert(`Áp dụng mã giảm giá thành công! Giảm ${response.data.data.discount_amount.toLocaleString()}đ`);
+      }
+    } catch (error) {
+      console.error('Error validating promotion:', error);
+      alert(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
+      setAppliedPromotion(null);
+    } finally {
+      setPromotionLoading(false);
+    }
+  };
+
+  const handleRemovePromotion = () => {
+    setAppliedPromotion(null);
+    setPromotionCode('');
+  };
   
   const handleShippingChange = (field, value) => {
     setShippingInfo(prev => ({
@@ -161,7 +210,8 @@ function CheckoutPage() {
       shipping_address: shippingInfo,
       payment_method: paymentMethod,
       customer_note: customerNote,
-      loyalty_points_used: loyaltyPointsToUse
+      loyalty_points_used: loyaltyPointsToUse,
+      promotion_code: appliedPromotion?.code || null // THÊM MỚI
     };
     
     try {
@@ -458,10 +508,10 @@ function CheckoutPage() {
                       component="img"
                       src={item.image_url}
                       alt={item.name}
-                      sx={{ width: 50, height: 50, objectFit: 'cover', mr: 1 }}
+                      sx={{ width: 50, height: 50, objectFit: 'cover', mr: 1, borderRadius: 1 }}
                     />
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2">{item.name}</Typography>
+                      <Typography variant="body2" fontWeight={600}>{item.name}</Typography>
                       <Typography variant="caption" color="text.secondary">
                         {item.attributes?.map(attr => `${attr.code}: ${attr.value}`).join(', ')}
                       </Typography>
@@ -475,10 +525,54 @@ function CheckoutPage() {
               
               <Divider sx={{ my: 2 }} />
               
-              {/* Điểm tích lũy */}
+              {/* Promotion Code Section - THÊM MỚI */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                  <LocalOffer sx={{ mr: 1, fontSize: 16 }} />
+                  Mã giảm giá
+                </Typography>
+                
+                {!appliedPromotion ? (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Nhập mã giảm giá"
+                      value={promotionCode}
+                      onChange={(e) => setPromotionCode(e.target.value.toUpperCase())}
+                      onKeyPress={(e) => e.key === 'Enter' && handleApplyPromotion()}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={handleApplyPromotion}
+                      disabled={promotionLoading}
+                      sx={{ minWidth: 'auto', px: 2 }}
+                    >
+                      {promotionLoading ? <CircularProgress size={20} /> : 'Áp dụng'}
+                    </Button>
+                  </Box>
+                ) : (
+                  <Alert 
+                    severity="success" 
+                    action={
+                      <Button color="inherit" size="small" onClick={handleRemovePromotion}>
+                        Bỏ
+                      </Button>
+                    }
+                  >
+                    <Typography variant="body2">
+                      <strong>{appliedPromotion.code}</strong><br/>
+                      {appliedPromotion.name}<br/>
+                      Giảm {appliedPromotion.discount_amount.toLocaleString()}đ
+                    </Typography>
+                  </Alert>
+                )}
+              </Box>
+              
+              {/* Loyalty Points Section */}
               {profile?.loyalty_points > 0 && (
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
                     Điểm tích lũy có thể dùng: {profile.loyalty_points.toLocaleString()}
                   </Typography>
                   <TextField
@@ -488,15 +582,15 @@ function CheckoutPage() {
                     label="Sử dụng điểm"
                     value={loyaltyPointsToUse}
                     onChange={(e) => {
-                      const value = Math.max(0, Math.min(profile.loyalty_points, subtotal, parseInt(e.target.value) || 0));
+                      const value = Math.max(0, Math.min(profile.loyalty_points, subtotal - promotionDiscount, parseInt(e.target.value) || 0));
                       setLoyaltyPointsToUse(value);
                     }}
-                    inputProps={{ max: Math.min(profile.loyalty_points, subtotal) }}
+                    inputProps={{ max: Math.min(profile.loyalty_points, subtotal - promotionDiscount) }}
                   />
                 </Box>
               )}
               
-              {/* Tính toán giá */}
+              {/* Price Breakdown */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography>Tạm tính:</Typography>
                 <Typography>{subtotal.toLocaleString()}đ</Typography>
@@ -509,10 +603,17 @@ function CheckoutPage() {
                 </Typography>
               </Box>
               
-              {discountAmount > 0 && (
+              {promotionDiscount > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography>Giảm giá (mã):</Typography>
+                  <Typography color="success.main">-{promotionDiscount.toLocaleString()}đ</Typography>
+                </Box>
+              )}
+              
+              {loyaltyDiscount > 0 && (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Giảm giá (điểm):</Typography>
-                  <Typography color="success.main">-{discountAmount.toLocaleString()}đ</Typography>
+                  <Typography color="success.main">-{loyaltyDiscount.toLocaleString()}đ</Typography>
                 </Box>
               )}
               

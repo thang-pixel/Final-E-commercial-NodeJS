@@ -36,6 +36,16 @@ const orderSchema = new mongoose.Schema({
   loyalty_points_used: { type: Number, default: 0 },
   total_amount: { type: Number, required: true },
   
+  // Thông tin promotion được sử dụng - THÊM MỚI
+  promotion_used: {
+    promotion_id: { type: Number, ref: "Promotion" },
+    code: String,
+    name: String,
+    discount_type: String,
+    discount_value: Number,
+    discount_amount: Number
+  },
+
   // Thông tin giao hàng
   shipping_address: {
     full_name: { type: String, required: true },
