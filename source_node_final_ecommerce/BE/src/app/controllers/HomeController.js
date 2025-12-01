@@ -1,3 +1,4 @@
+const UserModel = require("../models/UserModel");
 
 class HomeController{
     // [GET] | /

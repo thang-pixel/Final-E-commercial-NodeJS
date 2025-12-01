@@ -121,6 +121,7 @@ const loadCartLocal = () => {
   }
   return [];
 };
+
 const initState = {
   carts: loadCartLocal() || [],
   loading: false,
@@ -139,18 +140,23 @@ const cartSlice = createSlice({
       state.message = '';
       state.errors = null;
     },
-    addToCart: (state, action) => {
-      const { product_id, variant_id } = action.payload;
 
+
+    clearCart: (state) => {
+      localStorage.removeItem('carts');
+      state.carts = [];
+    },
+
+    addToCart: (state, action) => {
+      const { product_id, variant_id } = action.payload; 
+      
       const existingItemIndex = state.carts.findIndex(
         (item) =>
           item.product_id === product_id && item.variant_id === variant_id
       );
       if (existingItemIndex !== -1) {
-        // If item exists, update quantity
         state.carts[existingItemIndex].quantity += action.payload.quantity;
       } else {
-        // If item does not exist, add new item
         state.carts.push(action.payload);
       }
       localStorage.setItem('carts', JSON.stringify(state.carts));
@@ -169,8 +175,8 @@ const cartSlice = createSlice({
         localStorage.setItem('carts', JSON.stringify(state.carts));
       } else if (itemIndex !== -1) {
         state.carts[itemIndex].quantity = quantity;
+        localStorage.setItem('carts', JSON.stringify(state.carts));
       }
-      localStorage.setItem('carts', JSON.stringify(state.carts));
     },
     removeFromCart: (state, action) => {
       const { product_id, variant_id } = action.payload;
@@ -223,8 +229,7 @@ const cartSlice = createSlice({
       );
   },
 });
-
-export const { clearCartState, addToCart, updateQuantity, removeFromCart } =
-  cartSlice.actions;
+ 
+export const { clearCartState, clearCart, addToCart, updateQuantity, removeFromCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

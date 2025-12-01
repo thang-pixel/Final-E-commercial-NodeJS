@@ -8,27 +8,29 @@ const cors = require('cors');
 const { PORT } = require('./constants'); 
 const route = require('./routes');
 const db = require('./config/database');
-
+ 
 const app = express();
+// setup cors
 // setup cors
 app.use(cors({ origin: true, credentials: true })); // development
 // production
-// const allowOrigins = ['http://localhost:3000'];
-// app.use(
-//     cors({
-//         origin: (origin, callback) => {
-//             // Cho phép request không có origin (Postman, server-to-server)
-//             if (!origin) return callback(null, true);
+const allowOrigins = ['http://localhost:3000'];
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // Cho phép request không có origin (Postman, server-to-server)
+            if (!origin) return callback(null, true);
 
-//             if (allowOrigins.includes(origin)) {
-//                 callback(null, true); // cho phép
-//             } else {
-//                 callback(new Error('Not allowed by CORS'), false); // chặn
-//             }
-//         },
-//         credentials: true, // nếu cần gửi cookie/session
-//     })
-// );
+            if (allowOrigins.includes(origin)) {
+                callback(null, true); // cho phép
+            } else {
+                callback(new Error('Not allowed by CORS'), false); // chặn
+            }
+        },
+        credentials: true, // nếu cần gửi cookie/session
+    })
+);
+
 // HTTP Logger
 app.use(morgan('combined'));
 // static files

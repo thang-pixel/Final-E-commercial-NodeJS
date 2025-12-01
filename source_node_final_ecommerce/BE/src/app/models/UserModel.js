@@ -6,8 +6,11 @@ const { isEmail } = require("validator");
 
 const addressSubSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    is_default: { type: Boolean, default: false },
+    address: { type: String },
+    ward: { type: String },
+    district: { type: String },
+    province: { type: String },
+    is_default: { type: Boolean, default: false }
   },
   { _id: true }
 );
@@ -59,6 +62,8 @@ const userSchema = new mongoose.Schema(
     point: { type: Number, default: 0 },
 
     addresses: [addressSubSchema],
+  
+  loyalty_points: { type: Number, default: 0 },
 
     avatar: { type: String, maxLength: 255, default: "" },
   },

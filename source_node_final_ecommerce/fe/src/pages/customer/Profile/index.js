@@ -18,26 +18,30 @@ import {
   Tooltip,
   Fade,
   Grid,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Edit, Delete, AddLocationAlt, Save, Lock } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  updateProfile,
-  changePassword,
-  fetchProfile,
+  getMyProfile,
+  updateMyProfile,
+  changeMyPassword,
   addAddress,
   updateAddress,
   deleteAddress,
-} from '../../../redux/actions/userAction';
+  clearError,
+  clearSuccess
+} from '../../../redux/reducers/userSlice';
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  const { profile, addresses, loading, error, success } = useSelector((state) => state.user);
   const [editInfo, setEditInfo] = useState(false);
   const [form, setForm] = useState({
-    full_name: user?.full_name || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
+    full_name: '',
+    email: '',
+    phone: '',
   });
 
   // Password change dialog
@@ -46,31 +50,43 @@ const Profile = () => {
 
   // Address dialog
   const [addrOpen, setAddrOpen] = useState(false);
-  const [addrForm, setAddrForm] = useState({ name: '', is_default: false });
+  const [addrForm, setAddrForm] = useState({ 
+    address: '',
+    ward: '', 
+    district: '', 
+    province: '', 
+    is_default: false 
+  });
   const [editingAddr, setEditingAddr] = useState(null);
 
   // Load user info on mount
   useEffect(() => {
-    dispatch(fetchProfile());
+    dispatch(getMyProfile());
   }, [dispatch]);
 
+  // Update form when profile changes
   useEffect(() => {
-    setForm({
-      full_name: user?.full_name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-    });
-  }, [user]);
+    if (profile) {
+      setForm({
+        full_name: profile.full_name || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+      });
+    }
+  }, [profile]);
 
   // Update info
   const handleUpdateInfo = () => {
-    dispatch(updateProfile(form));
+    dispatch(updateMyProfile({
+      full_name: form.full_name,
+      phone: form.phone
+    }));
     setEditInfo(false);
   };
 
   // Change password
   const handleChangePassword = () => {
-    dispatch(changePassword(pwForm));
+    dispatch(changeMyPassword(pwForm));
     setPwOpen(false);
     setPwForm({ old_password: '', new_password: '' });
   };
@@ -79,26 +95,61 @@ const Profile = () => {
   const handleAddAddress = () => {
     dispatch(addAddress(addrForm));
     setAddrOpen(false);
-    setAddrForm({ name: '', is_default: false });
+    setAddrForm({ address: '', ward: '', district: '', province: '', is_default: false });
   };
+
   const handleEditAddress = (addr) => {
     setEditingAddr(addr);
-    setAddrForm(addr);
+    setAddrForm({
+      address: addr.address || '',
+      ward: addr.ward || '',
+      district: addr.district || '',
+      province: addr.province || '',
+      is_default: addr.is_default || false
+    });
     setAddrOpen(true);
   };
+
   const handleUpdateAddress = () => {
-    dispatch(updateAddress(editingAddr, addrForm));
+    dispatch(updateAddress({ 
+      addressId: editingAddr._id, 
+      addressData: addrForm 
+    }));
     setAddrOpen(false);
     setEditingAddr(null);
-    setAddrForm({ name: '', is_default: false });
+    setAddrForm({ address: '', ward: '', district: '', province: '', is_default: false });
   };
+
   const handleDeleteAddress = (addr) => {
-    dispatch(deleteAddress(addr));
+    if (window.confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+      dispatch(deleteAddress(addr._id));
+    }
   };
 
   return (
     <Fade in>
       <Box sx={{ mx: 'auto', mt: 0 }}>
+        {/* Snackbar cho thông báo */}
+        <Snackbar 
+          open={!!error} 
+          autoHideDuration={6000} 
+          onClose={() => dispatch(clearError())}
+        >
+          <Alert severity="error" onClose={() => dispatch(clearError())}>
+            {error}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar 
+          open={!!success} 
+          autoHideDuration={6000} 
+          onClose={() => dispatch(clearSuccess())}
+        >
+          <Alert severity="success" onClose={() => dispatch(clearSuccess())}>
+            {success}
+          </Alert>
+        </Snackbar>
+
         <Paper elevation={4} sx={{ p: 2, borderRadius: 3, bgcolor: '#f5fafd' }}>
           <Typography
             variant="h4"
@@ -109,62 +160,51 @@ const Profile = () => {
             Quản lý hồ sơ cá nhân
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          <Box
-          // sx={{
-          //   display: 'flex',
-          //   flexWrap: 'wrap',
-          //   alignItems: 'center',
-          //   gap: 2,
-          // }}
-          >
-            <Grid container spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <TextField
-                  label="Họ tên"
-                  value={form.full_name}
-                  onChange={(e) =>
-                    setForm({ ...form, full_name: e.target.value })
-                  }
-                  disabled={!editInfo}
-                  fullWidth
-                  // sx={{ flex: 1 }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }} >
-                <TextField
-                  label="Email"
-                  value={form.email}
-                  disabled
-                  fullWidth
-                  // sx={{ flex: 1 }}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 6, md: 3 }} >
-                <TextField
-                  label="Số điện thoại"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  disabled={!editInfo}
-                  fullWidth
-                  // sx={{ flex: 1 }}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex', justifyContent: 'center'}}>
-                <Tooltip title={editInfo ? 'Lưu' : 'Chỉnh sửa'}>
-                  <IconButton
-                    color={editInfo ? 'success' : 'primary'}
-                    onClick={() =>
-                      editInfo ? handleUpdateInfo() : setEditInfo(true)
-                    }
-                  >
-                    {editInfo ? <Save /> : <Edit />}
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+          
+          <Grid container spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Họ tên"
+                value={form.full_name}
+                onChange={(e) =>
+                  setForm({ ...form, full_name: e.target.value })
+                }
+                disabled={!editInfo}
+                fullWidth
+              />
             </Grid>
-          </Box>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Email"
+                value={form.email}
+                disabled
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                label="Số điện thoại"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                disabled={!editInfo}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3} sx={{ display: 'flex', justifyContent: 'center'}}>
+              <Tooltip title={editInfo ? 'Lưu' : 'Chỉnh sửa'}>
+                <IconButton
+                  color={editInfo ? 'success' : 'primary'}
+                  onClick={() =>
+                    editInfo ? handleUpdateInfo() : setEditInfo(true)
+                  }
+                  disabled={loading}
+                >
+                  {editInfo ? <Save /> : <Edit />}
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+
           <Box sx={{ mt: 2 }}>
             <Button
               variant="outlined"
@@ -175,15 +215,17 @@ const Profile = () => {
               Đổi mật khẩu
             </Button>
           </Box>
+
           <Divider sx={{ my: 3 }} />
+
           <Box>
             <Typography variant="h6" color="primary" fontWeight={600}>
-              Địa chỉ giao hàng
+              Địa chỉ giao hàng ({addresses.length})
             </Typography>
             <List>
-              {user?.addresses?.map((addr, idx) => (
+              {addresses?.map((addr) => (
                 <ListItem
-                  key={idx}
+                  key={addr._id}
                   sx={{
                     bgcolor: addr.is_default ? '#e3f2fd' : '#fff',
                     borderRadius: 2,
@@ -191,8 +233,8 @@ const Profile = () => {
                   }}
                 >
                   <ListItemText
-                    primary={addr.name}
-                    secondary={addr.is_default ? 'Mặc định' : ''}
+                    primary={`${addr.address}, ${addr.ward}, ${addr.district}, ${addr.province}`}
+                    secondary={addr.is_default ? 'Địa chỉ mặc định' : ''}
                   />
                   <ListItemSecondaryAction>
                     <Tooltip title="Chỉnh sửa">
@@ -221,7 +263,7 @@ const Profile = () => {
               startIcon={<AddLocationAlt />}
               onClick={() => {
                 setEditingAddr(null);
-                setAddrForm({ name: '', is_default: false });
+                setAddrForm({ address: '', ward: '', district: '', province: '', is_default: false });
                 setAddrOpen(true);
               }}
             >
@@ -231,7 +273,7 @@ const Profile = () => {
         </Paper>
 
         {/* Đổi mật khẩu */}
-        <Dialog open={pwOpen} onClose={() => setPwOpen(false)}>
+        <Dialog open={pwOpen} onClose={() => setPwOpen(false)} maxWidth="sm" fullWidth>
           <DialogTitle>Đổi mật khẩu</DialogTitle>
           <DialogContent>
             <TextField
@@ -257,28 +299,65 @@ const Profile = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setPwOpen(false)}>Hủy</Button>
-            <Button variant="contained" onClick={handleChangePassword}>
+            <Button variant="contained" onClick={handleChangePassword} disabled={loading}>
               Đổi mật khẩu
             </Button>
           </DialogActions>
         </Dialog>
 
         {/* Thêm/Sửa địa chỉ */}
-        <Dialog open={addrOpen} onClose={() => setAddrOpen(false)}>
+        <Dialog open={addrOpen} onClose={() => setAddrOpen(false)} maxWidth="md" fullWidth>
           <DialogTitle>
             {editingAddr ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
           </DialogTitle>
           <DialogContent>
-            <TextField
-              label="Tên địa chỉ"
-              fullWidth
-              margin="normal"
-              value={addrForm.name}
-              onChange={(e) =>
-                setAddrForm({ ...addrForm, name: e.target.value })
-              }
-            />
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Địa chỉ"
+                  fullWidth
+                  value={addrForm.address}
+                  onChange={(e) =>
+                    setAddrForm({ ...addrForm, address: e.target.value })
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Phường/Xã"
+                  fullWidth
+                  value={addrForm.ward}
+                  onChange={(e) =>
+                    setAddrForm({ ...addrForm, ward: e.target.value })
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Quận/Huyện"
+                  fullWidth
+                  value={addrForm.district}
+                  onChange={(e) =>
+                    setAddrForm({ ...addrForm, district: e.target.value })
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Tỉnh/Thành phố"
+                  fullWidth
+                  value={addrForm.province}
+                  onChange={(e) =>
+                    setAddrForm({ ...addrForm, province: e.target.value })
+                  }
+                  required
+                />
+              </Grid>
+            </Grid>
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
               <input
                 type="checkbox"
                 checked={addrForm.is_default}
@@ -297,6 +376,7 @@ const Profile = () => {
             <Button
               variant="contained"
               onClick={editingAddr ? handleUpdateAddress : handleAddAddress}
+              disabled={loading}
             >
               {editingAddr ? 'Cập nhật' : 'Thêm'}
             </Button>

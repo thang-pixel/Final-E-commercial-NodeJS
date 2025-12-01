@@ -15,11 +15,20 @@ const CustomerList = () => {
 
   const token = localStorage.getItem("token");
 
-  // Fetch all users
+   // Fetch all users
   useEffect(() => {
     axios.get(`${API_DOMAIN}/api/users`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then(res => setUsers(res.data));
+    }).then(res => {
+      // Backend trả về { success: true, data: users }
+      if (res.data.success) {
+        setUsers(res.data.data);
+      } else {
+        setUsers(res.data); // fallback nếu format khác
+      }
+    }).catch(err => {
+      console.error('Error fetching users:', err);
+    });
   }, [editOpen, token]);
 
   // Open edit dialog
@@ -31,10 +40,16 @@ const CustomerList = () => {
 
   // Update user info
   const handleUpdate = async () => {
-    await axios.put(`${API_DOMAIN}/api/users/${selectedUser._id}`, editForm, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setEditOpen(false);
+    try {
+      await axios.put(`${API_DOMAIN}/api/users/${selectedUser._id}`, editForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setEditOpen(false);
+      // Refresh data
+      window.location.reload(); // hoặc fetch lại data
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
   };
 
   // Ban user
