@@ -38,6 +38,7 @@
   width: 36px; height: 36px; border-radius: 10px;
   background: #eef2f7; display: grid; place-items: center;
   transition: background .2s ease;
+  cursor: pointer;
 }
 .header-icon:hover { background: #e2e8f0; }
 

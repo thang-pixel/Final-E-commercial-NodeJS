@@ -1,0 +1,25 @@
+.custom-dots li button {
+  background: #d9d9d9;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.custom-dots li.slick-active button {
+  background: #1976d2;
+  width: 20px;
+}
+
+.ant-carousel .slick-prev,
+.ant-carousel .slick-next {
+  color: #1976d2;
+  font-size: 20px;
+  z-index: 2;
+}
+
+.ant-carousel .slick-prev {
+  left: -30px;
+}
+
+.ant-carousel .slick-next {
+  right: -30px;
+}

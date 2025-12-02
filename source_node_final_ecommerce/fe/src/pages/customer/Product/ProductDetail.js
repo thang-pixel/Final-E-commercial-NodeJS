@@ -7,25 +7,19 @@ import {
   Typography,
   Chip,
   Button,
-  Divider,
   Rating,
   ToggleButtonGroup,
   ToggleButton,
   TextField,
-  Skeleton,
   Alert,
   Stack,
-  IconButton,
-  Table,
-  TableHead,
+  Table, 
   TableRow,
   TableCell,
   TableBody,
 } from '@mui/material';
 import {
-  AddShoppingCart,
-  ChevronLeft,
-  ChevronRight,
+  AddShoppingCart, 
   ShoppingCartCheckout,
 } from '@mui/icons-material';
 import { api } from '../../../api/axios';
@@ -62,11 +56,7 @@ function ProductDetail() {
   const [attributes, setAttributes] = useState([]); // [{ code, values: [] }, ...]
   const [variantSelected, setVariantSelected] = useState(null);
 
-  // reviews
-  const [reviews, setReviews] = useState([]);
-  const [rvLoading, setRvLoading] = useState(false);
-  const [rvPage, setRvPage] = useState(1);
-  const [rvTotalPages, setRvTotalPages] = useState(1);
+  // reviews 
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState('');
 
@@ -94,58 +84,12 @@ function ProductDetail() {
   }, [dispatch, slug]);
 
   const productId = data?._id;
-
-  const fetchReviews = useCallback(
-    async (page = 1) => {
-      if (!productId) return;
-      setRvLoading(true);
-      try {
-        const res = await api.get('/api/reviews', {
-          params: { product_id: productId, page, limit: 5 },
-        });
-        const list = res.data?.data || [];
-        const meta = res.data?.meta || { totalPages: 1 };
-        setReviews(list);
-        setRvTotalPages(meta.totalPages || 1);
-      } catch {
-        setReviews([]);
-        setRvTotalPages(1);
-      } finally {
-        setRvLoading(false);
-      }
-    },
-    [productId]
-  );
-
-  useEffect(() => {
-    fetchReviews(rvPage);
-  }, [fetchReviews, rvPage]);
+ 
 
   const images = useMemo(() => {
     if (!data?.images) return [];
     return data.images.map((it) => stringUtils.normalizeUrl(it.img_url));
-  }, [data]);
-
-  const handleSubmitReview = async () => {
-    if (!productId) return;
-    if (!myRating || !myComment.trim()) {
-      alert('Vui lòng chọn sao và nhập bình luận.');
-      return;
-    }
-    try {
-      await api.post('/api/reviews', {
-        product_id: productId,
-        rating: myRating,
-        comment: myComment.trim(),
-      });
-      setMyRating(0);
-      setMyComment('');
-      fetchReviews(1);
-      setRvPage(1);
-    } catch (e) {
-      alert(e?.response?.data?.message || 'Gửi đánh giá thất bại');
-    }
-  };
+  }, [data]); 
 
   if (loading) return <SkeletonProductDetail />;
 

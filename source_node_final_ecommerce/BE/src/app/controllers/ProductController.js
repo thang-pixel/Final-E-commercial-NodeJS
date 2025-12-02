@@ -1,4 +1,4 @@
-const { PRODUCT_STATUSES, USER_ROLES } = require('../../constants/dbEnum'); 
+const { PRODUCT_STATUSES, USER_ROLES } = require('../../constants/dbEnum');
 const categoryUtil = require('../../utils/categoryUtil');
 const {
   sortObj,
@@ -33,7 +33,18 @@ class ProductController {
       //   };
       // }
       if (keyword && keyword.trim()) {
-        filter.$text = { $search: keyword.trim() };
+        const trimmedKeyword = keyword.trim();
+
+        // Thử text search trước (nếu có text index)
+        // try {
+        //   filter.$text = { $search: trimmedKeyword };
+        // } catch (e) {
+        //   // Fallback: regex search nếu chưa có text index
+        // }
+        filter.$or = [
+          { name: { $regex: trimmedKeyword, $options: 'i' } },
+          { description: { $regex: trimmedKeyword, $options: 'i' } },
+        ];
       }
 
       if (status && Object.values(PRODUCT_STATUSES).includes(status)) {
@@ -45,7 +56,7 @@ class ProductController {
         // ƯU TIÊN SLUG
         const category = await CategoryModel.findOne({
           slug: category_slug,
-        }).select('_id'); 
+        }).select('_id');
 
         if (category) {
           const childIds = await categoryUtil.getChildCategoryIds(category._id);
@@ -53,14 +64,19 @@ class ProductController {
         } else {
           // Slug sai → fallback qua id nếu FE gửi category_id
           if (category_id) {
-            filter.category_id = Number(category_id);
+            const parsedCategoryId = parseInt(category_id, 10);
+            const childIds = await categoryUtil.getChildCategoryIds(parsedCategoryId);
+            filter.category_id = { $in: [parsedCategoryId, ...childIds] };
           } else {
-            filter.category_id = -99999; // đảm bảo không trả kết quả
+            filter.category_id = -99999; // không có kết quả
           }
         }
       } else if (category_id) {
-        // Không có slug → xử lý category_id
-        filter.category_id = Number(category_id);
+        const parsedCategoryId = parseInt(category_id, 10);
+        // Lấy tất cả danh mục con
+        const childIds = await categoryUtil.getChildCategoryIds(parsedCategoryId);
+        filter.category_id = { $in: [parsedCategoryId, ...childIds] };
+        console.log('✅ Category filter (id):', filter.category_id);
       }
 
       filter = filterProduct(filter, brand_ids, range_prices, ratings);

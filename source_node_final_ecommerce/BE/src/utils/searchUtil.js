@@ -62,13 +62,25 @@ const filterProduct = (filter, brand_ids, range_prices, ratings) => {
         filter.brand_id = { $in: brand_id_arr };
     }
     if (range_prices_arr.length > 0) {
-        filter.$or = range_prices_arr.map(({ min, max }) => {
+        const priceConditions = range_prices_arr.map(({ min, max }) => {
             if (isNaN(min)) min = 0;
             if (isNaN(max)) max = Number.MAX_SAFE_INTEGER;
             return {
                 min_price: { $gte: min, $lte: max },
             };
         });
+
+        // Nếu đã có $or (từ keyword), dùng $and để kết hợp
+        if (filter.$or) {
+            filter.$and = [
+                { $or: filter.$or },
+                { $or: priceConditions },
+            ];
+            delete filter.$or;
+        } else {
+            // Chưa có $or, gán trực tiếp
+            filter.$or = priceConditions;
+        }
     }
     if (ratings_arr.length > 0) {
         filter.average_rating = { $in: ratings_arr };

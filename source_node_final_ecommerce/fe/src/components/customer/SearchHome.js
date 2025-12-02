@@ -2,9 +2,12 @@ import { Clear, SearchOutlined } from '@mui/icons-material';
 import { useEffect, useRef, useState } from 'react';
 import { API_DOMAIN } from '../../constants/apiDomain';
 import { api } from '../../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function SearchHome({ isHomePage = false }) {
+  // nếu là seacrh trên home page thì mới hiện kết quả search
+  // nếu không thì navigate đến trang products với keyword đã nhập
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
@@ -13,15 +16,22 @@ function SearchHome({ isHomePage = false }) {
 
     try {
       const response = await api.get(`${API_DOMAIN}/api/products`, {
-        params: { keyword, limit: 100 },
+        params: { keyword, limit: 20 },
       });
-      console.log('Search response:', response.data.data);
+      // console.log('Search response:', response.data.data);
       setSearchResults(response?.data?.data);
-      setIsOpenSearchResults(true);
-      // Handle the search results as needed
+
     } catch (error) {
       console.log(error);
       setSearchResults([]);
+    } finally {
+      if (!isHomePage) {
+        // Chuyển hướng đến trang products với từ khóa tìm kiếm
+        navigate(`/products?keyword=${encodeURIComponent(keyword)}`);
+      } else {
+        // Mở kết quả tìm kiếm trên trang chủ
+        setIsOpenSearchResults(true);
+      }
     }
   };
 
@@ -46,6 +56,15 @@ function SearchHome({ isHomePage = false }) {
     };
   }, [isOpenSearchResults]);
 
+  const isShowTransition = (isOk) => {
+    let baseTransition =
+      'transition-all duration-300 ease-in-out z-30 ';
+    if (isOk) {
+      return baseTransition + 'visible opacity-100';
+    } else {
+      return baseTransition + 'invisible opacity-0 pointer-events-none';
+    }
+  };
   return (
     <div
       className="
@@ -84,18 +103,33 @@ function SearchHome({ isHomePage = false }) {
       </div>
 
       {/* result search */}
-      {isOpenSearchResults && isHomePage && (
+      {/* {isOpenSearchResults && isHomePage && (
         <div
           ref={searchRef}
-          className="w-full absolute top-full left-0 mt-2 bg-white shadow-lg rounded-lg z-20"
+          className="w-full 
+          absolute top-full left-0 
+          mt-2 
+          bg-white shadow-lg rounded-lg z-20
+          "
         >
           {<ResultSearch products={searchResults} keyword={keyword} />}
         </div>
-      )}
+      )} */}
+
+      <div
+        ref={searchRef}
+        className={`w-full 
+          absolute top-full left-0 
+          mt-2 
+          bg-white shadow-lg rounded-lg
+           ${isShowTransition(isOpenSearchResults && isHomePage)}
+          `}
+      >
+        {<ResultSearch products={searchResults} keyword={keyword} />}
+      </div>
     </div>
   );
-
-  // ...existing code...
+ 
 }
 
 export default SearchHome;

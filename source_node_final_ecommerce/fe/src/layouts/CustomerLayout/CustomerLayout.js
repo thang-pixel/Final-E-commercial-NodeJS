@@ -48,7 +48,7 @@ function CustomerLayout() {
   const { user } = useAuth();
   const { length } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(true);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const { categories, rootCategories, treeCategories } = useSelector(
     (state) => state.categories
   );
@@ -341,7 +341,7 @@ function CustomerLayout() {
                 )}
               </div>
             </div>
-            <div className="menuCategoryContainer absolute left-0 top-full rounded-lg z-20">
+            <div className="menuCategoryContainer min-w-full absolute left-0 top-full rounded-lg z-20">
               <CategoryDropdown categories={rootCategories} isOpenCateMenu={isOpenCateMenu}/>
             </div>
           </div>
@@ -432,7 +432,7 @@ function CustomerLayout() {
         </div>
 
         {/* Drawer cart */}
-        <div>
+        <div className="cart-drawer">
           {/* Caanf ref, state open, handleOpen */}
           <CartDrawer
             ref={drawerCartRef}
