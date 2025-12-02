@@ -19,10 +19,13 @@ import {
   Drawer,
   Grid,
 } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { LightMode, NotificationsNone, Person } from '@mui/icons-material';
 import Badge from '@mui/material/Badge';
 import LogoutButton from '../../components/common/LogoutButton/LogoutButton';
+import NotificationDropdown from '../../components/admin/Notification/NotificationDropdown';
+import { getNotificationsByUserId } from '../../api/notificationApi'; 
+import { socket } from '../../sockets/socket';
 
 const { Sider, Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -35,6 +38,8 @@ export default function AdminLayout({ user }) {
   const [collapsed, setCollapsed] = useState(false);
   // mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
+  // state
+  const [notifications, setNotifications] = useState([]);
 
   const isDesktop = screens.lg; // lg: ≥1024px
 
@@ -74,7 +79,7 @@ export default function AdminLayout({ user }) {
     {
       key: 'admin/profile',
       label: (
-        <Link to="/admin/profile" className='flex items-center gap-2'>
+        <Link to="/admin/profile" className="flex items-center gap-2">
           <ProfileOutlined /> Hồ sơ của tôi
         </Link>
       ),
@@ -95,6 +100,66 @@ export default function AdminLayout({ user }) {
   // đóng Drawer khi đổi route
   // (nếu bạn dùng v6.22+, có thể dùng useNavigationType để tinh hơn)
   if (mobileOpen && isDesktop) setMobileOpen(false);
+
+  // Đóng menu danh mục khi click ra ngoài
+  const notiMenuRef = useRef();
+  const [isOpenNotifyMenu, setIsOpenNotifyMenu] = useState(false);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notiMenuRef.current && !notiMenuRef.current.contains(event.target)) {
+        setIsOpenNotifyMenu(false);
+      }
+    }
+    if (isOpenNotifyMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpenNotifyMenu]);
+
+  // ----
+  // fetch notifications từ API nếu cần
+  //
+  useEffect(() => {
+    // giả sử fetch từ /api/admin/notifications
+    (async () => {
+      try {
+        const resp = await getNotificationsByUserId(user.id || user._id, {
+          page: 1,
+          limit: 100,
+        })
+        const { data, meta } = resp;
+        setNotifications(data || []);
+        console.log('Fetched notifications:', data, meta);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        setNotifications([]);
+      }
+    })()
+  }, [user]);
+
+  // ----
+  // join room admin để nhận thông báo realtime qua socket.io
+  //
+  useEffect(() => {
+    socket.emit('admin:join');
+
+    socket.on('admin_notification:new', (notifyData) => {
+      console.log('Received new admin notification via socket:', notifyData);
+      if (!notifyData) return;
+      // chỉ cho nếu đúng user_id admin hiện tại
+      if (notifyData.user_id !== user.id && notifyData.user_id !== user._id) return;
+      setNotifications((prevNotis) => [notifyData, ...prevNotis]);
+    })
+
+    return () => {
+      // socket.emit('admin:leave');
+      socket.off('admin_notification:new');
+    };
+  }, []);
+
+  const unReadCount = notifications.filter(noti => !noti.is_read).length;
 
   return (
     <ConfigProvider
@@ -223,10 +288,16 @@ export default function AdminLayout({ user }) {
               <div className="header-icon">
                 <LightMode />
               </div>
-              <div className="header-icon">
-                <Badge badgeContent={4} color="error">
-                  <NotificationsNone />
-                </Badge>
+              <div ref={notiMenuRef} className="relative">
+                <div className='relative cursor-pointer header-icon '>
+                  <Badge badgeContent={unReadCount} color="error" onClick={() => setIsOpenNotifyMenu(!isOpenNotifyMenu)}>
+                    <NotificationsNone />
+                  </Badge>
+
+                  <div className="w-72 mt-2 absolute top-full right-0 z-50">
+                    <NotificationDropdown notifications={notifications} setNotifications={setNotifications} isOpen={isOpenNotifyMenu} />
+                  </div>
+                </div>
               </div>
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
                 <Link
@@ -242,6 +313,7 @@ export default function AdminLayout({ user }) {
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
+                      className='hidden md:block'
                     >
                       {user?.full_name || 'ADMIN No full_name'}
                     </span>

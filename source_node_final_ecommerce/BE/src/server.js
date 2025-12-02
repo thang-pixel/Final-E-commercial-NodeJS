@@ -2,6 +2,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
 const registerProductSocket = require('./sockets/productSocket');
+const { setIO } = require('./services/notificationService');
 const PORT = process.env.PORT || 8000;
 
 // Toj http server tu express app
@@ -30,6 +31,7 @@ const io = new Server(server, {
 
 // Cho phep truy cap io tu req.app.get('io')
 app.set('io', io); 
+setIO(io);
 
 // Danh ky cac event websocket cho product
 registerProductSocket(io);

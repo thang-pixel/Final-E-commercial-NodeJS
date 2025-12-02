@@ -1,5 +1,7 @@
+const { sentNotificationToAdmin } = require('../../services/notificationService');
 const { paginationParam } = require('../../utils/searchUtil');
 const CommentModel = require('../models/CommentModel');
+const ProductModel = require('../models/ProductModel');
 
 class CommentController {
   index(req, res) {}
@@ -165,6 +167,27 @@ class CommentController {
         level: savedComment.level,
         createdAt: savedComment.createdAt,
       });
+
+      // gửi thông báo đến admin về bình luận mới
+      // find product để lấy thông tin nếu cần
+      const pro = await ProductModel.findById(prodIdParsed).lean();
+      if (!pro) {
+        console.warn(
+          `Product with ID ${prodIdParsed} not found while sending comment notification`
+        );
+      }
+
+
+      const admin_ids = [3, 17]; // tạm thời user admin ID là 3, 17
+      await Promise.all(admin_ids.map(async (admin_id) => {
+        await sentNotificationToAdmin({
+          user_id: admin_id,
+          type: 'PRODUCT_REVIEWED',
+          title: `Bình luận mới trên sản phẩm #${pro.name || prodIdParsed}`,
+          message: `User: ${user.email || name} - "${content.slice(0, 80)}..."`,
+          link: `/admin/products/${pro._id || prodIdParsed}/detail`,
+        });
+      }));
 
       return res.status(201).json({
         success: true,

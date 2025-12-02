@@ -92,11 +92,11 @@ const items = [
     icon: <ContainerOutlined />,
     label: <Link to="/admin/reports">Báo cáo, phân tích</Link>,
   },
-  {
-    key: '9',
-    icon: <NotificationOutlined />,
-    label: <Link to="/admin/notifications">Thông báo</Link>,
-  },
+  // {
+  //   key: '9',
+  //   icon: <NotificationOutlined />,
+  //   label: <Link to="/admin/notifications">Thông báo</Link>,
+  // },
   {
     key: '10',
     icon: <SettingOutlined />,

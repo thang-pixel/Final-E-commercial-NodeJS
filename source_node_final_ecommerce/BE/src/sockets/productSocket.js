@@ -20,6 +20,15 @@ const registerProductSocket = (io) => {
       socket.to(`product_${product_id}`).emit('comment:typing', { product_id });
     });
 
+    // comment new đã broadcast trong controller rồi
+
+    // admin join để nhận thông báo 
+    socket.on('admin:join', () => {
+      const room = `admins_room`;
+      socket.join(room);
+      console.log(`Socket ${socket.id} joined room: ${room}`);
+    })
+
     socket.on('disconnect', () => {
       console.log(
         'A user disconnected from product socket, socket id: ',

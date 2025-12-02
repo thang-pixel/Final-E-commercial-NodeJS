@@ -1,5 +1,7 @@
 const RatingModel = require('../models/RatingModel');
 const ProductModel = require('../models/ProductModel');
+const { sentNotificationToAdmin } = require('../../services/notificationService');
+const { ADMIN_NOTIFICATIONS } = require('../../constants/notifyContants');
 
 class RatingController {
   // [GET] | /api/ratings/:user_id/update-rate/:product_id
@@ -148,7 +150,6 @@ class RatingController {
         },
       ]);
 
-
       const data = aggregationResult[0] || { new_average: 0, new_count: 0 };
       console.log('New aggregation data:', data);
 
@@ -170,6 +171,19 @@ class RatingController {
         new_average: data.new_average,
         new_count: data.new_count,
       });
+
+      // find user để lấy thông tin nếu cần 
+      const user = req.user || null;
+      const admin_ids = [3, 17]; // tạm thời user admin ID là 3, 17
+      await Promise.all(admin_ids.map(async (admin_id) => {
+        await sentNotificationToAdmin({
+          user_id: admin_id,
+          type: 'PRODUCT_REVIEWED',
+          title: `Đánh giá mới trên sản phẩm #${existPro.name || prodIdParsed}`,
+          message: `User: ${user.email || user.full_name} - ${value} sao - "${content.slice(0, 80)}..."`,
+          link: `/admin/products/${prodIdParsed}/detail`,
+        });
+      }));
 
       return res.status(200).json({
         success: true,
@@ -216,8 +230,6 @@ class RatingController {
       });
     }
   }
-
-
 }
 
 module.exports = new RatingController();

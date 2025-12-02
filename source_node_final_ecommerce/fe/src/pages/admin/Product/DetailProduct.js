@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Container } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 import {
   Card,
   Col,
@@ -36,9 +36,11 @@ import {
 import { useState } from 'react';
 import { buildSku } from '../../../utils/productVariantUtil';
 import MoneyInput from '../../../components/common/MoneyInput';
-import  './AdminProduct.css';
+import './AdminProduct.css';
 import { formatDateTimeVn } from '../../../utils/formatTime';
- 
+import styleMuiUtils from '../../../utils/styleMuiUtils';
+import CommentList from '../../../components/common/product/CommentList';
+
 const { Paragraph } = Typography;
 
 const useStyles = createStyles(() => ({
@@ -261,7 +263,13 @@ const DetailProduct = () => {
           currency: 'VND',
         }),
     },
-    { title: 'Kho', dataIndex: 'stock', key: 'stock', width: 100, sorter: (a, b) => a.stock - b.stock },
+    {
+      title: 'Kho',
+      dataIndex: 'stock',
+      key: 'stock',
+      width: 100,
+      sorter: (a, b) => a.stock - b.stock,
+    },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -336,7 +344,7 @@ const DetailProduct = () => {
       setOriginalPriceVariant(variantEditing?.original_price || 0);
       setStockVariant(variantEditing?.stock || 0);
     } else {
-      handleCompleteSaveOrCloseModal(); 
+      handleCompleteSaveOrCloseModal();
     }
   }, [variantEditing, formVariant]);
 
@@ -444,7 +452,7 @@ const DetailProduct = () => {
           </Card>
 
           {/* 4️⃣ Biến thể sản phẩm */}
-          <Card title="Biến thể sản phẩm">
+          <Card title="Biến thể sản phẩm" style={{ marginBottom: 24 }}>
             {/* Them bien the */}
             <Button
               type="primary"
@@ -469,7 +477,7 @@ const DetailProduct = () => {
               onCancel={handleCompleteSaveOrCloseModal}
               footer={null}
               maskClosable={false} // ✅ Không cho đóng khi click vào overlay
-              keyboard={false}     // ✅ (Optional) Không cho đóng khi nhấn ESC
+              keyboard={false} // ✅ (Optional) Không cho đóng khi nhấn ESC
             >
               <Form
                 layout="vertical"
@@ -573,6 +581,13 @@ const DetailProduct = () => {
                 </Button>
               </Form>
             </Modal>
+          </Card>
+
+          <Card title="Review sản phẩm" >
+            {/* Reviews & Comments */}
+            <Grid container sx={{ ...styleMuiUtils.createBoxRoundedShadow(), width: '100%' }}>
+              <CommentList productId={currentProduct._id} product={currentProduct} />
+            </Grid>
           </Card>
         </>
       )}
