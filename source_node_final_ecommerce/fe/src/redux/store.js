@@ -8,7 +8,7 @@ import orderReducer from './reducers/orderSlice.js';
 import userReducer from './reducers/userSlice.js';
 import paymentReducer from './reducers/paymentSlice.js';
 import homeReducer from './reducers/homeSlice.js';
-
+import dashboardReducer from './reducers/dashboardSlice';
 const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -20,6 +20,7 @@ const store = configureStore({
     orders: orderReducer,
     user: userReducer,
     payment: paymentReducer,
+    dashboard: dashboardReducer,
   },
 });
 

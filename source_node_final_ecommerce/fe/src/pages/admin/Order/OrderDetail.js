@@ -56,7 +56,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { API_DOMAIN } from '../../../constants/apiDomain';
-
+import { useNotification } from '../../../hooks/useNotification';
 // Status mapping
 const ORDER_STATUS = {
   'PENDING': { 
@@ -150,6 +150,8 @@ function AdminOrderDetail() {
   const [newStatus, setNewStatus] = useState('');
   const [statusNote, setStatusNote] = useState('');
 
+  const { showSuccess, showError, NotificationComponent } = useNotification();
+
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -196,10 +198,10 @@ function AdminOrderDetail() {
       // Refresh order data
       fetchOrderDetail();
       
-      alert('Cập nhật trạng thái thành công!');
+      showSuccess('Cập nhật trạng thái đơn hàng thành công');
     } catch (error) {
       console.error('Error updating status:', error);
-      alert(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái');
+      showError('Cập nhật trạng thái đơn hàng thất bại');
     }
   };
 
@@ -719,6 +721,7 @@ function AdminOrderDetail() {
           </Button>
         </DialogActions>
       </Dialog>
+      <NotificationComponent />
     </Box>
   );
 }

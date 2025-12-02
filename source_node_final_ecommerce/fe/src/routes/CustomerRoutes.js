@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
 import Home from '../pages/customer/home';
 import Cart from '../pages/customer/Cart';
@@ -21,6 +21,27 @@ import OrderDetail from '../pages/customer/Order/OrderDetail';
 import PaymentSuccess from '../pages/customer/Payment/PaymentSuccess';
 import PaymentFailed from '../pages/customer/Payment/PaymentFailed';
 
+// Component kiểm tra status của user
+const StatusGuard = ({ children, user }) => {
+  if (user && user.status === 'inactive') {
+    // Clear localStorage và chuyển về login với thông báo
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    return (
+      <Navigate 
+        to="/login" 
+        replace 
+        state={{ 
+          message: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+          from: window.location.pathname 
+        }} 
+      />
+    );
+  }
+  return children;
+};
+
 function CustomerRoutes() {
   const { user } = useAuth();
   
@@ -30,7 +51,11 @@ function CustomerRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} /> 
       
-      <Route path="/" element={<CustomerLayout user={user} />}>
+      <Route path="/" element={
+        <StatusGuard user={user}>
+          <CustomerLayout user={user} />
+        </StatusGuard>
+      }>
         <Route index element={<Home />} />
         
         <Route path="products" element={<Outlet />}>
@@ -44,7 +69,13 @@ function CustomerRoutes() {
         <Route path="carts" element={<Cart />} />
         
         {/* Chỉnh lại luồng */}
-        <Route path="checkout" element={user ? <CheckoutPage /> : <Login />} />
+        <Route path="checkout" element={
+          user ? (
+            user.status === 'inactive' ? 
+            <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+            <CheckoutPage />
+          ) : <Login />
+        } />
         
         <Route path="order-success" element={<OrderSuccess />} />
         
@@ -53,12 +84,48 @@ function CustomerRoutes() {
         <Route path="payment/failed" element={<PaymentFailed />} />
         
         {/* Account nested routes */}
-        <Route path="account" element={user ? <AccountCustomer /> : <Login />}>
-          <Route path="profile" element={user ? <Profile /> : <Login />} />
-          <Route path="orders" element={user ? <Order /> : <Login />} />
-          <Route path="orders/:orderId" element={user ? <OrderDetail /> : <Login />} />
-          <Route path="carts" element={user ? <Cart /> : <Login />} />
-          <Route path="favorites" element={user ? <Favorite /> : <Login />} />
+        <Route path="account" element={
+          user ? (
+            user.status === 'inactive' ?
+            <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+            <AccountCustomer />
+          ) : <Login />
+        }>
+          <Route path="profile" element={
+            user ? (
+              user.status === 'inactive' ?
+              <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+              <Profile />
+            ) : <Login />
+          } />
+          <Route path="orders" element={
+            user ? (
+              user.status === 'inactive' ?
+              <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+              <Order />
+            ) : <Login />
+          } />
+          <Route path="orders/:orderId" element={
+            user ? (
+              user.status === 'inactive' ?
+              <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+              <OrderDetail />
+            ) : <Login />
+          } />
+          <Route path="carts" element={
+            user ? (
+              user.status === 'inactive' ?
+              <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+              <Cart />
+            ) : <Login />
+          } />
+          <Route path="favorites" element={
+            user ? (
+              user.status === 'inactive' ?
+              <Navigate to="/login" replace state={{ message: 'Tài khoản của bạn đã bị khóa.' }} /> :
+              <Favorite />
+            ) : <Login />
+          } />
         </Route>
 
         {/* Pages */}

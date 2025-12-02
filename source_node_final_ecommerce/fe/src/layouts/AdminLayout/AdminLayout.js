@@ -36,7 +36,7 @@ export default function AdminLayout({ user }) {
       ["/admin/promotions", "Khuyến mãi"],
       ["/admin/reports", "Báo cáo"],
       ["/admin/notifications", "Thông báo"],
-      ["/admin/settings", "Cài đặt"],
+
     ]);
     for (const [p, t] of map.entries()) {
       if (location.pathname === p || location.pathname.startsWith(p + "/")) return t;
@@ -149,12 +149,12 @@ export default function AdminLayout({ user }) {
 
             <div style={{ marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               {/* Ẩn bớt icon trên màn nhỏ nếu cần */}
-              <div className="header-icon"><LightMode /></div>
+              {/* <div className="header-icon"><LightMode /></div>
               <div className="header-icon">
                 <Badge badgeContent={4} color="error">
                   <NotificationsNone />
                 </Badge>
-              </div>
+              </div> */}
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
                 <Link to="/admin/profile" onClick={(e) => e.preventDefault()} className="user-chip">
                   <Space>

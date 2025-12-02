@@ -435,151 +435,153 @@ function OrderDetail() {
           </Card>
         </Grid>
 
-        {/* Thông tin bên phải */}
+        {/* Thông tin bên phải - chỉnh thành lưới ngang các card */}
         <Grid item xs={12} md={4}>
-          {/* THÊM MỚI: Thông tin vận chuyển */}
-          {currentOrder.shipping_method_details && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                  <LocalShipping sx={{ mr: 1 }} />
-                  Phương thức vận chuyển
-                </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  {SHIPPING_METHOD_CONFIG[currentOrder.shipping_method]?.icon}
-                  <Box sx={{ ml: 1 }}>
-                    <Typography variant="body1" fontWeight={600}>
-                      {currentOrder.shipping_method_details.name}
+          <Grid container spacing={2} alignItems="stretch">
+            {/* Phương thức vận chuyển */}
+            {currentOrder.shipping_method_details && (
+              <Grid item xs={12} sm={6}>
+                <Card sx={{ height: '100%' }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                      <LocalShipping sx={{ mr: 1 }} />
+                      Phương thức vận chuyển
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Thời gian dự kiến: {currentOrder.shipping_method_details.estimated_days}
-                    </Typography>
-                  </Box>
-                </Box>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2">Phí vận chuyển:</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      {SHIPPING_METHOD_CONFIG[currentOrder.shipping_method]?.icon}
+                      <Box sx={{ ml: 1 }}>
+                        <Typography variant="body1" fontWeight={600}>
+                          {currentOrder.shipping_method_details.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Thời gian dự kiến: {currentOrder.shipping_method_details.estimated_days}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Phí vận chuyển:</Typography>
+                      <Typography variant="body1" fontWeight={600}>
+                        {currentOrder.shipping_method_details.fee === 0 ? 
+                          <Chip label="Miễn phí" color="success" size="small" /> :
+                          formatPrice(currentOrder.shipping_method_details.fee)
+                        }
+                      </Typography>
+                    </Box>
+                    {currentOrder.shipping_method_details.description && (
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                        {currentOrder.shipping_method_details.description}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+
+            {/* Địa chỉ giao hàng */}
+            <Grid item xs={12} sm={6}>
+              <Card sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                    <LocationOn sx={{ mr: 1 }} />
+                    Địa chỉ giao hàng
+                  </Typography>
                   <Typography variant="body1" fontWeight={600}>
-                    {currentOrder.shipping_method_details.fee === 0 ? 
-                      <Chip label="Miễn phí" color="success" size="small" /> :
-                      formatPrice(currentOrder.shipping_method_details.fee)
-                    }
+                    {currentOrder.shipping_address?.full_name}
                   </Typography>
-                </Box>
-                
-                {currentOrder.shipping_method_details.description && (
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                    {currentOrder.shipping_method_details.description}
+                  <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                    <Phone sx={{ mr: 1, fontSize: 16 }} />
+                    {currentOrder.shipping_address?.phone}
                   </Typography>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {currentOrder.shipping_address?.address}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {[
+                      currentOrder.shipping_address?.ward,
+                      currentOrder.shipping_address?.district,
+                      currentOrder.shipping_address?.province
+                    ].filter(Boolean).join(', ')}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
 
-          {/* Thông tin giao hàng */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                <LocationOn sx={{ mr: 1 }} />
-                Địa chỉ giao hàng
-              </Typography>
-              
-              <Typography variant="body1" fontWeight={600}>
-                {currentOrder.shipping_address?.full_name}
-              </Typography>
-              <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <Phone sx={{ mr: 1, fontSize: 16 }} />
-                {currentOrder.shipping_address?.phone}
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {currentOrder.shipping_address?.address}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {[
-                  currentOrder.shipping_address?.ward,
-                  currentOrder.shipping_address?.district,
-                  currentOrder.shipping_address?.province
-                ].filter(Boolean).join(', ')}
-              </Typography>
-            </CardContent>
-          </Card>
+            {/* Thông tin thanh toán */}
+            <Grid item xs={12} sm={6}>
+              <Card sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                    <Payment sx={{ mr: 1 }} />
+                    Thanh toán
+                  </Typography>
+                  <Typography variant="body1">
+                    {PAYMENT_METHOD[currentOrder.payment_method] || currentOrder.payment_method}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Trạng thái: {currentOrder.payment_status || 'PENDING'}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
 
-          {/* Thông tin thanh toán */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                <Payment sx={{ mr: 1 }} />
-                Thanh toán
-              </Typography>
-              
-              <Typography variant="body1">
-                {PAYMENT_METHOD[currentOrder.payment_method] || currentOrder.payment_method}
-              </Typography>
-              
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Trạng thái: {currentOrder.payment_status || 'PENDING'}
-              </Typography>
-            </CardContent>
-          </Card>
+            {/* Ghi chú */}
+            {currentOrder.customer_note && (
+              <Grid item xs={12} sm={6}>
+                <Card sx={{ height: '100%' }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                      <Note sx={{ mr: 1 }} />
+                      Ghi chú
+                    </Typography>
+                    <Typography variant="body2">
+                      {currentOrder.customer_note}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
 
-          {/* Ghi chú */}
-          {currentOrder.customer_note && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                  <Note sx={{ mr: 1 }} />
-                  Ghi chú
-                </Typography>
-                
-                <Typography variant="body2">
-                  {currentOrder.customer_note}
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Actions */}
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Hành động
-              </Typography>
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {['PENDING', 'CONFIRMED'].includes(currentOrder.status) && (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<Cancel />}
-                    onClick={handleCancelOrder}
-                    fullWidth
-                  >
-                    Hủy đơn hàng
-                  </Button>
-                )}
-                
-                {currentOrder.status === 'DELIVERED' && (
-                  <Button
-                    variant="outlined"
-                    startIcon={<Star />}
-                    fullWidth
-                    disabled
-                  >
-                    Đánh giá sản phẩm
-                  </Button>
-                )}
-
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  onClick={() => window.print()}
-                >
-                  In đơn hàng
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
+            {/* Actions - luôn full width */}
+            <Grid item xs={12}>
+              <Card sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2 }}>
+                    Hành động
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {['PENDING', 'CONFIRMED'].includes(currentOrder.status) && (
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<Cancel />}
+                        onClick={handleCancelOrder}
+                        fullWidth
+                      >
+                        Hủy đơn hàng
+                      </Button>
+                    )}
+                    {currentOrder.status === 'DELIVERED' && (
+                      <Button
+                        variant="outlined"
+                        startIcon={<Star />}
+                        fullWidth
+                        disabled
+                      >
+                        Đánh giá sản phẩm
+                      </Button>
+                    )}
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => window.print()}
+                    >
+                      In đơn hàng
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Box>

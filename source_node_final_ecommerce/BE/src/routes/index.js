@@ -15,6 +15,7 @@ const ratingRoute = require('./ratingRoute');
 const homeRoute = require('./homeRoute');
 const adminHomeRoute = require('./adminHomeRoute.js');
 
+const dashboardRouter = require('./dashboardRoute');
 
 const { globalLimiter, authLimiter } = require('../security/rateLimit');
 const { adminRequired, authRequired, tryAuth } = require('../app/middlewares/AuthMiddleware');
@@ -45,7 +46,7 @@ function route(app) {
     });
     app.use('/api/admin-home', adminHomeRoute);
     app.use('/api/home', homeRoute);
-    
+    app.use('/api/dashboard', dashboardRouter);
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
         next(createError(404));

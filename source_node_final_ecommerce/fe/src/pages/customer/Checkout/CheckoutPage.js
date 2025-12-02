@@ -39,11 +39,11 @@ import {
 import { createOrder } from '../../../redux/reducers/orderSlice';
 import { getMyProfile } from '../../../redux/reducers/userSlice';
 import { API_DOMAIN } from '../../../constants/apiDomain';
-
+import { useNotification } from '../../../hooks/useNotification';
 function CheckoutPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const { showSuccess, showError, NotificationComponent } = useNotification();
   const [checkoutItems, setCheckoutItems] = useState([]);
   const { user } = useSelector(state => state.auth);
   const { profile, addresses, loading: userLoading } = useSelector(state => state.user);
@@ -154,7 +154,7 @@ function CheckoutPage() {
   // Validate promotion code
   const handleApplyPromotion = async () => {
     if (!promotionCode.trim()) {
-      alert('Vui lòng nhập mã giảm giá');
+      showError('Vui lòng nhập mã giảm giá');
       return;
     }
 
@@ -174,11 +174,11 @@ function CheckoutPage() {
 
       if (response.data.success) {
         setAppliedPromotion(response.data.data);
-        alert(`Áp dụng mã giảm giá thành công! Giảm ${response.data.data.discount_amount.toLocaleString()}đ`);
+        showSuccess(`Áp dụng mã giảm giá thành công! Giảm ${response.data.data.discount_amount.toLocaleString()}đ`);
       }
     } catch (error) {
       console.error('Error validating promotion:', error);
-      alert(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
+      showError(error.response?.data?.message || 'Mã giảm giá không hợp lệ');
       setAppliedPromotion(null);
     } finally {
       setPromotionLoading(false);
@@ -445,12 +445,12 @@ function CheckoutPage() {
   const handleSubmitOrder = async () => {
     // Validate
     if (!shippingInfo.full_name || !shippingInfo.phone || !shippingInfo.address) {
-      alert('Vui lòng điền đầy đủ thông tin giao hàng');
+      showError('Vui lòng điền đầy đủ thông tin giao hàng');
       return;
     }
     
     if (checkoutItems.length === 0) {
-      alert('Không có sản phẩm để thanh toán');
+      showError('Không có sản phẩm để thanh toán');
       return;
     }
     
@@ -475,7 +475,7 @@ function CheckoutPage() {
         localStorage.removeItem('checkout_items');
         
         if (paymentMethod === 'VNPAY' && result.payload.data.payment?.payment_url) {
-          alert('Đang chuyển đến VNPay để thanh toán...');
+          showSuccess('Đang chuyển đến VNPay để thanh toán...');
           window.location.href = result.payload.data.payment.payment_url;
         } else {
           navigate('/order-success', { 
@@ -841,6 +841,7 @@ function CheckoutPage() {
           </Card>
         </Grid>
       </Grid>
+      <NotificationComponent />
     </Box>
   );
 }

@@ -57,14 +57,7 @@ const items = [
         key: '4-2',
         label: <Link to="/admin/products/add">Thêm sản phẩm</Link>,
       },
-      {
-        key: '4-3',
-        label: <Link to="/admin/products/edit">Sửa sản phẩm</Link>,
-      },
-      {
-        key: '4-4',
-        label: <Link to="/admin/products/:slug">Chi tiết sản phẩm</Link>,
-      },
+    
     ],
   },
   {
@@ -82,21 +75,9 @@ const items = [
     icon: <ContainerOutlined />,
     label: <Link to="/admin/promotions">Khuyến mãi</Link>,
   },
-  {
-    key: '8',
-    icon: <ContainerOutlined />,
-    label: <Link to="/admin/reports">Báo cáo, phân tích</Link>,
-  },
-  {
-    key: '9',
-    icon: <NotificationOutlined />,
-    label: <Link to="/admin/notifications">Thông báo</Link>,
-  },
-  {
-    key: '10',
-    icon: <SettingOutlined />,
-    label: <Link to="/admin/settings">Cài đặt</Link>,
-  },
+  
+
+
   {
     key: '11',
     icon: <LogoutOutlined />,

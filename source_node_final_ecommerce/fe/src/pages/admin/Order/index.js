@@ -49,7 +49,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { API_DOMAIN } from '../../../constants/apiDomain';
-
+import { useNotification } from '../../../hooks/useNotification';
 // Status mapping
 const ORDER_STATUS = {
   'PENDING': { label: 'Chờ xử lý', color: 'warning', icon: <Schedule /> },
@@ -79,6 +79,8 @@ const DATE_RANGES = [
 ];
 
 const OrderList = () => {
+  const { showSuccess, showError, NotificationComponent } = useNotification();
+
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -197,10 +199,10 @@ const OrderList = () => {
       // Refresh data
       fetchOrders();
       
-      alert('Cập nhật trạng thái thành công!');
+      showSuccess('Cập nhật trạng thái đơn hàng thành công');
     } catch (error) {
       console.error('Error updating status:', error);
-      alert(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái');
+      showError('Cập nhật trạng thái đơn hàng thất bại');
     }
   };
 
@@ -570,6 +572,7 @@ const OrderList = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <NotificationComponent />
       </Box>
     </Fade>
   );

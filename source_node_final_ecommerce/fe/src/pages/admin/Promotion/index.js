@@ -43,14 +43,14 @@ import axios from 'axios';
 import { API_DOMAIN } from '../../../constants/apiDomain';
 import CreatePromotionDialog from './CreatePromotionDialog';
 import PromotionDetailDialog from './PromotionDetailDialog'; // KIỂM TRA: Import này
-
+import { useNotification } from '../../../hooks/useNotification';
 const PromotionList = () => {
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [meta, setMeta] = useState({});
-  
+  const { showSuccess, showError, NotificationComponent } = useNotification();
   // Dialogs
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -130,27 +130,25 @@ const PromotionList = () => {
       }
     } catch (error) {
       console.error('Error fetching promotion detail:', error);
-      alert('Lỗi khi tải chi tiết promotion');
+      showError(error.response?.data?.message || 'Lỗi khi tải chi tiết mã giảm giá');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (promotion) => {
-    if (!window.confirm(`Bạn có chắc muốn xóa mã "${promotion.code}"?`)) {
-      return;
-    }
+    
 
     try {
       await axios.delete(`${API_DOMAIN}/api/promotions/${promotion._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      alert('Xóa mã giảm giá thành công!');
+      showSuccess('Xóa mã giảm giá thành công');
       fetchPromotions();
     } catch (error) {
       console.error('Error deleting promotion:', error);
-      alert(error.response?.data?.message || 'Lỗi khi xóa mã giảm giá');
+      showError(error.response?.data?.message || 'Lỗi khi xóa mã giảm giá');
     }
   };
 
@@ -421,7 +419,7 @@ const PromotionList = () => {
                           color="error" 
                           onClick={() => handleDelete(promotion)}
                           size="small"
-                          disabled={promotion.used_count > 0}
+                          
                         >
                           <Delete />
                         </IconButton>

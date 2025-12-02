@@ -9,12 +9,47 @@ export const loginUser = (email, password) => async (dispatch) => {
       password
     });
     const { user, token } = res.data;
+    
+    // Kiểm tra status trước khi lưu
+    if (user.status === 'inactive') {
+      return { 
+        success: false, 
+        message: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+        user: user
+      };
+    }
+    
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user)); // Thêm dòng này
+    localStorage.setItem("user", JSON.stringify(user));
     dispatch(login({ user, token }));
-    return { success: true };
+    return { success: true, user: user };
   } catch (err) {
     return { success: false, message: err.response?.data?.message || "Login failed" };
+  }
+};
+
+export const socialLoginUser = (provider, token) => async (dispatch) => {
+  try {
+    const res = await axios.post(`${API_DOMAIN}/api/auth/social`, { provider, token });
+    const { user, token: authToken } = res.data;
+    console.log('Inactive user tried social login1:', user);
+    // Kiểm tra status trước khi lưu
+    if (user.status === 'inactive') {
+      console.log('Inactive user tried social login:', user);
+      return { 
+        success: false, 
+        message: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+        user: user
+      };
+    }
+    
+    localStorage.setItem("token", authToken);
+    localStorage.setItem("user", JSON.stringify(user));
+    dispatch(login({ user, token: authToken }));
+    console.log('User logged in via social login:', user);
+    return { success: true, user: user };
+  } catch (err) {
+    return { success: false, message: err.response?.data?.message || "Social login failed" };
   }
 };
 
@@ -47,18 +82,7 @@ export const registerUser = (data) => async (dispatch) => {
   }
 };
 
-export const socialLoginUser = (provider, token) => async (dispatch) => {
-  try {
-    const res = await axios.post(`${API_DOMAIN}/api/auth/social`, { provider, token });
-    const { user, token: authToken } = res.data;
-    localStorage.setItem("token", authToken);
-    localStorage.setItem("user", JSON.stringify(user));
-    dispatch(login({ user, token: authToken }));
-    return { success: true };
-  } catch (err) {
-    return { success: false, message: err.response?.data?.message || "Social login failed" };
-  }
-};
+
 
 export const guestLoginUser = () => async (dispatch) => {
   try {

@@ -19,7 +19,8 @@ import {
   Divider,
   Card,
   CardContent,
-  Alert
+  Alert,
+  minor
 } from '@mui/material';
 import {
   LocalOffer,
@@ -143,7 +144,7 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
               {promotionData.max_discount_amount && (
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body2" color="text.secondary">Giảm tối đa:</Typography>
-                  <Typography variant="body1" color="error">
+                  <Typography variant="h6" color="error">
                     {formatPrice(promotionData.max_discount_amount)}
                   </Typography>
                 </Grid>
@@ -151,14 +152,14 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
               
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">Đơn hàng tối thiểu:</Typography>
-                <Typography variant="body1">
+                <Typography variant="h6">
                   {formatPrice(promotionData.min_order_amount)}
                 </Typography>
               </Grid>
               
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">Người tạo:</Typography>
-                <Typography variant="body1">
+                <Typography variant="h6">
                   {promotionData.created_by?.full_name || 'N/A'}
                 </Typography>
               </Grid>
@@ -221,7 +222,7 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
             </Typography>
             
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ minWidth: '250px' }}>
                 <Card variant="outlined">
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Receipt color="primary" sx={{ fontSize: 40, mb: 1 }} />
@@ -233,7 +234,7 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
                 </Card>
               </Grid>
               
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ minWidth: '250px' }}>
                 <Card variant="outlined">
                   <CardContent sx={{ textAlign: 'center' }}>
                     <AttachMoney color="success" sx={{ fontSize: 40, mb: 1 }} />
@@ -245,7 +246,7 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
                 </Card>
               </Grid>
               
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ minWidth: '250px' }}>
                 <Card variant="outlined">
                   <CardContent sx={{ textAlign: 'center' }}>
                     <TrendingUp color="info" sx={{ fontSize: 40, mb: 1 }} />
@@ -257,7 +258,7 @@ const PromotionDetailDialog = ({ open, onClose, promotion }) => {
                 </Card>
               </Grid>
               
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ minWidth: '250px' }}>
                 <Card variant="outlined">
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Event color="secondary" sx={{ fontSize: 40, mb: 1 }} />

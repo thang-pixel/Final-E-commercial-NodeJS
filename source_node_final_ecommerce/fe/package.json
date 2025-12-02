@@ -28,7 +28,12 @@
     "sass": "^1.91.0",
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4",
-    "@mui/lab": "^7.0.0-alpha.15"
+    "@mui/lab": "^7.0.0-alpha.15",
+    "recharts": "^2.7.2",
+    "react-toastify": "^9.1.3",
+    "@mui/x-data-grid": "^7.3.0",
+    "@mui/x-date-pickers": "^7.3.0",
+    "@mui/x-charts": "8.20.0"
   },
   "scripts": {
     "start": "react-scripts start",

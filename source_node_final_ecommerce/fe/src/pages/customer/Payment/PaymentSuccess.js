@@ -82,12 +82,18 @@ function PaymentSuccess() {
         </Typography>
         
         {order && (
-          <Alert severity="info" sx={{ mb: 0 }}>
-            <Typography variant="body2">
-              Mã đơn hàng: <strong>{order.order_number}</strong><br/>
-              Tổng tiền đã thanh toán: <strong>{order.total_amount.toLocaleString()}đ</strong><br/>
-              Phương thức: <strong>VNPay</strong>
-            </Typography>
+          <Alert severity="info" sx={{ mb: 0, textAlign: 'left' }}>
+            <Box>
+              <Typography variant="body2">
+                Mã đơn hàng: <strong>{order.order_number}</strong>
+              </Typography>
+              <Typography variant="body2">
+                Tổng tiền đã thanh toán: <strong>{order.total_amount.toLocaleString()}đ</strong>
+              </Typography>
+              <Typography variant="body2">
+                Phương thức: <strong>VNPay</strong>
+              </Typography>
+            </Box>
           </Alert>
         )}
       </Paper>
