@@ -111,23 +111,7 @@ export default function Home() {
                     >
                       {banner.subtitle}
                     </Typography>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      startIcon={<ShoppingCartIcon />}
-                      sx={{
-                        bgcolor: banner.color,
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        '&:hover': {
-                          bgcolor: banner.color,
-                          filter: 'brightness(1.1)',
-                        },
-                      }}
-                    >
-                      Mua ngay
-                    </Button>
+                    
                   </Box>
                 </Container>
               </Box>

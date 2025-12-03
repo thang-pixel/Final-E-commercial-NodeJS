@@ -329,17 +329,7 @@ function ProductDetail() {
               >
                 Thêm vào giỏ
               </Button>
-              <Button
-                variant="outlined"
-                startIcon={<ShoppingCartCheckout />}
-                disabled={
-                  !variantSelected ||
-                  variantSelected.stock === 0 ||
-                  data.status !== PRODUCT_STATUS.ACTIVE.value
-                }
-              >
-                Mua ngay
-              </Button>
+              
             </div>
           </Stack>
         </Grid>
