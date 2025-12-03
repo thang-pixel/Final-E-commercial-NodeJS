@@ -31,10 +31,9 @@ import useAuth from '../../hooks/authHook';
 import { fetchCartUser } from '../../redux/reducers/cartSlice';
 
 const menuPages = [
-  { name: 'Home', path: '/' },
-  { name: 'Products', path: '/products' },
-  { name: 'About Us', path: '/about' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'Trang chủ', path: '/' },
+  { name: 'Sản phẩm', path: '/products' },
+
 ];
 
 const menuBottom = [

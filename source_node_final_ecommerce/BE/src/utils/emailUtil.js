@@ -522,11 +522,7 @@ const generateWelcomeEmailContent = (userData) => {
                     <p>Vui lòng đổi mật khẩu ngay sau khi đăng nhập lần đầu!</p>
                 </div>
 
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${userData.login_url}" class="login-btn">
-                        🚀 Đăng nhập ngay
-                    </a>
-                </div>
+                
 
                 <div class="security-notice">
                     <h3>🛡️ Bảo mật tài khoản</h3>
@@ -591,8 +587,163 @@ const generateWelcomeEmailContent = (userData) => {
   `;
 };
 
+
+
+// Function gửi email với mật khẩu mới
+const sendNewPasswordEmail = async (userEmail, userData) => {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      throw new Error('Email configuration missing');
+    }
+
+    const transporter = createTransporter();
+    
+    const emailContent = generateNewPasswordEmailContent(userData);
+    
+    const mailOptions = {
+      from: {
+        name: process.env.EMAIL_FROM_NAME || 'E-Shop Vietnam',
+        address: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER
+      },
+      to: userEmail,
+      subject: '🔑 Mật khẩu mới - E-Shop Vietnam',
+      html: emailContent,
+      priority: 'high'
+    };
+    
+    const result = await transporter.sendMail(mailOptions);
+    
+    return {
+      success: true,
+      messageId: result.messageId,
+      message: 'New password email sent successfully'
+    };
+    
+  } catch (error) {
+    console.error('❌ New password email sending error:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
+
+// Function tạo nội dung HTML email mật khẩu mới
+const generateNewPasswordEmailContent = (userData) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mật khẩu mới - E-Shop</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'Segoe UI', Arial, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                background-color: #f5f5f5;
+            }
+            .container { 
+                max-width: 600px; 
+                margin: 20px auto; 
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .header { 
+                background: linear-gradient(135deg, #dc3545, #c82333);
+                color: white; 
+                padding: 40px 20px; 
+                text-align: center; 
+            }
+            .header h1 { font-size: 28px; margin-bottom: 10px; }
+            .content { padding: 40px 30px; }
+            .password-box { 
+                background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+                padding: 25px; 
+                border-radius: 10px; 
+                margin: 25px 0;
+                border: 2px solid #ffc107;
+                text-align: center;
+            }
+            .password { 
+                font-size: 24px; 
+                font-weight: bold; 
+                color: #dc3545;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                border: 2px dashed #dc3545;
+                margin: 15px 0;
+                letter-spacing: 2px;
+                font-family: 'Courier New', monospace;
+            }
+            .security-notice { 
+                background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+                padding: 20px; 
+                border-radius: 8px; 
+                margin: 25px 0;
+                border-left: 4px solid #dc3545;
+            }
+            .footer { 
+                background: linear-gradient(135deg, #343a40, #495057);
+                color: white;
+                padding: 30px 20px; 
+                text-align: center; 
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🔑 Mật khẩu mới</h1>
+                <p>Khôi phục mật khẩu thành công</p>
+            </div>
+            
+            <div class="content">
+                <h2>Xin chào ${userData.full_name}! 👋</h2>
+                <p>Mật khẩu của bạn đã được khôi phục thành công.</p>
+
+                <div class="password-box">
+                    <h3>🔑 Mật khẩu mới của bạn</h3>
+                    <div class="password">${userData.password}</div>
+                    <p><strong>⚠️ Quan trọng:</strong> Vui lòng đổi mật khẩu ngay sau khi đăng nhập!</p>
+                </div>
+
+                <div class="security-notice">
+                    <h3>🛡️ Bảo mật tài khoản</h3>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Đổi mật khẩu ngay:</strong> Vào Hồ sơ → Đổi mật khẩu</li>
+                        <li><strong>Sử dụng mật khẩu mạnh:</strong> Tối thiểu 8 ký tự, có chữ hoa, số và ký tự đặc biệt</li>
+                        <li><strong>Không chia sẻ:</strong> Giữ thông tin đăng nhập cho riêng bạn</li>
+                        <li><strong>Đăng xuất:</strong> Luôn đăng xuất khi sử dụng máy công cộng</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <p><strong>💬 Cần hỗ trợ?</strong></p>
+                    <p>📞 Hotline: <strong>1900-xxxx</strong></p>
+                    <p>📧 Email: <strong>${process.env.EMAIL_USER || 'support@eshop.com'}</strong></p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <h3>🛒 E-Shop Vietnam</h3>
+                <p>Hệ thống thương mại điện tử hàng đầu Việt Nam</p>
+                <p><small>📧 Đây là email tự động, vui lòng không reply trực tiếp</small></p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+};
+
 module.exports = {
   sendOrderConfirmationEmail,
   sendPasswordResetEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendNewPasswordEmail
 };

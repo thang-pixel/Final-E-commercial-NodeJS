@@ -69,7 +69,7 @@ function SearchHome({ isHomePage = false }) {
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // ✅ Thêm search khi nhấn Enter
-        placeholder="Search products..."
+        placeholder="Tìm kiếm sản phẩm..."
         className="px-4 py-2 flex-1 focus:outline-none"
       />
 

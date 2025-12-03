@@ -314,5 +314,170 @@ class AuthController {
       res.status(500).json({ message: err.message });
     }
   }
+  
+
+
+
+    // [POST] /auth/forgot-password
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email là bắt buộc'
+        });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Định dạng email không hợp lệ'
+        });
+      }
+
+      // Find user by email
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy tài khoản với email này'
+        });
+      }
+
+      // Check user status
+      if (user.status !== 'active') {
+        return res.status(400).json({
+          success: false,
+          message: 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.'
+        });
+      }
+
+      // Generate reset token (valid for 1 hour)
+      const resetToken = jwt.sign(
+        { userId: user._id, email: user.email, type: 'password-reset' },
+        process.env.JWT_SECRET || "secret",
+        { expiresIn: "1h" }
+      );
+
+      // Send password reset email
+      const { sendPasswordResetEmail } = require('../../utils/emailUtil');
+      const emailResult = await sendPasswordResetEmail(email, resetToken);
+
+      if (!emailResult.success) {
+        console.error('Failed to send reset email:', emailResult.error);
+        return res.status(500).json({
+          success: false,
+          message: 'Không thể gửi email khôi phục. Vui lòng thử lại sau.'
+        });
+      }
+
+      console.log(`✅ Password reset email sent to: ${email}`);
+
+      res.json({
+        success: true,
+        message: 'Email khôi phục mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư.'
+      });
+
+    } catch (error) {
+      console.error('❌ Forgot password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server, vui lòng thử lại sau'
+      });
+    }
+  }
+
+  // [POST] /auth/reset-password
+  async resetPassword(req, res) {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          message: 'Token là bắt buộc'
+        });
+      }
+
+      // Verify token
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+          message: 'Token không hợp lệ hoặc đã hết hạn'
+        });
+      }
+
+      // Check token type
+      if (decoded.type !== 'password-reset') {
+        return res.status(400).json({
+          success: false,
+          message: 'Token không hợp lệ'
+        });
+      }
+
+      // Find user
+      const user = await User.findById(decoded.userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy tài khoản'
+        });
+      }
+
+      // Generate new random password
+      const generateRandomPassword = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
+        let password = '';
+        for (let i = 0; i < 10; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return password;
+      };
+
+      const newPassword = generateRandomPassword();
+      console.log(`🔑 Generated new password for ${user.email}:`, newPassword);
+
+      // Update user password
+      user.password = newPassword;
+      await user.save();
+
+      // Send new password email
+      const { sendNewPasswordEmail } = require('../../utils/emailUtil');
+      const emailResult = await sendNewPasswordEmail(user.email, {
+        full_name: user.full_name,
+        email: user.email,
+        password: newPassword
+      });
+
+      if (!emailResult.success) {
+        console.error('Failed to send new password email:', emailResult.error);
+        return res.status(500).json({
+          success: false,
+          message: 'Đã tạo mật khẩu mới nhưng không thể gửi email. Vui lòng liên hệ hỗ trợ.'
+        });
+      }
+
+      console.log(`✅ New password sent to: ${user.email}`);
+
+      res.json({
+        success: true,
+        message: 'Mật khẩu mới đã được gửi về email của bạn.'
+      });
+
+    } catch (error) {
+      console.error('❌ Reset password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi server, vui lòng thử lại sau'
+      });
+    }
+  }
 }
 module.exports = new AuthController();

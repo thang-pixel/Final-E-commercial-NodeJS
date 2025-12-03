@@ -34,12 +34,12 @@ import {
   guestLoginUser,
   loginUser,
 } from '../../../redux/actions/authAction';
-
+import ForgotPasswordDialog from '../../../components/ForgotPasswordDialog';
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const from = location.state?.from?.pathname; // nơi user định vào trước khi bị chặn
   const message = location.state?.message; // thông báo từ StatusGuard
@@ -376,20 +376,26 @@ function Login() {
 
               {/* Forgot Password */}
               <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Link
-                  to="/forgot-password"
-                  style={{
+                <Button
+                  variant="text"
+                  onClick={() => setForgotPasswordOpen(true)}
+                  sx={{
                     color: '#667eea',
                     textDecoration: 'none',
                     fontSize: '0.875rem',
-                    fontWeight: 500
+                    fontWeight: 500,
+                    textTransform: 'none'
                   }}
                 >
                   Quên mật khẩu?
-                </Link>
+                </Button>
               </Box>
             </Box>
           </Fade>
+          <ForgotPasswordDialog
+            open={forgotPasswordOpen}
+            onClose={() => setForgotPasswordOpen(false)}
+          />
 
           {/* Divider */}
           <Divider sx={{ my: 3 }}>

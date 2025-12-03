@@ -60,7 +60,11 @@ const Profile = () => {
 
   // Password change dialog
   const [pwOpen, setPwOpen] = useState(false);
-  const [pwForm, setPwForm] = useState({ old_password: '', new_password: '' });
+  const [pwForm, setPwForm] = useState({ 
+  old_password: '', 
+  new_password: '', 
+  confirm_password: '' 
+});
 
   // Address dialog
   const [addrOpen, setAddrOpen] = useState(false);
@@ -105,10 +109,18 @@ const Profile = () => {
 
   // Change password
   const handleChangePassword = () => {
-    if (!pwForm.old_password || !pwForm.new_password) {
+    if (!pwForm.old_password || !pwForm.new_password || !pwForm.confirm_password) {
       dispatch({ 
         type: 'user/setError', 
         payload: 'Vui lòng điền đầy đủ thông tin mật khẩu' 
+      });
+      return;
+    }
+    
+    if (pwForm.new_password !== pwForm.confirm_password) {
+      dispatch({ 
+        type: 'user/setError', 
+        payload: 'Mật khẩu xác nhận không khớp' 
       });
       return;
     }
@@ -121,9 +133,12 @@ const Profile = () => {
       return;
     }
     
-    dispatch(changeMyPassword(pwForm));
+    dispatch(changeMyPassword({
+      old_password: pwForm.old_password,
+      new_password: pwForm.new_password
+    }));
     setPwOpen(false);
-    setPwForm({ old_password: '', new_password: '' });
+    setPwForm({ old_password: '', new_password: '', confirm_password: '' });
   };
 
   // Address CRUD
@@ -190,24 +205,26 @@ const Profile = () => {
       <Box sx={{ mx: 'auto', mt: 0 }}>
         {/* Snackbar cho thông báo */}
         <Snackbar 
-          open={!!error} 
-          autoHideDuration={6000} 
-          onClose={() => dispatch(clearError())}
-        >
-          <Alert severity="error" onClose={() => dispatch(clearError())}>
-            {error}
-          </Alert>
-        </Snackbar>
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={() => dispatch(clearError())}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Thông báo giữa màn hình
+      >
+        <Alert severity="error" onClose={() => dispatch(clearError())}>
+          {error}
+        </Alert>
+      </Snackbar>
 
-        <Snackbar 
-          open={!!success} 
-          autoHideDuration={6000} 
-          onClose={() => dispatch(clearSuccess())}
-        >
-          <Alert severity="success" onClose={() => dispatch(clearSuccess())}>
-            {success}
-          </Alert>
-        </Snackbar>
+      <Snackbar 
+        open={!!success} 
+        autoHideDuration={6000} 
+        onClose={() => dispatch(clearSuccess())}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Thông báo giữa màn hình
+      >
+        <Alert severity="success" onClose={() => dispatch(clearSuccess())}>
+          {success}
+        </Alert>
+      </Snackbar>
 
         {/* Header với thông tin tổng quan */}
         <Paper elevation={4} sx={{ p: 3, borderRadius: 3, bgcolor: '#f5fafd', mb: 3 }}>
@@ -496,20 +513,43 @@ const Profile = () => {
               required
               helperText="Mật khẩu phải có ít nhất 6 ký tự"
             />
+            <TextField
+              label="Xác nhận mật khẩu mới"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={pwForm.confirm_password || ''}
+              onChange={(e) =>
+                setPwForm({ ...pwForm, confirm_password: e.target.value })
+              }
+              required
+              error={pwForm.confirm_password && pwForm.new_password !== pwForm.confirm_password}
+              helperText={
+                pwForm.confirm_password && pwForm.new_password !== pwForm.confirm_password 
+                  ? "Mật khẩu xác nhận không khớp" 
+                  : ""
+              }
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={() => {
               setPwOpen(false);
-              setPwForm({ old_password: '', new_password: '' });
+              setPwForm({ old_password: '', new_password: '', confirm_password: '' });
             }}>
               Hủy
             </Button>
             <Button 
               variant="contained" 
               onClick={handleChangePassword} 
-              disabled={loading || !pwForm.old_password || !pwForm.new_password}
+              disabled={
+                loading || 
+                !pwForm.old_password || 
+                !pwForm.new_password || 
+                !pwForm.confirm_password ||
+                pwForm.new_password !== pwForm.confirm_password
+              }
             >
-              Đổi mật khẩu
+              {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
             </Button>
           </DialogActions>
         </Dialog>
