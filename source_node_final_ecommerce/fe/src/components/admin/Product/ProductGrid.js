@@ -62,9 +62,9 @@ const ProductGrid = ({
                 <Space direction="vertical" size={4} style={{ width: '100%' }}>
                   <Space>
                     <Tag
-                      color={STATUS.find((s) => s.value === p.status)?.color}
+                      color={Object.values(STATUS).find((s) => s.value === p.status)?.color}
                     >
-                      {STATUS.find((s) => s.value === p.status)?.label}
+                      {Object.values(STATUS).find((s) => s.value === p.status)?.label}
                     </Tag>
                   </Space>
                 </Space>

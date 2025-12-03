@@ -670,7 +670,7 @@ function CheckoutPage() {
         </Grid>
         
         {/* Right Column - Order Summary */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} minWidth="100%">
           <Card sx={{ position: 'sticky', top: 20 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>

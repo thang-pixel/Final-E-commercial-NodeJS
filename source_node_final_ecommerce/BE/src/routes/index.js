@@ -12,6 +12,7 @@ const paymentRoute = require('./paymentRoute');
 const promotionRoute = require('./promotionRoute'); 
 const commentRoute = require('./commentRoute');
 const ratingRoute = require('./ratingRoute');
+const notifyRoute = require('./notificationRoute.js');
 const homeRoute = require('./homeRoute');
 const adminHomeRoute = require('./adminHomeRoute.js');
 
@@ -37,7 +38,7 @@ function route(app) {
     app.use('/api/payment', paymentRoute);
     app.use('/api/promotions', promotionRoute);
     // app.use('/api/wishlist', authLimiter, wishlistRoute);
-    // app.use('/api/notifications', authLimiter, notificationRoute); 
+    app.use('/api/notifications', notifyRoute);
     app.use('/api/ratings', ratingRoute); 
     app.use('/api/comments', commentRoute);
 
@@ -49,7 +50,7 @@ function route(app) {
     app.use('/api/dashboard', dashboardRouter);
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
-        next(createError(404));
+        next(createError(404, 'API endpoint not found'));
     });
 
     // error handler

@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 import { notification } from 'antd';
 import {
   Alert,
@@ -7,8 +7,7 @@ import {
   Card,
   CardContent,
   Chip,
-  Divider,
-  Grid,
+  Divider, 
   IconButton,
   Paper,
   Rating,
@@ -282,7 +281,7 @@ const CommentList = ({ productId, product }) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       {notiContexHolder}
       <AlertRating
         isOpen={isAlertRatingOpen}

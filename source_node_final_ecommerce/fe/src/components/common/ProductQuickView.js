@@ -29,6 +29,7 @@ import { message } from 'antd';
 import { getProductBySlugApi } from '../../api/productApi';
 import SkeletonProductDetail from './SketonProductDetail';
 import useAuth from '../../hooks/authHook';
+import { PRODUCT_STATUS } from '../../constants/productConstant';
 
 const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
   const dispatch = useDispatch();
@@ -320,12 +321,14 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
                       onClick={handleAddToCart}
                       variant="contained"
                       startIcon={<AddShoppingCart />}
+                      disabled={!variantSelected || variantSelected.stock === 0 || product.status !== PRODUCT_STATUS.ACTIVE.value}
                     >
                       Thêm vào giỏ
                     </Button>
                     <Button
                       variant="outlined"
                       startIcon={<ShoppingCartCheckout />}
+                      disabled={!variantSelected || variantSelected.stock === 0 || product.status !== PRODUCT_STATUS.ACTIVE.value}
                     >
                       Mua ngay
                     </Button>

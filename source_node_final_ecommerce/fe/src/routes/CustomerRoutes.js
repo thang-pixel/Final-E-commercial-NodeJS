@@ -20,6 +20,8 @@ import OrderSuccess from '../pages/customer/Order/OrderSuccess';
 import OrderDetail from '../pages/customer/Order/OrderDetail';
 import PaymentSuccess from '../pages/customer/Payment/PaymentSuccess';
 import PaymentFailed from '../pages/customer/Payment/PaymentFailed';
+import ContactPage from '../pages/customer/Contact/ContactPage';
+import AboutPage from '../pages/customer/About/AboutPage';
 
 // Component kiểm tra status của user
 const StatusGuard = ({ children, user }) => {
@@ -130,8 +132,8 @@ function CustomerRoutes() {
 
         {/* Pages */}
         <Route path="home" element={<Home />} />
-        <Route path="contact" element={<>Contact</>} />
-        <Route path="about" element={<>About</>} />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="about" element={<AboutPage />} />
         <Route path="" element={<Home />} />
       </Route>
       

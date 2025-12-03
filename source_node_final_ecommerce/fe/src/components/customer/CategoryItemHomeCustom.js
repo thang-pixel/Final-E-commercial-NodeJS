@@ -18,6 +18,7 @@ const CategoryItemHomeCustom = ({ cate }) => {
       key={cate._id}
       className="menuCategoryItem
       group  rounded-e-md p-2  
+      min-w-full  hover:bg-gray-100 cursor-pointer
       relative"
     >
       <Link to={`/products?category_slug=${cate.slug}`} className="flex items-center">
@@ -53,7 +54,7 @@ const CategoryItemHomeCustom = ({ cate }) => {
           <div className="hidden group-hover:block rounded-lg overflow-hidden z-50 absolute top-0 left-full ml-2 min-w-max">
             <CategoryListHomeCustom
               categories={cate.children}
-              className={'bg-white'}
+              className={'bg-white shadow-lg border border-gray-200'}
             />
           </div>
         </>

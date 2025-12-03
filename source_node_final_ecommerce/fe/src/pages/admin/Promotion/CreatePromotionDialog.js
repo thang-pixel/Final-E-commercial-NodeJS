@@ -125,7 +125,7 @@ const CreatePromotionDialog = ({ open, onClose, onSuccess }) => {
             </Grid>
 
             {/* Hàng 2: Mô tả (Full width) */}
-            <Grid item xs={12}>
+            <Grid item xs={12} minWidth="100%">
               <TextField
                 fullWidth
                 label="Mô tả"
@@ -205,7 +205,7 @@ const CreatePromotionDialog = ({ open, onClose, onSuccess }) => {
             </Grid>
 
             {/* Hàng 5: Số lượt sử dụng */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} minWidth="50%">
               <TextField
                 fullWidth
                 label="Số lượt sử dụng"
@@ -218,8 +218,8 @@ const CreatePromotionDialog = ({ open, onClose, onSuccess }) => {
             </Grid>
 
             {/* Separator cho phần thời gian */}
-            <Grid item xs={12} sx={{ mt: 2 }}>
-              <Typography variant="h6" sx={{ color: 'primary.main', borderBottom: '1px solid #e0e0e0', pb: 1 }}>
+            <Grid item xs={12} sx={{ mt: 2 }} minWidth="100%">
+              <Typography variant="h6" sx={{ borderBottom: '1px solid #e0e0e0', pb: 1 }}>
                 Thời gian hiệu lực
               </Typography>
             </Grid>

@@ -1,14 +1,31 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
-import "./AdminLayout.css";
-import AdminFooter from "../../components/admin/Partials/AdminFooter";
-import AdminMenu from "../../components/admin/Navigation/AdminMenu";
-import { LeftCircleOutlined, MenuOutlined, DownOutlined } from "@ant-design/icons";
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import './AdminLayout.css';
+import AdminFooter from '../../components/admin/Partials/AdminFooter';
+import AdminMenu from '../../components/admin/Navigation/AdminMenu';
 import {
-  Layout, Breadcrumb, Dropdown, Space, ConfigProvider, theme, Drawer, Grid
-} from "antd";
-import { useMemo, useState } from "react";
-import { LightMode, NotificationsNone, Person } from "@mui/icons-material";
-import Badge from "@mui/material/Badge";
+  LeftCircleOutlined,
+  MenuOutlined,
+  DownOutlined,
+  LogoutOutlined,
+  ProfileOutlined,
+} from '@ant-design/icons';
+import {
+  Layout,
+  Breadcrumb,
+  Dropdown,
+  Space,
+  ConfigProvider,
+  theme,
+  Drawer,
+  Grid,
+} from 'antd';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { LightMode, NotificationsNone, Person } from '@mui/icons-material';
+import Badge from '@mui/material/Badge';
+import LogoutButton from '../../components/common/LogoutButton/LogoutButton';
+import NotificationDropdown from '../../components/admin/Notification/NotificationDropdown';
+import { getNotificationsByUserId } from '../../api/notificationApi'; 
+import { socket } from '../../sockets/socket';
 
 const { Sider, Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -21,33 +38,36 @@ export default function AdminLayout({ user }) {
   const [collapsed, setCollapsed] = useState(false);
   // mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
+  // state
+  const [notifications, setNotifications] = useState([]);
 
-  const isDesktop = screens.lg;   // lg: ≥1024px
+  const isDesktop = screens.lg; // lg: ≥1024px
 
   const title = useMemo(() => {
     const map = new Map([
-      ["/admin/home", "Trang chủ"],
-      ["/admin/profile", "Hồ sơ"],
-      ["/admin/products", "Sản phẩm"],
-      ["/admin/brands", "Thương hiệu"],
-      ["/admin/categories", "Danh mục"],
-      ["/admin/orders", "Đơn hàng"],
-      ["/admin/customers", "Khách hàng"],
-      ["/admin/promotions", "Khuyến mãi"],
-      ["/admin/reports", "Báo cáo"],
-      ["/admin/notifications", "Thông báo"],
-
+      ['/admin/home', 'Trang chủ'],
+      ['/admin/profile', 'Hồ sơ'],
+      ['/admin/products', 'Sản phẩm'],
+      ['/admin/brands', 'Thương hiệu'],
+      ['/admin/categories', 'Danh mục'],
+      ['/admin/orders', 'Đơn hàng'],
+      ['/admin/customers', 'Khách hàng'],
+      ['/admin/promotions', 'Khuyến mãi'],
+      ['/admin/reports', 'Báo cáo'],
+      ['/admin/notifications', 'Thông báo'],
+      ['/admin/settings', 'Cài đặt'],
     ]);
     for (const [p, t] of map.entries()) {
-      if (location.pathname === p || location.pathname.startsWith(p + "/")) return t;
+      if (location.pathname === p || location.pathname.startsWith(p + '/'))
+        return t;
     }
-    return "Dashboard";
+    return 'Dashboard';
   }, [location.pathname]);
 
   const crumbs = useMemo(() => {
-    const parts = location.pathname.split("/").filter(Boolean);
+    const parts = location.pathname.split('/').filter(Boolean);
     const acc = [];
-    let cur = "";
+    let cur = '';
     for (const part of parts) {
       cur += `/${part}`;
       acc.push({ path: cur, label: part });
@@ -56,72 +76,172 @@ export default function AdminLayout({ user }) {
   }, [location.pathname]);
 
   const userMenuItems = [
-    { key: "admin/profile", label: <Link to="/admin/profile">Hồ sơ của tôi</Link> },
-    { type: "divider" },
-    { key: "logout", label: <Link to="/logout">Đăng xuất</Link>, danger: true },
+    {
+      key: 'admin/profile',
+      label: (
+        <Link to="/admin/profile" className="flex items-center gap-2">
+          <ProfileOutlined /> Hồ sơ của tôi
+        </Link>
+      ),
+    },
+    { type: 'divider' },
+    {
+      key: 'logout',
+      label: (
+        <Link to="/logout" className="flex items-center gap-2">
+          <LogoutOutlined />
+          Đăng xuất
+        </Link>
+      ),
+      danger: true,
+    },
   ];
 
   // đóng Drawer khi đổi route
   // (nếu bạn dùng v6.22+, có thể dùng useNavigationType để tinh hơn)
   if (mobileOpen && isDesktop) setMobileOpen(false);
 
+  // Đóng menu danh mục khi click ra ngoài
+  const notiMenuRef = useRef();
+  const [isOpenNotifyMenu, setIsOpenNotifyMenu] = useState(false);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notiMenuRef.current && !notiMenuRef.current.contains(event.target)) {
+        setIsOpenNotifyMenu(false);
+      }
+    }
+    if (isOpenNotifyMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpenNotifyMenu]);
+
+  // ----
+  // fetch notifications từ API nếu cần
+  //
+  useEffect(() => {
+    // giả sử fetch từ /api/admin/notifications
+    (async () => {
+      try {
+        const resp = await getNotificationsByUserId(user.id || user._id, {
+          page: 1,
+          limit: 100,
+        })
+        const { data, meta } = resp;
+        setNotifications(data || []);
+        console.log('Fetched notifications:', data, meta);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        setNotifications([]);
+      }
+    })()
+  }, [user]);
+
+  // ----
+  // join room admin để nhận thông báo realtime qua socket.io
+  //
+  useEffect(() => {
+    socket.emit('admin:join');
+
+    socket.on('admin_notification:new', (notifyData) => {
+      console.log('Received new admin notification via socket:', notifyData);
+      if (!notifyData) return;
+      // chỉ cho nếu đúng user_id admin hiện tại
+      if (notifyData.user_id !== user.id && notifyData.user_id !== user._id) return;
+      setNotifications((prevNotis) => [notifyData, ...prevNotis]);
+    })
+
+    return () => {
+      // socket.emit('admin:leave');
+      socket.off('admin_notification:new');
+    };
+  }, []);
+
+  const unReadCount = notifications.filter(noti => !noti.is_read).length;
+
   return (
     <ConfigProvider
       theme={{
         algorithm: theme.defaultAlgorithm,
-        token: { borderRadius: 12, colorPrimary: "#06b6d4" },
+        token: { borderRadius: 12, colorPrimary: '#06b6d4' },
         components: {
-          Layout: { siderBg: "#fff", headerBg: "#fff", bodyBg: "#f1f5f9" },
-          Menu: { itemBorderRadius: 10 }
-        }
+          Layout: { siderBg: '#fff', headerBg: '#fff', bodyBg: '#f1f5f9' },
+          Menu: { itemBorderRadius: 10 },
+        },
       }}
     >
       <Layout className="admin-layout">
         {/* Desktop Sider */}
         {isDesktop && (
-          <Sider
-            width={248}
-            collapsedWidth={64}
-            collapsible
-            collapsed={collapsed}
-            trigger={null}
-            className="admin-sider"
-            style={{
-              position: "fixed", insetInlineStart: 0, top: 0, bottom: 0,
-              paddingInline: 8, paddingTop: 8
-            }}
-          >
-            <Link to="/admin/home" className="sider-logo">
-              <img src="/logo192.png" alt="Logo" />
-              <span className={`logo-text ${collapsed ? "is-collapsed" : ""}`}>Quản trị viên</span>
-            </Link>
-
-            <AdminMenu collapsed={collapsed} />
-
-            <button
-              className="sider-toggle"
-              onClick={() => setCollapsed(v => !v)}
-              aria-label="Toggle sidebar"
+          <>
+            <Sider
+              width={248}
+              collapsedWidth={64}
+              collapsible
+              collapsed={collapsed}
+              trigger={null}
+              className="admin-sider"
+              style={{
+                position: 'fixed',
+                insetInlineStart: 0,
+                top: 0,
+                bottom: 0,
+                paddingInline: 8,
+                paddingTop: 8,
+                overflow: 'auto',
+                height: '100vh',
+                paddingBottom: 50,
+                boxShadow: '2px 0 8px rgba(0,0,0,.06)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              <LeftCircleOutlined rotate={collapsed ? 180 : 0} />
-            </button>
-          </Sider>
+              <Link to="/admin/home" className="sider-logo">
+                <img src="/logo192.png" alt="Logo" />
+                <span
+                  className={`logo-text ${collapsed ? 'is-collapsed' : ''}`}
+                >
+                  Quản trị viên
+                </span>
+              </Link>
+
+              <AdminMenu collapsed={collapsed} />
+
+              <div className="mt-auto flex-1 flex justify-center items-center">
+                <button
+                  className="collapse-btn bg-slate-200 hover:bg-slate-300 p-2 rounded-full"
+                  onClick={() => setCollapsed((v) => !v)}
+                  aria-label="Toggle sidebar"
+                >
+                  <LeftCircleOutlined rotate={collapsed ? 180 : 0} />
+                </button>
+              </div>
+            </Sider>
+          </>
         )}
 
         {/* Main area */}
         <Layout
           style={{
             marginInlineStart: isDesktop ? (collapsed ? 64 : 248) : 0,
-            transition: "margin 220ms cubic-bezier(0.2,0,0,1)",
-            minHeight: "100vh",
+            transition: 'margin 220ms cubic-bezier(0.2,0,0,1)',
+            minHeight: '100vh',
           }}
         >
           <Header
             className="admin-header"
             style={{
-              display: "flex", alignItems: "center", gap: 12,
-              background: "#fff", position: "sticky", top: 0, zIndex: 10,
-              paddingInline: 12, boxShadow: "0 4px 12px rgba(0,0,0,.06)"
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              background: '#fff',
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              paddingInline: 12,
+              boxShadow: '0 4px 12px rgba(0,0,0,.06)',
             }}
           >
             {/* Hamburger trên mobile */}
@@ -136,31 +256,66 @@ export default function AdminLayout({ user }) {
             ) : (
               <button
                 className="collapse-btn"
-                onClick={() => setCollapsed(v => !v)}
+                onClick={() => setCollapsed((v) => !v)}
                 aria-label="Toggle sidebar"
               >
                 <LeftCircleOutlined rotate={collapsed ? 180 : 0} />
               </button>
             )}
 
-            <h2 style={{ fontSize: 20, fontWeight: 700, marginInlineStart: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <h2
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                marginInlineStart: 6,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {title}
             </h2>
 
-            <div style={{ marginInlineStart: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+            <div
+              style={{
+                marginInlineStart: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
               {/* Ẩn bớt icon trên màn nhỏ nếu cần */}
-              {/* <div className="header-icon"><LightMode /></div>
               <div className="header-icon">
-                <Badge badgeContent={4} color="error">
-                  <NotificationsNone />
-                </Badge>
-              </div> */}
+                <LightMode />
+              </div>
+              <div ref={notiMenuRef} className="relative">
+                <div className='relative cursor-pointer header-icon '>
+                  <Badge badgeContent={unReadCount} color="error" onClick={() => setIsOpenNotifyMenu(!isOpenNotifyMenu)}>
+                    <NotificationsNone />
+                  </Badge>
+
+                  <div className="w-72 mt-2 absolute top-full right-0 z-50">
+                    <NotificationDropdown notifications={notifications} setNotifications={setNotifications} isOpen={isOpenNotifyMenu} />
+                  </div>
+                </div>
+              </div>
               <Dropdown placement="bottomRight" menu={{ items: userMenuItems }}>
-                <Link to="/admin/profile" onClick={(e) => e.preventDefault()} className="user-chip">
+                <Link
+                  to="/admin/profile"
+                  onClick={(e) => e.preventDefault()}
+                  className="user-chip"
+                >
                   <Space>
                     <Person />
-                    <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {user?.full_name || "ADMIN No full_name"}
+                    <span
+                      style={{
+                        maxWidth: 120,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                      className='hidden md:block'
+                    >
+                      {user?.full_name || 'ADMIN No full_name'}
                     </span>
                     <DownOutlined />
                   </Space>
@@ -171,20 +326,26 @@ export default function AdminLayout({ user }) {
 
           <Content style={{ padding: isDesktop ? 16 : 12 }}>
             {/* Breadcrumb: rút gọn trên mobile */}
-            <div className="admin-breadcrumb card" style={{ display: isDesktop ? "block" : "none" }}>
+            <div
+              className="admin-breadcrumb card"
+              style={{ display: isDesktop ? 'block' : 'none' }}
+            >
               <Breadcrumb
-                items={crumbs.map(c => ({
+                items={crumbs.map((c) => ({
                   title: <Link to={c.path}>{decodeURIComponent(c.label)}</Link>,
                 }))}
               />
             </div>
 
-            <div className="admin-content card" style={{ marginTop: isDesktop ? 8 : 6 }}>
+            <div
+              className="admin-content card"
+              style={{ marginTop: isDesktop ? 8 : 6 }}
+            >
               <Outlet />
             </div>
           </Content>
 
-          <Footer style={{ padding: 0, background: "transparent" }}>
+          <Footer style={{ padding: 0, background: 'transparent' }}>
             <AdminFooter />
           </Footer>
         </Layout>
@@ -195,18 +356,28 @@ export default function AdminLayout({ user }) {
             open={mobileOpen}
             onClose={() => setMobileOpen(false)}
             placement="left"
-            width={260} 
+            width={300}
+            style={{
+              paddingBottom: 50,
+            }}
           >
-            <Link to="/admin/home" className="sider-logo" onClick={() => setMobileOpen(false)}>
+            <Link
+              to="/admin/home"
+              className="sider-logo"
+              onClick={() => setMobileOpen(false)}
+            >
               <img src="/logo192.png" alt="Logo" />
               <span className="logo-text">Quản trị viên</span>
             </Link>
             <AdminMenu
               collapsed={false}
-              className=""
+              className="mb-14"
               // đóng drawer khi chọn menu (antd Menu v5 dùng onClick)
               onClick={() => setMobileOpen(false)}
             />
+
+            {/* logout button */}
+            <LogoutButton />
           </Drawer>
         )}
       </Layout>

@@ -31,6 +31,7 @@ import {
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import {
+  changeProductStatus,
   getAllProducts,
   softDeleteProduct,
 } from '../../../redux/reducers/productSlice';
@@ -41,12 +42,11 @@ import { getAllBrands } from '../../../redux/reducers/brandSlice';
 
 const { RangePicker } = DatePicker;
 
-const PRODUCT_STATUS = [
-  { label: 'Đang bán', value: 'ACTIVE', color: 'green' },
-  { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
-  { label: 'Hết hàng', value: 'OUT_OF_STOCK', color: 'red' },
-];
-
+const PRODUCT_STATUS = {
+  ACTIVE: { label: 'Đang bán', value: 'ACTIVE', color: 'green' },
+  INACTIVE: { label: 'Ẩn', value: 'INACTIVE', color: 'default' },
+  // OUT_OF_STOCK: { label: 'Hết hàng', value: 'OUT_OF_STOCK', color: 'red' },
+};
 const ProductList = () => {
   const [messageApi, contextHolderMessage] = message.useMessage();
   const [modal, contextHolderModal] = Modal.useModal();
@@ -81,7 +81,7 @@ const ProductList = () => {
   // Build query
   const query = useMemo(
     () => ({
-      q,
+      keyword: q,
       category_id,
       brand_ids: [brand_id],
       status,
@@ -227,10 +227,23 @@ const ProductList = () => {
     {
       title: 'Trạng thái',
       dataIndex: 'status',
-      width: 100,
-      render: (v) => {
-        const s = PRODUCT_STATUS.find((x) => x.value === v);
-        return <Tag color={s?.color}>{s?.label}</Tag>;
+      width: 150,
+      render: (v, record ) => {
+        // const s = PRODUCT_STATUS.find((x) => x.value === v);
+        // select component to change status
+        console.log('Render status:', v, record);
+        return (
+          <Select
+            value={v}
+            onChange={(newStatus) => handleChangeStatus(record?._id, newStatus)}
+            options={Object.values(PRODUCT_STATUS).map((s) => ({
+              label: s.label,
+              value: s.value,
+            }))}
+            style={{ width: '100%' }}
+          />
+        );
+        // return <Tag color={s?.color}>{s?.label}</Tag>;
       },
     },
     {
@@ -322,6 +335,28 @@ const ProductList = () => {
     });
   };
 
+  // change status product
+
+  const handleChangeStatus = async (id, newStatus) => {
+    console.log('Change status:', id, newStatus);
+    if (!id || !newStatus) return;
+    if (
+      newStatus !== PRODUCT_STATUS.ACTIVE.value &&
+      newStatus !== PRODUCT_STATUS.INACTIVE.value
+    ) {
+      messageApi.error('Trạng thái không hợp lệ!');
+      return;
+    }
+
+    try {
+      await dispatch(changeProductStatus({ productId:id, status: newStatus })).unwrap();
+      messageApi.success('Cập nhật trạng thái thành công!');
+    } catch (error) {
+      messageApi.error(error.message || 'Cập nhật trạng thái thất bại!');
+      console.error('Change product status error:', error);
+    }
+  };
+
   return (
     <>
       {contextHolderMessage}
@@ -369,7 +404,7 @@ const ProductList = () => {
               placeholder="Trạng thái"
               value={status}
               onChange={setStatus}
-              options={PRODUCT_STATUS.map((s) => ({
+              options={Object.values(PRODUCT_STATUS).map((s) => ({
                 label: s.label,
                 value: s.value,
               }))}

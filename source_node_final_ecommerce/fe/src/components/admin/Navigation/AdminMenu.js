@@ -1,12 +1,14 @@
 import {
+  AppstoreOutlined,
   ContainerOutlined,
   CustomerServiceOutlined,
   LogoutOutlined,
   NotificationOutlined,
   OrderedListOutlined,
   PieChartOutlined,
-  ProductOutlined,
   SettingOutlined,
+  ShoppingOutlined,
+  TagsOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
@@ -19,6 +21,7 @@ const items = [
   },
   {
     key: '2',
+    icon: <AppstoreOutlined />,
     label: <Link to="/admin/categories">Danh mục</Link>,
     children: [
       {
@@ -33,6 +36,7 @@ const items = [
   },
   {
     key: '3',
+    icon: <TagsOutlined />,
     label: <Link to="/admin/brands">Thương hiệu</Link>,
     children: [
       {
@@ -47,6 +51,7 @@ const items = [
   },
   {
     key: '4',
+    icon: <ShoppingOutlined />,
     label: <Link to="/admin/products">Sản phẩm</Link>,
     children: [
       {
@@ -57,7 +62,14 @@ const items = [
         key: '4-2',
         label: <Link to="/admin/products/add">Thêm sản phẩm</Link>,
       },
-    
+      // {
+      //   key: '4-3',
+      //   label: <Link to="/admin/products/edit">Sửa sản phẩm</Link>,
+      // },
+      // {
+      //   key: '4-4',
+      //   label: <Link to="/admin/products/:slug">Chi tiết sản phẩm</Link>,
+      // },
     ],
   },
   {
@@ -75,13 +87,20 @@ const items = [
     icon: <ContainerOutlined />,
     label: <Link to="/admin/promotions">Khuyến mãi</Link>,
   },
-  
-
-
   {
-    key: '11',
-    icon: <LogoutOutlined />,
-    label: <Link to="/logout">Đăng xuất</Link>,
+    key: '8',
+    icon: <ContainerOutlined />,
+    label: <Link to="/admin/reports">Báo cáo, phân tích</Link>,
+  },
+  // {
+  //   key: '9',
+  //   icon: <NotificationOutlined />,
+  //   label: <Link to="/admin/notifications">Thông báo</Link>,
+  // },
+  {
+    key: '10',
+    icon: <SettingOutlined />,
+    label: <Link to="/admin/settings">Cài đặt</Link>,
   },
 ];
 
@@ -122,7 +141,7 @@ const AdminMenu = ({ collapsed, className }) => {
   // };
 
   return (
-    <>
+    <div className="=">
       <Menu
         mode="inline"
         theme="light"
@@ -131,9 +150,11 @@ const AdminMenu = ({ collapsed, className }) => {
         // selectedKeys={selectedKey} // 🔥 controlled theo URL
         inlineCollapsed={collapsed}
         items={items}
-        style={{ background: 'inherit', width: '100' }}
+        style={{ background: 'inherit'}}
         className={className}
       />
+
+
       {/* <ConfigProvider
                 theme={{
                     token: {
@@ -150,7 +171,7 @@ const AdminMenu = ({ collapsed, className }) => {
             >
                 
             </ConfigProvider> */}
-    </>
+    </div>
   );
 };
 

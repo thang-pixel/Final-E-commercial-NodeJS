@@ -7,27 +7,18 @@ import {
   Typography,
   Chip,
   Button,
-  Divider,
   Rating,
   ToggleButtonGroup,
   ToggleButton,
   TextField,
-  Skeleton,
   Alert,
   Stack,
-  IconButton,
   Table,
-  TableHead,
   TableRow,
   TableCell,
   TableBody,
 } from '@mui/material';
-import {
-  AddShoppingCart,
-  ChevronLeft,
-  ChevronRight,
-  ShoppingCartCheckout,
-} from '@mui/icons-material';
+import { AddShoppingCart, ShoppingCartCheckout } from '@mui/icons-material';
 import { api } from '../../../api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductBySlug } from '../../../redux/reducers/productSlice';
@@ -40,6 +31,7 @@ import SkeletonProductDetail from '../../../components/common/SketonProductDetai
 import useAuth from '../../../hooks/authHook';
 import CommentList from '../../../components/common/product/CommentList';
 import styleMuiUtils from '../../../utils/styleMuiUtils';
+import { PRODUCT_STATUS } from '../../../constants/productConstant';
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -63,10 +55,6 @@ function ProductDetail() {
   const [variantSelected, setVariantSelected] = useState(null);
 
   // reviews
-  const [reviews, setReviews] = useState([]);
-  const [rvLoading, setRvLoading] = useState(false);
-  const [rvPage, setRvPage] = useState(1);
-  const [rvTotalPages, setRvTotalPages] = useState(1);
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState('');
 
@@ -95,57 +83,10 @@ function ProductDetail() {
 
   const productId = data?._id;
 
-  const fetchReviews = useCallback(
-    async (page = 1) => {
-      if (!productId) return;
-      setRvLoading(true);
-      try {
-        const res = await api.get('/api/reviews', {
-          params: { product_id: productId, page, limit: 5 },
-        });
-        const list = res.data?.data || [];
-        const meta = res.data?.meta || { totalPages: 1 };
-        setReviews(list);
-        setRvTotalPages(meta.totalPages || 1);
-      } catch {
-        setReviews([]);
-        setRvTotalPages(1);
-      } finally {
-        setRvLoading(false);
-      }
-    },
-    [productId]
-  );
-
-  useEffect(() => {
-    fetchReviews(rvPage);
-  }, [fetchReviews, rvPage]);
-
   const images = useMemo(() => {
     if (!data?.images) return [];
     return data.images.map((it) => stringUtils.normalizeUrl(it.img_url));
   }, [data]);
-
-  const handleSubmitReview = async () => {
-    if (!productId) return;
-    if (!myRating || !myComment.trim()) {
-      alert('Vui lòng chọn sao và nhập bình luận.');
-      return;
-    }
-    try {
-      await api.post('/api/reviews', {
-        product_id: productId,
-        rating: myRating,
-        comment: myComment.trim(),
-      });
-      setMyRating(0);
-      setMyComment('');
-      fetchReviews(1);
-      setRvPage(1);
-    } catch (e) {
-      alert(e?.response?.data?.message || 'Gửi đánh giá thất bại');
-    }
-  };
 
   if (loading) return <SkeletonProductDetail />;
 
@@ -221,7 +162,7 @@ function ProductDetail() {
       {contextHolder}
       <Grid
         container
-        spacing={3} 
+        spacing={3}
         sx={{
           display: 'flex',
           flexWrap: 'wrap',
@@ -241,10 +182,7 @@ function ProductDetail() {
         </Grid>
 
         {/* Info */}
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          
-        >
+        <Grid size={{ xs: 12, md: 6 }}>
           <Stack spacing={1.25} sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="h5" fontWeight={700}>
               {data.name}
@@ -383,10 +321,23 @@ function ProductDetail() {
                 onClick={handleAddToCart}
                 variant="contained"
                 startIcon={<AddShoppingCart />}
+                disabled={
+                  !variantSelected ||
+                  variantSelected.stock === 0 ||
+                  data.status !== PRODUCT_STATUS.ACTIVE.value
+                }
               >
                 Thêm vào giỏ
               </Button>
-              <Button variant="outlined" startIcon={<ShoppingCartCheckout />}>
+              <Button
+                variant="outlined"
+                startIcon={<ShoppingCartCheckout />}
+                disabled={
+                  !variantSelected ||
+                  variantSelected.stock === 0 ||
+                  data.status !== PRODUCT_STATUS.ACTIVE.value
+                }
+              >
                 Mua ngay
               </Button>
             </div>
@@ -395,9 +346,7 @@ function ProductDetail() {
 
         {/* description */}
         {/* Description: tối thiểu hiển thị 5 dòng (giữ xuống dòng) */}
-        <Grid
-          size={{ xs: 12, md: 6 }} 
-        >
+        <Grid size={{ xs: 12, md: 6 }}>
           <Box sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Mô tả
@@ -417,9 +366,7 @@ function ProductDetail() {
         </Grid>
 
         {/* Thong so ky thuat */}
-        <Grid
-          size={{ xs: 12, md: 6 }} 
-        >
+        <Grid size={{ xs: 12, md: 6 }}>
           <Box sx={styleMuiUtils.createBoxRoundedShadow()}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
               Thông số kỹ thuật
@@ -450,7 +397,7 @@ function ProductDetail() {
 
         {/* Reviews & Comments */}
         <Grid size={12} sx={styleMuiUtils.createBoxRoundedShadow()}>
-          <CommentList productId={productId} product={data}/>
+          <CommentList productId={productId} product={data} />
         </Grid>
       </Grid>
     </Box>

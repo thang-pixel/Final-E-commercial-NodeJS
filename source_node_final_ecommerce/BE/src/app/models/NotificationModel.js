@@ -11,6 +11,7 @@ const notificationSchema = new mongoose.Schema(
     user_id: { type: Number, ref: "User", index: true, required: true },
     type: { type: String, required: true }, // INFO, ORDER, PROMOTION, COMMENT, USER, SHIPPING, PRODUCT
     title: { type: String, required: true },
+    link: { type: String },
     message: { type: String, required: true },
     is_read: { type: Boolean, default: false },
   },
