@@ -34,7 +34,6 @@ import {
   deleteCategory,
   getAllCategory,
 } from '../../../redux/reducers/categorySlice';
-import { API_DOMAIN } from '../../../constants/apiDomain';
 import CategoryTable from '../../../components/admin/Category/CategoryTable';
 import CategoryGrid from '../../../components/admin/Category/CategoryGrid';
 const STATUS = [
@@ -170,13 +169,7 @@ const CategoryList = () => {
       ),
     },
     { title: 'Mô tả', dataIndex: 'description', width: 160 },
-    { title: 'Danh mục cha', dataIndex: 'parent_id', width: 80 },
-    {
-      title: 'Số sản phẩm',
-      dataIndex: 'productCount',
-      width: 80,
-      render: (v) => v || 0,
-    },
+    { title: 'Danh mục cha', dataIndex: 'parent_id', width: 80 }, 
     {
       title: 'Trạng thái',
       dataIndex: 'status',

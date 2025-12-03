@@ -12,6 +12,11 @@ const buildSku = (productId, attributes) => {
   return `P${productId}-${attrPart}`;
 }
 
+const isOutOfStock = (variant) => {
+  return variant.stock <= 0;
+}
+
 module.exports = {
   buildSku,
+  isOutOfStock,
 };

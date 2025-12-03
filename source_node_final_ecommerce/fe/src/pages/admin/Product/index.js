@@ -254,6 +254,13 @@ const ProductList = () => {
       render: (v) => dayjs(v).format('DD/MM/YYYY HH:mm'),
     },
     {
+      title: 'Sửa lúc',
+      dataIndex: 'updatedAt',
+      sorter: true,
+      width: 150,
+      render: (v) => dayjs(v).format('DD/MM/YYYY HH:mm'),
+    },
+    {
       title: 'Thao tác',
       width: 150,
       fixed: 'right',

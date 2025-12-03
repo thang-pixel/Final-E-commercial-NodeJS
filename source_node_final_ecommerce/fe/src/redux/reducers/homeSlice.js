@@ -8,7 +8,7 @@ export const fetchHomeData = createAsyncThunk(
       const [newRes, bestRes, phoneRes, desktopRes, laptopRes] =
         await Promise.all([
           api.get("/api/products?sort=createdAt_desc&limit=8"),
-          api.get("/api/products?sort=best_sellers&limit=8"),
+          api.get("/api/home/best-sellers?limit=8"),
           api.get("/api/products?category_id=11&limit=8"),
           api.get("/api/products?category_id=14&limit=8"),
           api.get("/api/products?category_id=15&limit=8"),

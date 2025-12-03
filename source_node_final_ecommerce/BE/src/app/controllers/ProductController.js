@@ -88,6 +88,7 @@ class ProductController {
         min_price: 'min_price',
         max_price: 'max_price',
         createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
         rating: 'average_rating',
       };
 

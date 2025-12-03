@@ -30,6 +30,7 @@ import { getProductBySlugApi } from '../../api/productApi';
 import SkeletonProductDetail from './SketonProductDetail';
 import useAuth from '../../hooks/authHook';
 import { PRODUCT_STATUS } from '../../constants/productConstant';
+import { isOutOfStock } from '../../utils/productVariantUtil';
 
 const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
   const dispatch = useDispatch();
@@ -145,6 +146,46 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
     }
   };
 
+  // Mua ngay
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    if (!variantSelected) {
+      messageApi.open({
+        type: 'warning',
+        content: 'Vui lòng chọn thuộc tính sản phẩm.',
+      });
+      return;
+    }
+
+    if (qty > variantSelected.stock) {
+      messageApi.open({
+        type: 'warning',
+        content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+      });
+      return;
+    }
+
+    const payload = {
+      product_id: product._id,
+      variant_id: variantSelected ? variantSelected._id : null,
+      SKU: variantSelected.SKU,
+      attributes: variantSelected.attributes,
+      quantity: qty,
+      image_url: product.images[0].img_url,
+      name: product.name,
+      price: variantSelected.price,
+    }
+
+    // Save selectedVariants to localStorage for checkout page
+    localStorage.setItem(
+      'checkout_items',
+      JSON.stringify([payload])
+    );
+    // Navigate to checkout page
+ 
+    window.location.href = '/checkout';
+  };
+
   return (
     <>
       {/* Thêm/Sửa địa chỉ */}
@@ -195,10 +236,10 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
                     <Chip
                       size="small"
                       label={
-                        product.status === 'ACTIVE' ? 'Còn hàng' : 'Ngừng bán'
+                        variantSelected && isOutOfStock(variantSelected) ? 'Hết hàng' : (product.status === 'ACTIVE' ? 'Còn hàng' : 'Ngừng bán')
                       }
                       color={
-                        product.status === 'ACTIVE' ? 'success' : 'default'
+                        variantSelected && isOutOfStock(variantSelected) ? 'error' : (product.status === 'ACTIVE' ? 'success' : 'default')
                       }
                     />
                   </Stack>
@@ -326,6 +367,7 @@ const ProductQuickView = ({ isOpen, setIsOpen, product }) => {
                       Thêm vào giỏ
                     </Button>
                     <Button
+                      onClick={handleBuyNow}
                       variant="outlined"
                       startIcon={<ShoppingCartCheckout />}
                       disabled={!variantSelected || variantSelected.stock === 0 || product.status !== PRODUCT_STATUS.ACTIVE.value}

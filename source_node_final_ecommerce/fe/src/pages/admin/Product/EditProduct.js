@@ -111,7 +111,7 @@ const EditProduct = () => {
 
   const handleSubmit = async () => {
     const newErrors = {
-      specs: specs?.length === 0 || specs.some((s) => !s.key || !s.value),
+      specs: specs?.length === 0 || specs.some((s) => !s?.key || !s.value),
       thumbnail: !thumbnail,
       images: images?.length < 3,
       // variants: variants?.length === 0,
@@ -155,9 +155,9 @@ const EditProduct = () => {
     setIsEditing(true);
     console.log(specs, thumbnail, images);
     console.log('Product Info:', productInfo);
-    for (const [key, value] of formData.entries()) {
-      console.log('FD =>', key, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log('FD =>', key, value);
+    // }
     try {
       const result = await dispatch(
         editProduct({ productId: id, productData: formData })

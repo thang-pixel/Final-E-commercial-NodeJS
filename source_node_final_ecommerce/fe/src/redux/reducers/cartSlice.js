@@ -20,9 +20,15 @@ export const fetchCartUser = createAsyncThunk(
           message: res.data.message,
         };
       }
-      return rejectWithValue(res.data);
+      return rejectWithValue({
+        message: res.data.message,
+        errors: res.data.errors,
+      });
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Cart Api Error',
+        errors: error.response?.data?.errors || null,
+      });
     }
   }
 );
@@ -38,9 +44,15 @@ export const addToCartUser = createAsyncThunk(
           message: res.data.message,
         };
       }
-      return rejectWithValue(res.data);
+      return rejectWithValue({
+        message: res.data.message,
+        errors: res.data.errors,
+      });
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Cart Api Error',
+        errors: error.response?.data?.errors || null,
+      });
     }
   }
 );
@@ -52,6 +64,12 @@ export const updateCartItemUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      console.log('Updating cart item: ', {
+        user_id,
+        product_id,
+        variant_id,
+        quantity,
+      });
       const res = await api.put(`/api/carts/${user_id}/update`, {
         product_id,
         variant_id,
@@ -63,9 +81,15 @@ export const updateCartItemUser = createAsyncThunk(
           message: res.data.message,
         };
       }
-      return rejectWithValue(res.data);
+      return rejectWithValue({
+        message: res.data.message,
+        errors: res.data.errors,
+      });
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Cart Api Error',
+        errors: error.response?.data?.errors || null,
+      });
     }
   }
 );
@@ -74,9 +98,16 @@ export const removeItemCartUser = createAsyncThunk(
   'cart/removeItemFromCart',
   async ({ user_id, product_id, variant_id }, { rejectWithValue }) => {
     try {
-      const res = await api.delete(`/api/carts/${user_id}/remove`, {
+      console.log('Removing item from cart: ', {
+        user_id,
         product_id,
         variant_id,
+      });
+      const res = await api.delete(`/api/carts/${user_id}/remove`, {
+        data: {
+          product_id,
+          variant_id,
+        },
       });
       if (res.data) {
         return {
@@ -84,9 +115,16 @@ export const removeItemCartUser = createAsyncThunk(
           message: res.data.message,
         };
       }
-      return rejectWithValue(res.data);
+      return rejectWithValue({
+        message: res.data.message,
+        errors: res.data.errors,
+      });
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      console.error('Error removing item from cart: ', error);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Cart Api Error',
+        errors: error.response?.data?.errors || null,
+      });
     }
   }
 );
@@ -102,9 +140,15 @@ export const clearCartUser = createAsyncThunk(
           message: res.data.message,
         };
       }
-      return rejectWithValue(res.data);
+      return rejectWithValue({
+        message: res.data.message,
+        errors: res.data.errors,
+      });
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || 'Cart Api Error',
+        errors: error.response?.data?.errors || null,
+      });
     }
   }
 );
@@ -141,15 +185,14 @@ const cartSlice = createSlice({
       state.errors = null;
     },
 
-
     clearCart: (state) => {
       localStorage.removeItem('carts');
       state.carts = [];
     },
 
     addToCart: (state, action) => {
-      const { product_id, variant_id } = action.payload; 
-      
+      const { product_id, variant_id } = action.payload;
+
       const existingItemIndex = state.carts.findIndex(
         (item) =>
           item.product_id === product_id && item.variant_id === variant_id
@@ -229,7 +272,13 @@ const cartSlice = createSlice({
       );
   },
 });
- 
-export const { clearCartState, clearCart, addToCart, updateQuantity, removeFromCart } = cartSlice.actions;
+
+export const {
+  clearCartState,
+  clearCart,
+  addToCart,
+  updateQuantity,
+  removeFromCart,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

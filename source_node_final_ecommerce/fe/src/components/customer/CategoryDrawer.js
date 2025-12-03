@@ -24,6 +24,7 @@ const CategoryDrawer = ({ categories, isOpen, setIsOpen, ref }) => {
               { label: 'Sản phẩm', value: 'products' },
               { label: 'Giới thiệu', value: 'about' },
               { label: 'Liên hệ', value: 'contact' },
+              { label: 'Đăng xuất', value: 'logout' },
             ]}
           />
         ),
@@ -31,7 +32,7 @@ const CategoryDrawer = ({ categories, isOpen, setIsOpen, ref }) => {
     },
   ];
 
-  const [activeTab, setActiveTab] = useState(tabs[0].value);
+  const [activeTab, setActiveTab] = useState(tabs[0].item.value);
 
   
 

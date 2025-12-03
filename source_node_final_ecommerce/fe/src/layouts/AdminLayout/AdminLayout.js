@@ -54,8 +54,8 @@ export default function AdminLayout({ user }) {
       ['/admin/customers', 'Khách hàng'],
       ['/admin/promotions', 'Khuyến mãi'],
       ['/admin/reports', 'Báo cáo'],
-      ['/admin/notifications', 'Thông báo'],
-      ['/admin/settings', 'Cài đặt'],
+      // ['/admin/notifications', 'Thông báo'],
+      // ['/admin/settings', 'Cài đặt'],
     ]);
     for (const [p, t] of map.entries()) {
       if (location.pathname === p || location.pathname.startsWith(p + '/'))

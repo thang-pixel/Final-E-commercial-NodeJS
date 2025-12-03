@@ -32,6 +32,7 @@ import useAuth from '../../../hooks/authHook';
 import CommentList from '../../../components/common/product/CommentList';
 import styleMuiUtils from '../../../utils/styleMuiUtils';
 import { PRODUCT_STATUS } from '../../../constants/productConstant';
+import { isOutOfStock } from '../../../utils/productVariantUtil';
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -157,6 +158,46 @@ function ProductDetail() {
     }
   };
 
+  // Mua ngay
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    if (!variantSelected) {
+      messageApi.open({
+        type: 'warning',
+        content: 'Vui lòng chọn thuộc tính sản phẩm.',
+      });
+      return;
+    }
+
+    if (qty > variantSelected.stock) {
+      messageApi.open({
+        type: 'warning',
+        content: `Chỉ còn ${variantSelected.stock} sản phẩm trong kho.`,
+      });
+      return;
+    }
+
+    const payload = {
+      product_id: data._id,
+      variant_id: variantSelected ? variantSelected._id : null,
+      SKU: variantSelected.SKU,
+      attributes: variantSelected.attributes,
+      quantity: qty,
+      image_url: data.images[0].img_url,
+      name: data.name,
+      price: variantSelected.price,
+    }
+
+    // Save selectedVariants to localStorage for checkout page
+    localStorage.setItem(
+      'checkout_items',
+      JSON.stringify([payload])
+    );
+    // Navigate to checkout page
+ 
+    window.location.href = '/checkout';
+  };
+
   return (
     <Box sx={{ p: { xs: 1.5, md: 0 }, my: 2 }}>
       {contextHolder}
@@ -206,8 +247,12 @@ function ProductDetail() {
               </Typography>
               <Chip
                 size="small"
-                label={data.status === 'ACTIVE' ? 'Còn hàng' : 'Ngừng bán'}
-                color={data.status === 'ACTIVE' ? 'success' : 'default'}
+                label={
+                  variantSelected && isOutOfStock(variantSelected) ? 'Hết hàng' : (data.status === 'ACTIVE' ? 'Còn hàng' : 'Ngừng bán')
+                }
+                color={
+                  variantSelected && isOutOfStock(variantSelected) ? 'error' : (data.status === 'ACTIVE' ? 'success' : 'default')
+                }
               />
             </Stack>
 
@@ -330,6 +375,7 @@ function ProductDetail() {
                 Thêm vào giỏ
               </Button>
               <Button
+                onClick={handleBuyNow}
                 variant="outlined"
                 startIcon={<ShoppingCartCheckout />}
                 disabled={

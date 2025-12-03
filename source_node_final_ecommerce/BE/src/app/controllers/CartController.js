@@ -122,17 +122,25 @@ class CartController {
           .status(404)
           .json({ message: 'Item không tìm thấy trong cart với variant_id: ' + variant_id });
       } else {
-        const oldQuantity = cart.items[itemIndex].quantity;
+        const oldQuantity = cart.items[itemIndex].quantity; 
         if (quantity > variant.stock) {
           return res.status(400).json({ message: `Số lượng vượt quá tồn kho. Chỉ còn ${variant.stock} sản phẩm.` });
         }
-        cart.items[itemIndex].quantity = quantity;
+
+        // update nhưng phải giữ xuống 0
+        const newQuantity = quantity < 0 ? 0 : quantity;
+        if (newQuantity === 0) {
+          // remove item nếu qty = 0
+          cart.items.splice(itemIndex, 1);
+        } else {
+          cart.items[itemIndex].quantity = newQuantity;
+        }
       }
       await cart.save();
       return res.status(200).json({ message: 'Cart item updated', data:cart });
     } catch (error) {
       console.error('Error updating cart item:', error);
-      return res.status(500).json({ message: 'ỗi server khi cập nhật cart: ' + error.message });
+      return res.status(500).json({ message: 'Lỗi server khi cập nhật cart: ' + error.message });
     }
 
   }
@@ -140,6 +148,7 @@ class CartController {
   // [DELETE] api/carts/:user_id/remove
   async removeCartItem(req, res) {
     const { user_id } = req.params;
+    console.log(req)
     const userIdParsed = parseInt(user_id, 10);
     if (isNaN(userIdParsed)) {
       return res.status(400).json({ message: 'Sai user_id: ' + user_id });
@@ -166,7 +175,7 @@ class CartController {
       return res.status(200).json({ message: 'Item trong cart đã được xóa', data:cart });
     } catch (error) {
       console.error('Error removing cart item:', error);
-      return res.status(500).json({ message: 'ỗi server khi xóa item khỏi cart: ' + error.message });
+      return res.status(500).json({ message: 'Lỗi server khi xóa item khỏi cart: ' + error.message });
     }
   }
 

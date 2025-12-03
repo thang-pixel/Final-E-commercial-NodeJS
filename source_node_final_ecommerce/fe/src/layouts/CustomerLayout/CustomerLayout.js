@@ -21,7 +21,10 @@ import {
   Login,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllCategory, getAllRootCategory } from '../../redux/reducers/categorySlice';
+import {
+  getAllCategory,
+  getAllRootCategory,
+} from '../../redux/reducers/categorySlice';
 import { Badge, Typography } from '@mui/material';
 import useCart from '../../hooks/cartHook';
 import CartDrawer from '../../components/customer/CartDrawer';
@@ -29,6 +32,7 @@ import CategoryDrawer from '../../components/customer/CategoryDrawer';
 import CategoryDropdown from '../../components/customer/CategoryDropdown';
 import useAuth from '../../hooks/authHook';
 import { fetchCartUser } from '../../redux/reducers/cartSlice';
+import UserMenuMobile from '../../components/customer/Menu/UserMenuMobile';
 
 const menuPages = [
   { name: 'Home', path: '/' },
@@ -39,7 +43,7 @@ const menuPages = [
 
 const menuBottom = [
   { name: 'Trang chủ', path: '/', icon: <HomeIcon /> },
-  { name: 'Yêu thích', path: '/account/favorites', icon: <Favorite /> },
+  // { name: 'Yêu thích', path: '/account/favorites', icon: <Favorite /> },
   { name: 'Tài khoản', path: '/account/profile', icon: <AccountCircle /> },
   // { name: 'Giỏ hàng', path: '/account/carts', icon: <ShoppingCart /> },
   { name: 'Đơn hàng', path: '/account/orders', icon: <ListAlt /> },
@@ -175,7 +179,6 @@ function CustomerLayout() {
     };
   }, [isOpenDrawerCate]);
 
-
   // Drawer cart khi click cart icon
   const [isOpenDrawerCart, setIsOpenDrawerCart] = useState(false);
   const drawerCartRef = useRef();
@@ -198,259 +201,511 @@ function CustomerLayout() {
 
   return (
     <div className="layout-customer flex flex-col items-stretch min-h-screen">
-      <header className="layout-customer__header fixed w-full bg-cyan-400 h-16 z-10 ">
-        <div className="layout-customer__nav container bg-inherit py-2 h-full w-full relative mx-auto hidden md:flex justify-between items-center gap-x-4 shadow-cyan-300">
-          <div className="layout-customer__nav--logo rounded-lg ">
+      {/* ✅ Header với 2 hàng: Logo/Search/Cart/User | Category/Pages */}
+      <header className="layout-customer__header fixed w-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg z-10">
+        {/* Hàng 1: Logo, Search, Cart, User - Desktop */}
+        <div className="layout-customer__nav container mx-auto py-3 hidden md:flex justify-between items-center gap-4 px-4">
+          {/* Logo */}
+          <div className="flex-shrink-0">
             <Link to="/">
-              <div className="flex flex-row p-2 bg-inherit justify-start items-center gap-2">
-                <div className="flex-shrink-0">
-                  <img
-                    src={'/logo192.png'}
-                    className="h-10 w-10 object-cover"
-                    alt="Logo"
-                  />
-                </div>
-                <div>
-                  <p className="p-2 whitespace-nowrap">My Shop</p>
-                </div>
+              <div className="flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg p-2 transition-all">
+                <img
+                  src={'/logo_e_shop.png'}
+                  className="h-10 w-10 object-cover"
+                  alt="Logo"
+                />
+                <p className="font-bold text-white text-lg whitespace-nowrap">
+                  E Shop
+                </p>
               </div>
             </Link>
           </div>
-          <nav className="layout-customer__nav--menu flex flex-row gap-x-2  items-center w-full">
-            <div className="nav-item--search m-auto">
-              <SearchHome isHomePage={true} />
-            </div>
 
-            <div
-              className="nav-item--cart cursor-pointer mr-2"
-              onClick={() => setIsOpenDrawerCart(true)}
-            >
-              <Badge color="error" badgeContent={length}>
-                <CartIcon />
-              </Badge>
-            </div>
+          {/* Search */}
+          <div className="flex-1 max-w-2xl mx-4">
+            <SearchHome isHomePage={true} />
+          </div>
 
-            <div className={'nav-item--account relative'} ref={profileMenuRef}>
-              <div
-                onClick={() => setShowProfileMenu((v) => !v)}
-                style={{ cursor: 'pointer', position: 'relative' }}
-                className="flex justify-center items-center gap-2 group"
-              >
-                <AccountCircle />
-                <p className="p-1 font-semibold">{`Chào ${
-                  user?.username || user?.full_name || user?.email || 'Khách'
-                }`}</p>
-                <span
-                  className={`arrow-down ${showProfileMenu ? 'open' : ''}`}
-                ></span>
+          {/* Cart */}
+          <div
+            className="nav-item--cart cursor-pointer hover:scale-110 transition-transform"
+            onClick={() => setIsOpenDrawerCart(true)}
+          >
+            <Badge color="error" badgeContent={length} max={99}>
+              <div className="bg-white/10 hover:bg-white/20 p-2 rounded-full">
+                <CartIcon className="text-white" fontSize="large" />
               </div>
-              <div
-                className={`menuProfile-modern absolute right-0 top-full mt-2 min-w-[180px] z-20 transition-all duration-300 ${
-                  showProfileMenu
-                    ? 'visible opacity-100 scale-100'
-                    : 'invisible opacity-0 scale-95'
-                }`}
-              >
-                <ul className="py-2">
-                  {user && (
+            </Badge>
+          </div>
+
+          {/* User menu */}
+          <div className="nav-item--account relative" ref={profileMenuRef}>
+            <div
+              onClick={() => setShowProfileMenu((v) => !v)}
+              className="flex items-center gap-2 cursor-pointer bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2 transition-all"
+            >
+              <AccountCircle className="text-white" />
+              <p className="font-semibold text-white text-sm">
+                {user?.username || user?.full_name || 'Khách'}
+              </p>
+              <span
+                className={`arrow-down ${showProfileMenu ? 'open' : ''}`}
+              ></span>
+            </div>
+
+            {/* Dropdown menu */}
+            <div
+              className={`menuProfile-modern absolute right-0 top-full mt-2 min-w-[200px] z-20 transition-all duration-300 ${
+                showProfileMenu
+                  ? 'visible opacity-100 scale-100'
+                  : 'invisible opacity-0 scale-95'
+              }`}
+            >
+              <ul className="py-2">
+                {user ? (
+                  <>
                     <li
                       className="menuProfile-item"
                       onClick={() => setShowProfileMenu(false)}
                     >
-                      <Link to={'/account/profile'}>
+                      <Link to="/account/profile">
                         <Person className="mr-2" /> Tài khoản của tôi
                       </Link>
                     </li>
-                  )}
-                  {user && (
                     <li
                       className="menuProfile-item"
                       onClick={() => setShowProfileMenu(false)}
                     >
-                      <Link to={'/account/orders'}>
+                      <Link to="/account/orders">
                         <ListAlt className="mr-2" /> Đơn hàng của tôi
                       </Link>
                     </li>
-                  )}
-                  {user && (
                     <li
                       className="menuProfile-item"
                       onClick={() => setShowProfileMenu(false)}
                     >
-                      <Link to={'/account/carts'}>
-                        <CartIcon className="mr-2" /> {length} Giỏ hàng của tôi
+                      <Link to="/account/carts">
+                        <CartIcon className="mr-2" /> Giỏ hàng ({length})
                       </Link>
                     </li>
-                  )}
-                  {user && (
                     <li
-                      className="menuProfile-item"
+                      className="menuProfile-item text-red-600"
                       onClick={() => setShowProfileMenu(false)}
                     >
-                      <Link to={'/logout'}>
+                      <Link to="/logout">
                         <Logout className="mr-2" /> Đăng xuất
                       </Link>
                     </li>
-                  )}
-                  {!user && (
-                    <li
-                      className="menuProfile-item"
-                      onClick={() => setShowProfileMenu(false)}
-                    >
-                      <Link to={'/login'}>
-                        <Login className="mr-2" /> Đăng nhập
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
+                  </>
+                ) : (
+                  <li
+                    className="menuProfile-item"
+                    onClick={() => setShowProfileMenu(false)}
+                  >
+                    <Link to="/login">
+                      <Login className="mr-2" /> Đăng nhập
+                    </Link>
+                  </li>
+                )}
+              </ul>
             </div>
-          </nav>
-          <div className="layout-customer__nav--hamburger mr-2">
-            <MenuIcon
-              className="cursor-pointer"
-              onClick={() => handleToggleNav(true)}
-            />
-          </div>
-          <div className="layout-customer__nav--close mr-2">
-            <Close
-              className="cursor-pointer"
-              onClick={() => handleToggleNav(false)}
-            />
           </div>
         </div>
 
-        {/* Danhj muc va pages */}
-        <div className="layout-customer__nav container mx-auto  hidden md:flex md:items-center w-full">
-          <div
-            ref={cateMenuRef}
-            className="relative bg-orange-400 min-w-48 rounded-lg shadow-md flex items-center mr-4"
-          >
-            <div
-              className="flex justify-between items-center gap-2 cursor-pointer px-2 "
-              onClick={() => setIsOpenCateMenu(!isOpenCateMenu)}
-            >
-              <div>
-                <p className="py-2">Danh mục sản phẩm</p>
-              </div>
-              <div>
+        {/* ✅ Hàng 2: Category + Pages - Desktop (ngang hàng) */}
+        <div className="bg-white/10 border-t border-white/20 hidden md:block">
+          <div className="container mx-auto px-4 py-2 flex items-center gap-4">
+            {/* Category Dropdown */}
+            <div ref={cateMenuRef} className="relative flex-shrink-0">
+              <div
+                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg cursor-pointer transition-all min-w-[200px]"
+                onClick={() => setIsOpenCateMenu(!isOpenCateMenu)}
+              >
+                <MenuIcon />
+                <span className="font-semibold">Danh mục sản phẩm</span>
                 {isOpenCateMenu ? (
-                  <ArrowDropDownOutlined />
+                  <ArrowDropUpOutlined className="ml-auto" />
                 ) : (
-                  <ArrowDropUpOutlined />
+                  <ArrowDropDownOutlined className="ml-auto" />
                 )}
               </div>
-            </div>
-            <div className="menuCategoryContainer min-w-full absolute left-0 top-full rounded-lg z-20">
-              <CategoryDropdown categories={rootCategories} isOpenCateMenu={isOpenCateMenu}/>
-            </div>
-          </div>
 
-          <div className="flex mr-auto gap-x-4">
-            {menuPages.map((page) => (
-              <div
-                key={page.name}
-                className={
-                  navItemClasses +
-                  (activePage === page.name ? activeNavItemClasses : '')
-                }
-                onClick={() => handleActivePage(page.name)}
-              >
-                <Link
-                  to={page.path}
-                  className="flex justify-center items-center"
-                >
-                  <p className="p-2">{page.name}</p>
-                </Link>
+              {/* Category Dropdown Menu */}
+              <div className="absolute left-0 top-full mt-1 min-w-[200px] z-20">
+                <CategoryDropdown
+                  categories={rootCategories}
+                  isOpenCateMenu={isOpenCateMenu}
+                />
               </div>
-            ))}
+            </div>
+
+            {/* Pages Navigation */}
+            <nav className="flex items-center gap-2 flex-1">
+              {menuPages.map((page) => (
+                <Link
+                  key={page.name}
+                  to={page.path}
+                  onClick={() => handleActivePage(page.name)}
+                  className={clsx(
+                    'px-4 py-2 rounded-lg font-medium transition-all',
+                    'hover:bg-white/20 hover:text-white',
+                    activePage === page.name
+                      ? 'bg-white/20 text-white border-b-2 border-white'
+                      : 'text-white/90'
+                  )}
+                >
+                  {page.name}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
 
-        {/* Khi man hinh nho thi hien thi toggle categories, logo, cart button */}
-        <div className="layout-customer__nav--toggle-categories md:hidden flex justify-between items-center px-4">
+        {/* ✅ Mobile Header */}
+        <div className="md:hidden flex justify-between items-center px-4 py-3">
           <MenuIcon
-            className="cursor-pointer"
+            className="cursor-pointer text-white"
             onClick={() => setIsOpenDrawerCate(!isOpenDrawerCate)}
           />
 
-          {/* Shop name */}
-          <div className="logo rounded-lg ">
-            <Link to="/">
-              <div className="flex flex-row p-2 bg-inherit justify-start items-center gap-2">
-                <div className="flex-shrink-0">
-                  <img
-                    src={'/logo192.png'}
-                    className="h-10 w-10 object-cover"
-                    alt="Logo"
-                  />
-                </div>
-                <div>
-                  <p className="p-2 whitespace-nowrap">My Shop</p>
-                </div>
-              </div>
-            </Link>
-          </div>
+          {/* Logo */}
+          <Link to="/">
+            <div className="flex items-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg p-2 transition-all">
+              <img
+                src={'/logo_e_shop.png'}
+                className="h-10 w-10 object-cover"
+                alt="Logo"
+              />
+              <p className="font-bold text-white text-lg whitespace-nowrap">
+                E Shop
+              </p>
+            </div>
+          </Link>
 
-          <div className="cart-btn-mobile cursor-pointer"  onClick={() => setIsOpenDrawerCart(true)}>
-            <Badge color="error" badgeContent={length}>
-              <CartIcon />
-            </Badge>
-          </div>
-        </div>
+          <div className="flex items-center gap-3">
+            {/* Cart */}
+            <div
+              className="cursor-pointer"
+              onClick={() => setIsOpenDrawerCart(true)}
+            >
+              <Badge color="error" badgeContent={length} max={99}>
+                <CartIcon className="text-white" />
+              </Badge>
+            </div>
 
-        {/* Drawer categories */}
-        <div className="category-drawer">
-          <CategoryDrawer
-            categories={rootCategories}
-            isOpen={isOpenDrawerCate}
-            setIsOpen={setIsOpenDrawerCate}
-            ref={drawerCateRef}
-          />
-        </div>
-
-        {/* bottom navbar */}
-        <div className="fixed bottom-0 left-0 w-full bg-gray-300 md:hidden flex justify-center items-center">
-          <div className="flex w-full justify-around">
-            {menuBottom.map((page) => (
-              <div
-                key={page.name}
-                className={
-                  'hover:bg-white/20 hover:font-semibold hover:border-white flex flex-col justify-center items-center rounded-full p-2 '
-                }
-              >
-                <Link
-                  to={page.path}
-                  className="flex justify-center items-center flex-col"
-                >
-                  {page.icon}
-                  <p className="text-sm">{page.name}</p>
-                </Link>
-              </div>
-            ))}
+            {/* User Menu */}
+            <UserMenuMobile user={user} cartLength={length} />
           </div>
         </div>
 
-        {/* Drawer cart */}
-        <div className="cart-drawer">
-          {/* Caanf ref, state open, handleOpen */}
-          <CartDrawer
-            ref={drawerCartRef}
-            isOpen={isOpenDrawerCart}
-            setIsOpen={setIsOpenDrawerCart}
-          />
-        </div>
+        {/* Category Drawer Mobile */}
+        <CategoryDrawer
+          categories={rootCategories}
+          isOpen={isOpenDrawerCate}
+          setIsOpen={setIsOpenDrawerCate}
+          ref={drawerCateRef}
+        />
+
+        {/* Cart Drawer */}
+        <CartDrawer
+          ref={drawerCartRef}
+          isOpen={isOpenDrawerCart}
+          setIsOpen={setIsOpenDrawerCart}
+        />
       </header>
 
-      <main className="layout-customer__main container mx-auto h-auto  relative">
-        <Outlet context={{  }} />
+      {/* ✅ Main content với padding-top để không bị header che */}
+      <main className="layout-customer__main container mx-auto pt-32 md:pt-36 pb-20 md:pb-4">
+        <Outlet />
       </main>
 
-      <footer className="layout-customer__footer  bg-gray-200">
+      {/* Bottom Navigation Mobile */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-lg md:hidden z-10">
+        <div className="flex justify-around py-2">
+          {menuBottom.map((page) => (
+            <Link
+              key={page.name}
+              to={page.path}
+              className="flex flex-col items-center justify-center px-3 py-1 hover:text-blue-500 transition-colors"
+            >
+              {page.icon}
+              <p className="text-xs mt-1">{page.name}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <footer className="layout-customer__footer bg-gray-200">
         <CustomerFooter />
       </footer>
     </div>
   );
+  // return (
+  //   <div className="layout-customer flex flex-col items-stretch min-h-screen">
+  //     <header className="layout-customer__header fixed w-full bg-cyan-400 h-16 z-10 ">
+  //       <div className="layout-customer__nav container bg-inherit py-2 h-full w-full relative mx-auto hidden md:flex justify-between items-center gap-x-4 shadow-cyan-300">
+  //         <div className="layout-customer__nav--logo rounded-lg ">
+  //           <Link to="/">
+  //             <div className="flex flex-row p-2 bg-inherit justify-start items-center gap-2">
+  //               <div className="flex-shrink-0">
+  //                 <img
+  //                   src={'/logo_e_shop.png'}
+  //                   className="h-10 w-10 object-cover"
+  //                   alt="Logo"
+  //                 />
+  //               </div>
+  //               <div>
+  //                 <p className="p-2 font-bold whitespace-nowrap">E Shop</p>
+  //               </div>
+  //             </div>
+  //           </Link>
+  //         </div>
+  //         <nav className="layout-customer__nav--menu flex flex-row gap-x-2  items-center w-full">
+  //           <div className="nav-item--search m-auto">
+  //             <SearchHome isHomePage={true} />
+  //           </div>
+
+  //           <div
+  //             className="nav-item--cart cursor-pointer mr-2"
+  //             onClick={() => setIsOpenDrawerCart(true)}
+  //           >
+  //             <Badge color="error" badgeContent={length}>
+  //               <CartIcon />
+  //             </Badge>
+  //           </div>
+
+  //           <div className={'nav-item--account relative'} ref={profileMenuRef}>
+  //             <div
+  //               onClick={() => setShowProfileMenu((v) => !v)}
+  //               style={{ cursor: 'pointer', position: 'relative' }}
+  //               className="flex justify-center items-center gap-2 group"
+  //             >
+  //               <AccountCircle />
+  //               <p className="p-1 font-semibold">{`Chào ${
+  //                 user?.username || user?.full_name || user?.email || 'Khách'
+  //               }`}</p>
+  //               <span
+  //                 className={`arrow-down ${showProfileMenu ? 'open' : ''}`}
+  //               ></span>
+  //             </div>
+  //             <div
+  //               className={`menuProfile-modern absolute right-0 top-full mt-2 min-w-[180px] z-20 transition-all duration-300 ${
+  //                 showProfileMenu
+  //                   ? 'visible opacity-100 scale-100'
+  //                   : 'invisible opacity-0 scale-95'
+  //               }`}
+  //             >
+  //               <ul className="py-2">
+  //                 {user && (
+  //                   <li
+  //                     className="menuProfile-item"
+  //                     onClick={() => setShowProfileMenu(false)}
+  //                   >
+  //                     <Link to={'/account/profile'}>
+  //                       <Person className="mr-2" /> Tài khoản của tôi
+  //                     </Link>
+  //                   </li>
+  //                 )}
+  //                 {user && (
+  //                   <li
+  //                     className="menuProfile-item"
+  //                     onClick={() => setShowProfileMenu(false)}
+  //                   >
+  //                     <Link to={'/account/orders'}>
+  //                       <ListAlt className="mr-2" /> Đơn hàng của tôi
+  //                     </Link>
+  //                   </li>
+  //                 )}
+  //                 {user && (
+  //                   <li
+  //                     className="menuProfile-item"
+  //                     onClick={() => setShowProfileMenu(false)}
+  //                   >
+  //                     <Link to={'/account/carts'}>
+  //                       <CartIcon className="mr-2" /> {length} Giỏ hàng của tôi
+  //                     </Link>
+  //                   </li>
+  //                 )}
+  //                 {user && (
+  //                   <li
+  //                     className="menuProfile-item"
+  //                     onClick={() => setShowProfileMenu(false)}
+  //                   >
+  //                     <Link to={'/logout'}>
+  //                       <Logout className="mr-2" /> Đăng xuất
+  //                     </Link>
+  //                   </li>
+  //                 )}
+  //                 {!user && (
+  //                   <li
+  //                     className="menuProfile-item"
+  //                     onClick={() => setShowProfileMenu(false)}
+  //                   >
+  //                     <Link to={'/login'}>
+  //                       <Login className="mr-2" /> Đăng nhập
+  //                     </Link>
+  //                   </li>
+  //                 )}
+  //               </ul>
+  //             </div>
+  //           </div>
+  //         </nav>
+  //         <div className="layout-customer__nav--hamburger mr-2">
+  //           <MenuIcon
+  //             className="cursor-pointer"
+  //             onClick={() => handleToggleNav(true)}
+  //           />
+  //         </div>
+  //         <div className="layout-customer__nav--close mr-2">
+  //           <Close
+  //             className="cursor-pointer"
+  //             onClick={() => handleToggleNav(false)}
+  //           />
+  //         </div>
+  //       </div>
+
+  //       {/* Danhj muc va pages */}
+  //       <div className="layout-customer__nav container mx-auto  hidden md:flex md:items-center w-full">
+  //         <div
+  //           ref={cateMenuRef}
+  //           className="relative bg-orange-400 min-w-48 rounded-lg shadow-md flex items-center mr-4"
+  //         >
+  //           <div
+  //             className="flex justify-between items-center gap-2 cursor-pointer px-2 "
+  //             onClick={() => setIsOpenCateMenu(!isOpenCateMenu)}
+  //           >
+  //             <div>
+  //               <p className="py-2">Danh mục sản phẩm</p>
+  //             </div>
+  //             <div>
+  //               {isOpenCateMenu ? (
+  //                 <ArrowDropDownOutlined />
+  //               ) : (
+  //                 <ArrowDropUpOutlined />
+  //               )}
+  //             </div>
+  //           </div>
+  //           <div className="menuCategoryContainer min-w-full absolute left-0 top-full rounded-lg z-20">
+  //             <CategoryDropdown
+  //               categories={rootCategories}
+  //               isOpenCateMenu={isOpenCateMenu}
+  //             />
+  //           </div>
+  //         </div>
+
+  //         <div className="flex mr-auto gap-x-4">
+  //           {menuPages.map((page) => (
+  //             <div
+  //               key={page.name}
+  //               className={
+  //                 navItemClasses +
+  //                 (activePage === page.name ? activeNavItemClasses : '')
+  //               }
+  //               onClick={() => handleActivePage(page.name)}
+  //             >
+  //               <Link
+  //                 to={page.path}
+  //                 className="flex justify-center items-center"
+  //               >
+  //                 <p className="p-2">{page.name}</p>
+  //               </Link>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+
+  //       {/* Khi man hinh nho thi hien thi toggle categories, logo, cart button */}
+  //       <div className="layout-customer__nav--toggle-categories md:hidden flex justify-between items-center px-4">
+  //         <MenuIcon
+  //           className="cursor-pointer"
+  //           onClick={() => setIsOpenDrawerCate(!isOpenDrawerCate)}
+  //         />
+
+  //         {/* Shop name */}
+  //         <div className="logo rounded-lg ">
+  //           <Link to="/">
+  //             <div className="flex flex-row p-2 bg-inherit justify-start items-center gap-2">
+  //               <div className="flex-shrink-0">
+  //                 <img
+  //                   src={'/logo192.png'}
+  //                   className="h-10 w-10 object-cover"
+  //                   alt="Logo"
+  //                 />
+  //               </div>
+  //               <div>
+  //                 <p className="p-2 whitespace-nowrap">My Shop</p>
+  //               </div>
+  //             </div>
+  //           </Link>
+  //         </div>
+
+  //         <div className="flex items-center gap-4">
+  //           <div
+  //             className="cart-btn-mobile cursor-pointer"
+  //             onClick={() => setIsOpenDrawerCart(true)}
+  //           >
+  //             <Badge color="error" badgeContent={length}>
+  //               <CartIcon />
+  //             </Badge>
+  //           </div>
+
+  //           {/* ✅ User menu dropdown component */}
+  //           <UserMenuMobile user={user} cartLength={length} />
+  //         </div>
+  //       </div>
+
+  //       {/* Drawer categories */}
+  //       <div className="category-drawer">
+  //         <CategoryDrawer
+  //           categories={rootCategories}
+  //           isOpen={isOpenDrawerCate}
+  //           setIsOpen={setIsOpenDrawerCate}
+  //           ref={drawerCateRef}
+  //         />
+  //       </div>
+
+  //       {/* bottom navbar */}
+  //       <div className="fixed bottom-0 left-0 w-full bg-gray-300 md:hidden flex justify-center items-center">
+  //         <div className="flex w-full justify-around">
+  //           {menuBottom.map((page) => (
+  //             <div
+  //               key={page.name}
+  //               className={
+  //                 'hover:bg-white/20 hover:font-semibold hover:border-white flex flex-col justify-center items-center rounded-full p-2 '
+  //               }
+  //             >
+  //               <Link
+  //                 to={page.path}
+  //                 className="flex justify-center items-center flex-col"
+  //               >
+  //                 {page.icon}
+  //                 <p className="text-sm">{page.name}</p>
+  //               </Link>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+
+  //       {/* Drawer cart */}
+  //       <div className="cart-drawer">
+  //         {/* Caanf ref, state open, handleOpen */}
+  //         <CartDrawer
+  //           ref={drawerCartRef}
+  //           isOpen={isOpenDrawerCart}
+  //           setIsOpen={setIsOpenDrawerCart}
+  //         />
+  //       </div>
+  //     </header>
+
+  //     <main className="layout-customer__main container mx-auto h-auto  relative">
+  //       <Outlet context={{}} />
+  //     </main>
+
+  //     <footer className="layout-customer__footer  bg-gray-200">
+  //       <CustomerFooter />
+  //     </footer>
+  //   </div>
+  // );
 }
 
 export default CustomerLayout;

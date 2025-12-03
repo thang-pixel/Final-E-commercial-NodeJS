@@ -1,26 +1,24 @@
 import IconButton from '@mui/material/IconButton';
 import { AddShoppingCart } from '@mui/icons-material';
-import { Link } from 'react-router-dom'; 
-import { useDispatch } from 'react-redux'; 
+import { Link } from 'react-router-dom';  
 import { useState } from 'react'; 
 import ProductQuickView from '../common/ProductQuickView';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, isBestSeller = false }) {
   const {
     _id,
-    name,
-    description,
+    name, 
     images,
     slug,
     min_price: price_from,
     average_rating: rating_avg,
     review_count: rating_count,
   } = product;
-  const dispatch = useDispatch();
+  
   const [isOpenQuickView, setIsOpenQuickView] = useState(false);
 
   const raw = images?.[0]?.img_url || '';
-  const thumbnail = raw; // url ảnh trên cloudinary đã là url đầy đủ
+  const thumbnail = isBestSeller ? product.image_url : raw; // url ảnh trên cloudinary đã là url đầy đủ
  
 
   return (
@@ -56,6 +54,11 @@ export default function ProductCard({ product }) {
               <div className="productCard---name font-semibold text-lg line-clamp-2 break-words group-hover:text-orange-400 transition-all duration-200 mb-2">
                 {name}
               </div>
+              {isBestSeller && (
+                <div className="productCard---best-seller-badge inline-block bg-yellow-300 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full mb-2">
+                  Đã bán: {product.totalQuantity}
+                </div>
+              )}
               <div className="productCard---price font-bold text-base text-red-600 mb-2">
                 {formatVND(price_from)}
               </div>
@@ -63,7 +66,7 @@ export default function ProductCard({ product }) {
 
             <div className="productCard---actions flex justify-center">
               <div className="productCard---ratings flex justify-center items-center gap-x-1 text-sm text-yellow-500">
-                <span>{rating_avg ? rating_avg.toFixed(1) : 0.0}</span>
+                <span>{rating_avg ? rating_avg.toFixed(1) : 0.0}★</span>
                 <span>({rating_count ?? 0})</span>
               </div>
             </div>
@@ -98,12 +101,12 @@ export default function ProductCard({ product }) {
                       "
           />
 
-          <span className="relative z-10 font-semibold text-sm col text-black">
-            Add to cart
-          </span>
           <IconButton color="primary" size="large" aria-label="Add to cart">
             <AddShoppingCart />
           </IconButton>
+          <span className="relative z-10 font-semibold text-sm col text-black">
+            Thêm vào giỏ
+          </span>
         </div>
       </div>
       <ProductQuickView

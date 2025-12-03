@@ -6,9 +6,11 @@ const TechnicalSpecs = ({ specs, setSpecs, showError }) => {
   };
 
   const updateSpec = (index, field, value) => {
-    const updated = [...specs];
-    updated[index][field] = value;
-    setSpecs(updated);
+    setSpecs((prev) => 
+      prev.map((spec, i) => 
+        i === index ? { ...spec, [field]: value } : spec
+      )
+    );
   };
 
   const removeSpec = (index) => {
