@@ -199,7 +199,7 @@ export default function AdminLayout({ user }) {
               }}
             >
               <Link to="/admin/home" className="sider-logo">
-                <img src="/logo192.png" alt="Logo" />
+                <img src="/logo_e_shop.png" alt="Logo" />
                 <span
                   className={`logo-text ${collapsed ? 'is-collapsed' : ''}`}
                 >
