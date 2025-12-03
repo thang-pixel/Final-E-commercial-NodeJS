@@ -1,0 +1,13 @@
+{
+  "name": "final-ecommerce-backend-frontend",
+  "version": "1.0.0",
+  "description": "Nodejs Final Project Backend and Frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start --prefix BE\" \"npm run start --prefix fe\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+
+}
